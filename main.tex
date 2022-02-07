@@ -1,0 +1,75 @@
+\documentclass{llncs}
+
+% --- -----------------------------------------------------------------
+% --- Document-specific definitions.
+% --- -----------------------------------------------------------------
+
+\input{preamble}
+\input{commanddefs}
+
+
+%\usepackage{hyperref}
+
+%\usepackage{cleveref}
+
+%\usepackage{graphicx}
+
+%\usepackage{subcaption}
+
+\makeatletter
+\newcommand\rraggedright{%
+  \let\\\@centercr\@rightskip\@flushglue \rightskip\@rightskip
+  \leftskip\z@skip}
+\makeatother
+
+
+\pagestyle{plain}
+
+% --- -----------------------------------------------------------------
+% --- The document starts here.
+% --- -----------------------------------------------------------------
+\begin{document}
+
+\title{Simple and Efficient Non-Malleable Timed Commitments}
+
+
+
+
+\maketitle
+%\begin{abstract}
+%Timed commitment schemes introduced by Boneh and Naor \cite{C:BonNao00} enable to achieve a fairness in different MPC protocols. Recently, the first non-malleable variant of timed commitment have been constructed by Katz~\etal \cite{TCC:KatLosXu20} which uses as a main building block so called timed public-key encryption scheme (TPKE).  The construction of TPKE scheme of Katz~\etal is based on the Strong Sequential Squaring Assumption and suffers from inefficient encryption that depends linearly on the hardness parameter. Therefore the resulting timed commitment has similarly inefficient commitment algorithm.
+%
+%In our work we propose two constructions of TPKE which are more efficient than the construction of Katz~\etal The first construction is generic in the sense that it does not rely on concrete assumption but rather uses arbitrary sequential problem which we denote in our work as a time-lock puzzle (TLP). 
+%\end{abstract}
+
+
+\input{intro}
+\input{techoverview}
+\input{prelims}
+\input{constructions}
+\input{nizk}
+
+
+% To avoid hard rejects
+
+
+% --- -----------------------------------------------------------------
+% --- The Bibliography.
+% --- -----------------------------------------------------------------
+\bibliographystyle{alpha}
+\bibliography{cryptobib/abbrev0,cryptobib/crypto,extrarefs}
+
+% --- -----------------------------------------------------------------
+% --- The Appendix.
+% --- -----------------------------------------------------------------
+
+
+
+\end{document}
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

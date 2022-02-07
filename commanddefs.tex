@@ -1,0 +1,488 @@
+%%%%%                   %%%%%%%%%%%%%%%%%%%%%                   %%%%%
+%%%%% Take out unneeded commands from this file to avoid bloat. %%%%%
+%%%%%                   %%%%%%%%%%%%%%%%%%%%%                   %%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%                              GROUPS/DISTRIBUTIONS/SETS/LISTS                                 %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%  %%%
+
+% number sets
+\newcommand{\x}{\ensuremath{\cdot}}
+\newcommand{\Z}{\ensuremath{\mathbb{Z}}\xspace}
+\newcommand{\N}{\ensuremath{\mathbb{N}}\xspace}
+\newcommand{\Q}{\ensuremath{\mathbb{Q}}\xspace}
+\newcommand{\R}{\ensuremath{\mathbb{R}}\xspace}
+\newcommand{\F}{\ensuremath{\mathbb{F}}\xspace}
+
+%% Groups, fields and rings
+\newcommand{\nats}{\mathbb{N}} % Set of natural numbers
+\newcommand{\ints}{\mathbb{Z}} % Set of integers
+\newcommand{\prms}{\mathbb{P}} % Set of prime numbers
+\newcommand{\Zp}{\ints_p} % Integers modulo p
+\newcommand{\Zq}{\ints_q} % Integers modulo q
+\newcommand{\Zn}{\ints_N} % Integers modulo N
+\newcommand{\Zns}{\ints_{N^2}^*}
+\newcommand{\Jn}{\mathbb{J}_N}
+\newcommand{\qrn}{\mathbb{QR}_N}
+\newcommand{\qrni}{\mathbb{QR}_{N_i}}
+\newcommand{\G}{\mathbb{G}} % Group!
+
+% operators
+\newcommand{\defeq}{\coloneqq}
+%\newcommand{\rand}{\xleftarrow{\smash{\raisebox{-1.75pt}{$\scriptscriptstyle\$$}}}}
+\newcommand{\rand}{\stackrel{{\scriptscriptstyle\$}}{\leftarrow}}
+\newcommand{\xor}{\oplus}
+\newcommand{\concat}{\mathbin\Vert}
+
+%% Distributions
+\newcommand{\distr}{\mathfrak{D}}
+\newcommand{\ind}{\in_{_{\distr}}}
+
+%% Set-shaped things
+\newcommand{\bits}{\{0,1\}} % Bit set
+\newcommand{\msgspace}{\mathcal{M}} % Message Space
+\newcommand{\tagspace}{\mathcal{T}} % Tag Space. SPPPAAAACEEE!!! SPPPPAAAAAAAAAACCCEEEEE!!!!
+\newcommand{\msgspacea}{\msgspace_1} % Message Space Uno!
+\newcommand{\msgspaceb}{\msgspace_2} % Message Space Dos!
+\newcommand{\repspace}{\mathbf{Y}_{\secpar,\h}} % Message Reprentative Space
+\newcommand{\hrepspace}{\mathbf{Y}_{\secpar+\beta,\h}} % Message Reprentative Space
+\newcommand{\keyspace}{\mathcal{K}} % Key Space
+\newcommand{\sigspace}{\mathfrak{S}} % Signature Space
+\newcommand{\sigspacea}{\sigspace_1} % Siganture Space Uno!
+\newcommand{\sigspaceb}{\sigspace_2} % Siganture Space Dos!
+\newcommand{\inr}{\in_{_R}} % Uniformily random in
+\newcommand{\intvalab}[2]{\llbracket #1 , #2 \rrbracket} % Int val a to b
+\newcommand{\intval}[1]{\llbracket 1, #1 \rrbracket}  %Int val from 1 to x
+\newcommand{\intvalz}[1]{\llbracket 0, #1 \rrbracket} % Int val from 0 to x
+\newcommand{\dom}{\mathsf{Domain}} % A domain of some sort.
+\newcommand{\ccls}{\mathcal{C}_{\lambda}} % Circuit class
+\newcommand{\cclsf}{\mathfrak{F}_{\lambda}} % Circuit class F
+\newcommand{\lang}{L}
+%\newcommand{\smplset}{[N^2]}
+%\newcommand{\smplset}{[\floor{N/4}]}
+\newcommand{\smplset}{[\floor{N/2}]}
+\newcommand{\hdom}{\mathcal{U}} % domain of a hash function
+\newcommand{\himg}{\mathcal{V}} % image of a hash function
+
+%% Lists
+\newcommand{\slista}{\mathcal{S}_1} % The list currently known as S
+\newcommand{\slistb}{\mathcal{S}_2} % The list currently known as S
+\newcommand{\mlista}{\mathcal{M}_1} % The list currently known as M
+\newcommand{\mlistb}{\mathcal{M}_2} % The list currently known as M
+\newcommand{\qlista}{\mathcal{Q}_1} % The list currently known as Q
+\newcommand{\qlistb}{\mathcal{Q}_2} % The list currently known as Q
+\newcommand{\alist}{\mathcal{A}} %  The list currently known as A
+\newcommand{\clist}{\mathcal{C}} %  The list currently known as F
+\newcommand{\hlist}{\mathcal{H}} %  The list currently known as H
+\newcommand{\glist}{\mathcal{G}} %  The list currently known as G
+\newcommand{\flist}{\mathcal{F}} %  The list currently known as F
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%                                  ADVERSARIES AND SUCH                                        %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Adversaries
+\newcommand{\advA}{\mathcal{A}} % Adversary 
+\newcommand{\adv}{\mathcal{A}} % Adversary
+\newcommand{\advB}{\mathcal{B}} % Simulator
+\newcommand{\simr}{\mathcal{B}} % Simulator
+\newcommand{\advC}{\mathcal{C}} % Challenger
+\newcommand{\chal}{\mathcal{C}} % Challener
+\newcommand{\advD}{\mathcal{D}} % Distinguisher
+\newcommand{\advE}{\mathcal{E}} % Extractor
+\newcommand{\extr}{\mathcal{E}} % Extractor
+\newcommand{\dist}{\mathcal{D}} % Distinguiser
+\newcommand{\advF}{\mathcal{F}} % Forger
+\newcommand{\forger}{\mathcal{F}} % Forger
+
+%% Such
+\newcommand{\advtg}{\mathbf{Adv}} % The adversary's advantage
+\newcommand{\zk}{\mathbf{ZK}}
+\newcommand{\simsnd}{\mathbf{SimSnd}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%                                   ALGORITHMS/PROCEDURES                                      %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Syntax never killed anyody right?
+\newcommand{\rnd}{\leftarrow_{\mbox{\tiny{\$}}}} % Randomised algorithm output
+\newcommand{\get}{\leftarrow} % Normal Algorithm output
+\newcommand{\true}{\mathtt{TRUE}} % TRUE boolean flag
+\newcommand{\false}{\mathtt{FALSE}} % FALSE boolean flag
+
+%% Setups and the like.
+\newcommand{\setup}{\mathsf{Setup}} % Setup Algorithm, that give us the groups and such.
+\newcommand{\keygen}{\mathsf{KeyGen}} % Key Generation Algorithm.
+\newcommand{\gen}{\mathsf{Gen}} % Generation Algorithm.
+\newcommand{\ggen}{\mathsf{GrpGen}} % Group Generation Algorithm.
+\newcommand{\pgen}{\mathsf{PGen}} % Parameters Generation Algorithm.
+\newcommand{\kgen}{\mathsf{KGen}} % Key Generation Algorithm.
+\newcommand{\genmod}{\mathsf{GenMod}} 
+
+\newcommand{\solve}{\mathsf{Solve}}
+\newcommand{\f}{\mathsf{F}}
+
+\newcommand{\preproc}{\mathsf{Preproc}}
+\newcommand{\encode}{\mathsf{Encode}}
+\newcommand{\decode}{\mathsf{Decode}}
+
+
+%% Obfuscation
+\newcommand{\io}{\mathscript{i}\mathcal{O}}
+\newcommand{\dio}{\mathscript{di}\mathcal{O}}
+\newcommand{\eo}{\mathscript{e}\mathcal{O}}
+
+%% Encryption Schemes.
+\newcommand{\otle}{\mathtt{OTLE}}
+\newcommand{\tpke}{\mathtt{TPKE}}
+\newcommand{\tlp}{\mathtt{TLP}}
+\newcommand{\tlppp}{\mathtt{TLP \mhyphen PP}}
+\newcommand{\stlp}{\mathtt{sTLP}}
+\newcommand{\wtlp}{\mathtt{wTLP}}
+\newcommand{\pptlp}{\mathtt{ppTLP}}
+\newcommand{\re}{\mathtt{RE}}
+\newcommand{\tre}{\mathtt{TRE}}
+\newcommand{\trepp}{\mathtt{TRE \mhyphen PP}}
+\newcommand{\hm}{\mathtt{H}}
+\newcommand{\htre}{\mathtt{HTRE}}
+\newcommand{\ftre}{\mathtt{FTRE}}
+\newcommand{\pke}{\mathtt{PKE}}
+\newcommand{\he}{\mathtt{HE}}
+\newcommand{\e}{\mathtt{E}}
+\newcommand{\fhe}{\mathtt{FHE}}
+\newcommand{\we}{\mathtt{WE}}
+\newcommand{\eowe}{\mathtt{EOWE}}
+\newcommand{\owe}{\mathtt{OWE}}
+\newcommand{\fwe}{\mathtt{FWE}}
+\newcommand{\ofwe}{\mathtt{OFWE}}
+\newcommand{\eofwe}{\mathtt{EOFWE}}
+\newcommand{\tbe}{\mathtt{TBE}}
+%\newcommand{\tbenc}{\mathtt{TBE}}
+\newcommand{\penc}{\mathtt{PE}}
+% Encryption Algorithms
+\newcommand{\enc}{\mathsf{Enc}}
+\newcommand{\dec}{\mathsf{Dec}}
+\newcommand{\decf}{\mathsf{Dec}_f}
+\newcommand{\decs}{\mathsf{Dec}_s}
+\newcommand{\eval}{\mathsf{Eval}}
+% Tag Encryption Algorithms
+\newcommand{\tenc}{\mathsf{TEnc}}
+\newcommand{\tdec}{\mathsf{TDec}}
+% Puncturable Encryption Algorithms
+\newcommand{\punct}{\mathsf{Punct}}
+\newcommand{\pdec}{\mathsf{PDec}}
+% Functional Encryption Algorithms
+\newcommand{\fe}{\mathtt{FE}}
+\newcommand{\msk}{\mathsf{msk}}
+\newcommand{\FF}{\mathcal{F}}
+\newcommand{\ID}{\mathcal{ID}}
+\newcommand{\MM}{\mathcal{M}}
+\newcommand{\OO}{\mathcal{O}}
+\newcommand{\XX}{\mathcal{X}}
+\newcommand{\YY}{\mathcal{Y}}
+\newcommand{\ff}{f}
+\newcommand{\xx}{x}
+\newcommand{\yy}{y}
+\newcommand{\Sim}{\mathcal{S}}
+\newcommand{\simgen}{\mathsf{\widetilde{Gen}}}
+\newcommand{\simkeygen}{\mathsf{\widetilde{KeyGen}}}
+\newcommand{\simenc}{\mathsf{\widetilde{Enc}}}
+\newcommand{\trfe}{\mathsf{TRFE}}
+
+
+\newcommand{\ro}{\mathsf{RO}}
+\newcommand{\gss}{\mathtt{GSS}}
+\newcommand{\fac}{\mathtt{Factor}}
+\newcommand{\factor}{\mathsf{Factor}}
+\newcommand{\dla}{\mathsf{DL}_\adv}
+\newcommand{\gnr}{\mathsf{GNR}}
+\newcommand{\fail}{\mathsf{FAIL}}
+\newcommand{\face}{\mathsf{FACTOR}}
+\newcommand{\gsse}{\mathsf{GSS}}
+\newcommand{\success}{\mathsf{SUCCESS}}
+\newcommand{\forge}{\mathsf{FRG}} 
+\newcommand{\event}{\mathsf{E}} 
+
+
+%% Signature Schemes.
+\newcommand{\ots}{\mathtt{OTS}} % One-time Signature Scheme
+\newcommand{\sig}{\mathtt{Sig}} % Signature Scheme.
+% Signature Algorithms
+\newcommand{\sign}{\mathsf{Sign}} % Signing Algorithm.
+\newcommand{\verify}{\mathsf{Verify}} % Verification Algorithm.
+\newcommand{\vrfy}{\mathsf{Vrfy}} % Verification Algorithm.
+
+
+%% Commitments
+\newcommand{\tc}{\mathtt{TC}}
+\newcommand{\nitc}{\mathtt{NITC}}
+\newcommand{\com}{\mathsf{Com}}
+\newcommand{\cvrfy}{\mathsf{ComVrfy}}
+\newcommand{\decom}{\mathsf{Dec}}
+\newcommand{\dvrfy}{\mathsf{DecVrfy}}
+\newcommand{\fdecom}{\mathsf{FDec}}
+\newcommand{\fdvrfy}{\mathsf{FDecVrfy}}
+
+
+%% NIZK/SNARK
+\newcommand{\nizk}{\mathtt{NIZK}}
+\newcommand{\niwi}{\mathtt{NIWI}}
+
+%% Proof systems
+\newcommand{\prv}{\mathsf{Prover}} % Prover
+\newcommand{\vrf}{\mathsf{Verifier}} %Verifier
+\newcommand{\snark}{\mathtt{SNARK}}
+\newcommand{\prove}{\mathsf{Prove}}
+%\newcommand{\simul}{\mathsf{Sim}}
+\newcommand{\crs}{\mathsf{crs}} % Common Reference String
+
+%% Hashes, Chameleon or otherwise.
+\newcommand{\CRH}{\mathsf{CRHF}} % Collision Resistant Hash Function.
+% Collision Resitant Hash Algorithms.
+\newcommand{\hash}{\mathsf{Hash}} % Hash Algorithm.
+\newcommand{\h}{\mathtt{H}}
+
+%% Oracles
+\newcommand{\ddhvf}{\mathsf{DDHvf}} % The DDH Oracle
+\newcommand{\dss}{\mathsf{DSSvf}} % The Decisional Sequential Squaring oracle
+\newcommand{\deco}{\mathsf{DEC}} %decryption oracle
+\newcommand{\signo}{\mathsf{SIGN}} %signing oracle
+\newcommand{\kgeno}{\mathsf{KEYGEN}} %signing oracle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%                                         ASSUMPTIONS                                          %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\dl}{\ensuremath{\mathsf{DLog}}\xspace} % The Discrete Logarithm Assumption
+\newcommand{\ddh}{\ensuremath{\mathsf{DDH}}\xspace} % The Decisional Diffie-Hellman Assumption
+\newcommand{\dlin}{\ensuremath{\mathsf{DLin}}\xspace} % The Descision Linear Assumption
+\newcommand{\gdlin}{\ensuremath{\mathsf{GapDLin}}\xspace} % The Descision Linear Assumption
+\newcommand{\ssa}{\ensuremath{\mathsf{SS}}\xspace}
+\newcommand{\sss}{\ensuremath{\mathsf{SSS}}\xspace}
+\newcommand{\dcr}{\ensuremath{\mathsf{DCR}}\xspace} % The Decisional Diffie-Hellman Assumption
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%                                    KEYS & CONSTANTS                                          %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Keys
+\newcommand{\gk}{\mathsf{gk}} % Description of the pairing group
+\newcommand{\pk}{\mathsf{pk}} % Public Key.
+\newcommand{\sk}{\mathsf{sk}} % Secret Key (Overloads to Signing Key).
+\newcommand{\ek}{\mathsf{ek}} % Encryption Key.
+\newcommand{\dk}{\mathsf{dk}} % Decryption Key.
+\newcommand{\td}{\mathsf{td}} % Trapdoor.
+\newcommand{\vk}{\mathsf{vk}} % Verfication Key.
+\newcommand{\otsk}{\mathsf{sk_{OT}}} % One Time Signing Key.
+\newcommand{\csk}{\mathsf{sk^*_{OT}}} % One Time Signing
+\newcommand{\otvk}{\mathsf{vk_{OT}}} % One Time Verification Key.
+\newcommand{\cvk}{\mathsf{vk^*_{OT}}} % One Time Verification Key.
+\newcommand{\spr}{\mathsf{sp}} % System Parameters.
+\newcommand{\pp}{\mathsf{pp}}
+\newcommand{\ppe}{\mathsf{pp}_e} % Encryption parameters
+\newcommand{\ppd}{\mathsf{pp}_d} % Decryption parameters
+\newcommand{\ppei}{\mathsf{pp}_{e,i}} % Encryption parameters
+\newcommand{\ppdi}{\mathsf{pp}_{d,i}} % Decryption parameters
+\newcommand{\ppej}{\mathsf{pp}_{e,j}} % Encryption parameters
+\newcommand{\ppdj}{\mathsf{pp}_{d,j}} % Decryption parameters
+\newcommand{\ppeft}{\mathsf{pp}_{e,T_i,\FF'}} % Encryption parameters
+\newcommand{\ppdft}{\mathsf{pp}_{d,T_i,\FF'}} % Encryption parameters
+\newcommand{\param}{\mathsf{par}} % parameters 
+\newcommand{\oracle}{\mathcal{O}}
+\newcommand{\funs}{\mathsf{Funs}[\hdom, \himg]}
+\newcommand{\rerand}{\mathsf{Rand}}
+
+%% Constants
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%                                          NAMES                                               %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\hexa}[1]{\mathtt{0x#1}} % Hexadecimal values
+
+%% Security Defs
+\newcommand{\ufcma}{\mathsf{UF \mhyphen CMA}}
+\newcommand{\ufnma}{\mathsf{UF \mhyphen NMA}}
+\newcommand{\rom}{\mathsf{ROM}}
+%\newcommand{\sm}{\mathsf{StdM}}
+
+\newcommand{\cpa}{\mathsf{CPA}}
+\newcommand{\cca}{\mathsf{CCA}}
+\newcommand{\ror}{\mathsf{RoR}}
+%%Known Schemes
+\newcommand{\ktbe}{\mathtt{KiltzTBE}}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%                                           MISC                                               %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mathchardef\hyphen="2D % Hyphen. Because it has to be done this way for reasons.
+\mathchardef\mhyphen="2D % Hyphen. Because it has to be done this way for reasons.
+\newcommand{\tab}{\hspace*{2em}} % Tabs for code
+\newcommand{\half}{\frac{1}{2}} % Half
+\newcommand{\qtr}{\frac{1}{4}} % Quarter
+\newcommand{\et}{$e^{\text{th}}$} % e-th cause why not make it easy?
+\newcommand{\secpar}{\ensuremath{\lambda\xspace}} % Security Parameter
+\newcommand{\seck}{1{^\secpar}} % Unary represntation of our security parameter
+\newcommand{\seckt}{1^{2\secpar}} % Unary represntation of our security parameter DOUBLED!
+\newcommand{\negl}{\mathsf{negl}}
+\newcommand{\poly}{\mathsf{poly}}
+\newcommand{\polylog}{\mathsf{polylog}}
+\newcommand{\inp}{\mathsf{input}}
+\newcommand{\tilT}{\tilde{T}}
+\newcommand{\undT}{\underline{T}}
+\newcommand{\undE}{\underline{\epsilon}}
+\newcommand{\dep}{\mathsf{depth}}
+\newcommand{\aux}{\mathsf{aux}}
+%\newcommand{\max}{\mathsf{max}}
+
+\newcommand{\win}{\mathsf{Win}}
+\newcommand{\query}{\mathsf{Query}}
+\newcommand{\games}{\mathsf{G}} % game
+\newcommand{\expe}{\mathsf{Exp}} % game
+\newcommand{\te}{t_{e}} % run time of encryption
+\newcommand{\tfd}{t_{fd}} % run time of fast decryption
+\newcommand{\tsd}{t_{sd}} % run time of slow decryption
+\newcommand{\st}{\mathsf{st}} % state
+\newcommand{\gap}{\epsilon} % gap
+\newcommand{\ugap}{\underline{\gap}}
+
+\newcommand{\epke}{\epsilon_{\pke}}
+\newcommand{\etbe}{\epsilon_{\tbe}}
+\newcommand{\etlp}{\epsilon_{\tlp}}
+\newcommand{\eots}{\epsilon_{\ots}}
+
+\newcommand{\simul}{\mathsf{Sim}}
+
+\newcommand{\clock}{\mathcal{C}}
+\newcommand{\rel}{\mathcal{R}}
+
+\newcommand{\circC}{C_{\sk}} % circuit with hardcoded secret key
+\newcommand{\obfC}{\widetilde{C}_{\sk}} % obfuscated circuit with hardcoded secret key
+
+\newcommand{\plm}{\mathsf{p}(\secpar)}
+\newcommand{\qlm}{\mathsf{q}(\secpar)}
+%\newcommand{\plm}{\alpha(\lambda)}
+%\newcommand{\qlm}{\poly(\lambda,1/(\varepsilon - \alpha(\secpar)))}
+\usepackage{stmaryrd}
+\newcommand{\heading}[1]{\paragraph{\sc #1}}
+
+\newcommand{\T}{\mathsf{T}}
+\newcommand{\np}{\mathtt{NP}}
+
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\sd}{\mathbb{SD}}
+\mathchardef\mhyphen="2D
+\newcommand{\ord}{\varphi(N)/4}
+\newcommand{\estord}{\floor{N/4}}
+\newcommand{\prot}[1]{\langle #1 \rangle}
+
+\newcommand{\fm}{a} % first message
+\newcommand{\sm}{c} % second message
+\newcommand{\tm}{z} % third message
+
+\newcommand{\frset}{A} %first set
+\newcommand{\scset}{\mathcal{C}} %second set
+\newcommand{\thset}{\mathcal{Z}} %third set
+\newcommand{\sset}{\mathcal{S}}
+\newcommand{\wset}{\mathcal{W}}
+
+\newcommand{\pr}{\mathsf{P}} % Prover algorithm
+\newcommand{\vr}{\mathsf{V}} %Verifier algorithm
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%                                    COMMENTS AND NOTES                                        %%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newlength{\strutdepth}%
+\settodepth{\strutdepth}{\strutbox}%
+\newcommand{\saqib}[1]{%
+	\noindent{\bfseries
+	\color{orange}{#1}\color{black}}%
+    \strut\vadjust{\kern-\strutdepth%
+        \vtop to \strutdepth{%
+            \baselineskip\strutdepth%
+            \vss\llap{{\large\color{blue}Saqib\quad\color{black}}}\null%
+        }%
+    }%
+}
+\newcommand{\peter}[1]{%
+	\noindent{\bfseries
+	\color{orange}{#1}\color{black}}%
+    \strut\vadjust{\kern-\strutdepth%
+        \vtop to \strutdepth{%
+            \baselineskip\strutdepth%
+            \vss\llap{{\large\color{green}Peter\quad\color{black}}}\null%
+        }%
+    }%
+}
+
+
+\newcommand{\daniel}[1]{{\color{blue} \textbf{Daniel:} #1}}
+\newcommand{\christoph}[1]{{\color{blue} \textbf{Christoph:} #1}}
+\newcommand{\tibor}[1]{{\color{blue} \textbf{Tibor:} #1}}
+
+
+\newcommand{\etal}{\emph{et~al.}\xspace}
+
+\newcommand*{\numero}{n\kern-.1em \raise.7ex\vbox{\hbox{\tiny \ensuremath{\circ}}\kern.5pt}}
+
+\newcommand{\todo}[1]{{\marginnote{\textcolor{red}{TODO}}\textcolor{red}{(todo: #1)}}}
+
+%for submission
+\crefname{appendix}{supplementary material}{supplementary materials}
+\Crefname{appendix}{Supplementary Material}{Supplementary Materials}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\newsequenceofgames}[1]{
+  \newcounter{#1}
+  \setcounter{#1}{-1}
+
+  \ifx \GameID \undefined
+    \newcommand{\GameID}{#1}
+  \else
+    \renewcommand{\GameID}{#1}
+  \fi
+
+  \ifx \PrevLabel \undefined
+    \newcommand{\PrevLabel}{\GameID.NULL}
+  \else
+    \renewcommand{\PrevLabel}{\GameID.NULL}
+  \fi
+
+  \ifx \ThisLabel \undefined
+    \newcommand{\ThisLabel}{\GameID.NULL}
+  \else
+    \renewcommand{\ThisLabel}{\GameID.NULL}
+  \fi
+}
+
+
+\newcommand{\nextgame}[1]{
+  \let\PrevLabel\ThisLabel
+  \renewcommand{\ThisLabel}{\GameID.#1}
+  \refstepcounter{\GameID}\label{\GameID.#1}
+  \paragraph{Game~\arabic{\GameID}.}
+}
+
+\newcommand{\thisgame}{{\ref{\ThisLabel}}\xspace}
+\newcommand{\prevgame}{{\ref{\PrevLabel}}\xspace}
+
+
+% workaround for making sure that list/tuples break at the comma
+% modified from https://tex.stackexchange.com/questions/19094/allowing-line-break-at-in-inline-math-mode-breaks-citations/19100#19100
+\mathchardef\breakingcomma\mathcode`\,
+{\catcode`,=\active
+    \gdef,{\breakingcomma\discretionary{}{}{}}
+}
+\newcommand{\mathlist}[1]{\ensuremath{\mathcode`\,=\string"8000 #1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:
+

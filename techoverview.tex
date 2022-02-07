@@ -1,0 +1,71 @@
+%!TEX root=main.tex
+\subsection{Technical Overview}\label{sec:techoverview}
+
+% Katz et al:
+% - Slow encryption, have to perform seq squaring in encryption, therefore. Still only for one fixed value of T, because the NIZK language CRS depends on T.
+
+% - NY proof, well-formed commitment (can be force-openend with suitable parameter),
+% third proof not sufficient to reveal randomness. Three proofs in total....
+
+% - We need only one, for plaintext equality (sim sound), due to same modulus can be instantiated very efficiently.
+
+% In our case, T is fixed...
+
+Similar to the construction by Katz \etal \cite{TCC:KatLosXu20}, our is based on the Naor-Yung double-encryption approach \cite{STOC:NaoYun90}. However, we apply it in a very different way. 
+
+
+\paragraph{Main idea of the construction.}
+The CRS of our commitment scheme essentially consists of a time parameter $T$, an RSA modulus $N$, a generator $g$ of the group $\qrn$ of quadratic residues modulo $N$ and two numbers $h_{1}, h_{2} \in \Z_{N}$, where
+\[
+h_{1} = g^{k} \qquad\text{and}\qquad h_{2} = g^{2^{T}} 
+\]
+for $k \rand \smplset$.
+Note that this $(h_{1}, h_{2})$ can be seen as two ElGamal public keys in the group $\qrn$, where the corresponding secret keys $k$ and $2^{T} \bmod \ord$ are discarded.
+
+A commitment to a message $m \in \Z_{N}$ contains $c = (c_{0}, c_{1}, c_{2})$ where
+\[
+c_{0} = g^{r}, \qquad c_{1} = h_{1}^{r} \cdot m, \qquad c_{2} = h_{2}^{r} \cdot m,
+\]
+for $r \rand \smplset$.
+Note that $c$ can be viewed as two ElGamal ciphertexts $(c_{0}, c_{1})$ and $(c_{0}, c_{2})$ that share the same randomness $r$ and encrypt the same message $m$ with respect to the two public keys $(h_{1}, h_{2})$.
+ElGamal ciphertext $(c_{0}, c_{2})$ can be force-opened by repeated squaring, by computing $m = c_{2} / c_{0}^{2^{T}}$.
+Furthermore, the fact that there exists a secret key $k$ for ciphertext $(c_{0}, c_{1})$ will allow for answering decommitment queries in the security experiment quickly, that is, without the need to solve a sequential squaring puzzle, by computing $m = c_{1} / c_{0}^{k}$.
+Additionally, a commitment contains a NIZK proof that both  $(c_{0}, c_{1})$ and $(c_{0}, c_{2})$ commit to the same message. 
+
+Note that the commitment scheme is hiding based on the DDH assumption (for $(c_{0}, c_{1})$) and the strong sequential squaring assumption (for $(c_{0}, c_{2})$) in $\qrn$. It is perfectly binding by the perfect correctness of ElGamal with honestly generated public key in $\qrn$.
+
+\paragraph{Simplicity and efficiency.}
+We are able to obtain a very significant improvement in computational efficiency and conceptual simplicity when compared to \cite{TCC:KatLosXu20}. We achieve this for the following two reasons.
+\begin{enumerate}
+\item One key advantage of our construction is that both ciphertexts  $(c_{0}, c_{1})$ and $(c_{0}, c_{2})$ are defined over the \emph{same group} $\qrn$. This enables a very simple and efficient Fiat-Shamir-style proof, simply setting $h := h_{1}/h_{2}$ and then proving that
+\[
+\left(g, h, c_{0}, \frac{c_{1}}{c_{2}} \right)
+=
+\left(g, h, g^{r}, \frac{h_{1}^{r} \cdot m}{h_{2}^{r} \cdot m} \right)
+=
+\left(g, h, g^{r}, h^{r} \right)
+\]
+forms a DDH-tuple. Note that this can be achieved using a simple Sigma-protocol-based simulation-sound ZK proof of membership in the language of DDH tuples in $\qrn$ as proposed by Chaum and Pedersen \cite{C:ChaPed92}, which can be made non-interactive using the Fiat-Shamir transform \cite{C:FiaSha86}. Hence, in contrast to  \cite{TCC:KatLosXu20}, who use double encryption with two ciphertexts over different groups modulo $N_{1} \neq N_{2}$, no NIZKs for general NP languages are necessary.
+\item Furthermore, committing to a message essentially consists of a few standard exponentiations in $\qrn$ and computing the Fiat-Shamir NIZK. In particular, in contrast to \cite{TCC:KatLosXu20} it is not necessary to perform $T$ sequential squarings also when \emph{committing} to the message, but only for forced opening.
+\end{enumerate}
+ 
+
+
+
+
+%On the technical level our construction has some similarities with the construction of Katz \etal , however we make several observations which are crucial to obtain fast encryption and allows to simplify the construction, which leads to significant efficiency improvements. We recall that the construction by Katz \etal is based on timed-public key encryption (TPKE) which is then generically turned into non-malleable non-interactive timed commitment using two NIZKs. One of the NIZKs is used to guarantee that commitment has been generated properly and the second NIZK is used to verify the validity of the opening. The proposed construction of TPKE is based on the Naor-Yung paradigm combining simulation sound NIZK and two time-locked encryptions produced using two independent RSA modulus $N_1, N_2$. The disadvantage of this construction is an expensive encryption that depends on the hardness parameter $T$ and hence yields an inefficient commitment algorithm. Concretely, one has to compute values $x_i^{2^T} \bmod N_i$ for $i \in [2]$ using $T$ repeated squarings. 
+
+%Our first observation is that if we can achieve fast encryption and hence fast commitment which is perfectly binding, then we are able to build NITC directly using the Naor-Yung paradigm without using additional NIZKs. Since encryption is fast and perfectly binding, then it is sufficient reveal as opening the message $m$ with the randomness $r$, which were used to produce commitment, and everyone is able to efficiently check that these values are correct. Therefore we do not need any NIZK to prove validity of the opening. Moreover, when relying on the Naor-Yung paradigm the language for the SS-NIZK can be designed in such a way, that it guarantees proper generation of a commitment. Hence, we do not need additional NIZK to enforce this property. 
+
+%To achieve fast commitment we precompute the value $h_1:=g^{2^T} \bmod N$ where $g$ is an generator of $\qrn$ in trusted setup. This can be done efficiently, since while executing the setup the factorization of $N$ is known. When encrypting a message, we produce an ElGamal-style ciphertext with respect to $g, h_1$. Since the order of the group $\qrn$ is not known, we sample randomness from $\smplset$ which we show is statistically indistinguishable from sampling from the set $[\ord]$. The second ciphertext is ElGamal encryption with respect to secret key $g, h_2: = g^k \bmod N$ where $k$ is chosen uniformly at random from $\smplset$. Lastly, we use SS-NIZK to prove equality of ciphertexts. All of these computations are independent of $T$ and hence the resulting commitment is efficient. In order to be able to prove security of our construction, we need DDH assumption holds in $\qrn$ even if the factorization of $N$ is known. This is however implied by hardness of DDH in the large subgroups of $\Zn^*$ as was shown in \cite{C:CouPetPoi16}.
+
+%We are able to shorten the ciphertext size by encrypting a message using shared randomness as proposed by Biagioni \etal \cite{SCN:BiaMasVen16}. This adjustment allows to design an efficient Sigma protocol that the commitment is properly generated. Applying the Fiat-Shamir transform \cite{C:FiaSha86} to the Sigma protocol we obtain SS-NIZK. The Sigma protocol essentially proves that the tuple specified by the commitment and the public key is a DDH tuple. Since the order of the group $\qrn$ is not know, we have to design the Sigma protocol in hidden order group. Such protocols are less efficient than Sigma protocols where order of the group is known. 
+%\todo{However, we realize that to obtain SS-NIZK, it is sufficient to prove that the constructed Sigma protocol has negligible soundness and we do not have to care about special soundness. In this way we are able to avoid the strong RSA assumption and therefore we are able to achieve proofs of smaller size. Usually in Sigma protocols in hidden order groups, the first value is sampled from very large interval which increases the overall size of the proof. } Since sampling from $\smplset$ is statistically indistinguishable from sampling from $[\ord]$ this additionally reduces the size of the resulting proof.
+
+
+We stress that our construction does not require \emph{special soundness}, which is usually more expensive to achieve in hidden-order groups since it requires larger proofs, since the integers contained in the proof must be chosen from larger intervals. Instead, for our construction a negligible soundness error is sufficient, so that we can use smaller integers, which reduces computational complexity and proof size further.
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

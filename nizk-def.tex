@@ -1,0 +1,64 @@
+%!TEX root=./main.tex
+\paragraph{Non-interactive zero-knowledge proofs.}
+Next we recall definition of a simulation-sound non-interactive proof system (SS-NIZK). 
+
+\begin{definition} 
+A \emph{non-interactive zero-knowledge argument system} $\Pi$ for an NP language $L$ associated with a relation $\rel$ is a tuple of four PPT algorithms $(\gen_\param, \gen_L, \prove, \vrfy)$, which work as follows:
+\begin{itemize}
+\item $\param \leftarrow \gen_\param(\seck)$ takes as input binary representation of a security parameter $\seck$ and outputs public parameters $\param$.
+\item $\crs \leftarrow \gen_L(\seck, L, \tau_L)$ takes as input binary representation of a security parameter $\seck$, the description of language $L$ which specifies length of statements $n$ and a membership testing trapdoor $\tau_L$ for $L$.  It outputs a language dependent part $\crs_L$ of the common reference string $\crs:=(\param, \crs_L)$. 
+\item $\pi \leftarrow \prove(\crs,s,w)$ is a PPT algorithm which takes as input the common reference sting $\crs$, a statement $s \in \{0,1\}^n$, and a witness $w$ such that $(s,w) \in \rel$ and outputs a proof $\pi$.
+\item $0/1 \leftarrow \vrfy(\crs, s, \pi)$ is a deterministic algorithm which takes as input the common reference string $\crs$, a statement $s\in \{0,1\}^n$ and a proof $\pi$ and outputs either 1 or 0, where 1 means that the proof is ``accepted'' and 0 means it is ``rejected''.
+\end{itemize}
+Moreover, $\Pi$ should satisfy the following properties. For simplification we denote below by $\setup$ an algorithm that runs successively $\gen_\param$ and $\gen_L$ to generate a common reference string. 
+\begin{itemize}
+\item \emph{Completeness:}  for all $(s, w) \in \rel$ holds:
+\[\Pr[\vrfy(\crs, s,\pi)=1:\crs \leftarrow \setup(\seck, L), \pi \leftarrow \prove(\crs, s,w)] =1.\] 
+\item \emph{Soundness:} for all $x \notin L$ and all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$, we have:
+\[\Pr[\vrfy(\crs, s,\pi)=1:\crs \leftarrow \setup(\seck, L), \pi \leftarrow \adv_\secpar(\crs, s)] \leq \negl(\secpar).\] 
+\item \emph{Zero-Knowledge:} there is a PPT simulator $(\simul_1, \simul_2)$, such that for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\begin{align*}
+\zk_\adv^\nizk =& 
+\left| \Pr\left[ \adv_\secpar^{\prove(\crs, \cdot, \cdot),}(\crs) = 1:\crs \leftarrow \setup(\seck, L) \right] \right. \\
+&\left. - \Pr\left[ \adv_\secpar^{\oracle(\crs, \tau, \cdot, \cdot),}(\crs) = 1: (\crs, \tau) \leftarrow \simul_1(\seck, L) \right] \right|
+\leq \negl(\secpar).
+\end{align*}
+Here $\prove(\crs, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,w) \notin \rel$ and outputs a valid proof $\pi \leftarrow \prove(\crs, s, w)$ otherwise; $\oracle(\crs, \tau, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,w) \notin \rel$ and outputs simulated proof $\pi \leftarrow \simul_2(\crs, \tau, s)$ on input $(s,w) \in \rel$. Note that the simulated proof is generated independently of the witness $w$.
+\end{itemize}
+
+\end{definition}
+
+\begin{definition}[One-Time Simulation Soundness]
+A NIZK for an NP language $L$ with zero-knowledge simulator $\simul = (\simul_0, \simul_1)$ is \emph{one-time simulation sound}, if for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[
+\simsnd_\adv^\nizk = \Pr\left[
+\begin{aligned}
+s \notin L \land \\
+(s, \pi) \neq (s', \pi') \land \\
+\vrfy(\crs, s, \pi) = 1
+\end{aligned}
+:
+\begin{aligned}
+(\crs, \tau) \leftarrow \simul_1(\seck, L) \\
+(s, \pi) \leftarrow \adv_\secpar^{\simul_2(\crs, \tau, \cdot)}(\crs, \tau_L)
+\end{aligned} \right] \leq \negl(\secpar),
+\]
+where $\tau_L$ is a membership testing trapdoor for language $L$ chosen by challenger and $\simul_2(\crs, \tau, \cdot)$ is a single query oracle which on input $s'$ returns $\pi' \leftarrow \simul(\crs, \tau, s')$.
+\end{definition}
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

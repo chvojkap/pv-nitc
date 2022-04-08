@@ -193,6 +193,8 @@ Moreover, publicly verifiable NITC must fulfil further properties:
 
 \end{definition}
 
+\include{nizk-def}
+
 
 \paragraph{Non-interactive zero-knowledge proofs.}
 Next we recall definition of a simulation-sound non-interactive proof system (SS-NIZK). 
@@ -231,17 +233,20 @@ Let $(\prove, \vrfy)$ be a non-interactive proof system for an NP language $L$ w
 \[
 \simsnd_\adv^\nizk = \Pr\left[
 \begin{aligned}
-x \notin L \land (s, \pi) \neq (s', \pi') \\
+s \notin L \land (s, \pi) \neq (s', \pi') \\
 \land \vrfy^{\simul_2(\cdot)}(s, \pi) = 1
 \end{aligned}
-:(x, \pi) \leftarrow \adv_\secpar^{\simul_1(\cdot), \simul_2(\cdot)} \right] \leq \negl(\secpar),
+:(s, \pi) \leftarrow \adv_\secpar^{\simul_1(\cdot), \simul_2(\cdot)} \right] \leq \negl(\secpar),
 \]
-where $\simul_1(\cdot)$ is a single query oracle which on input $s'$ returns the first output of $(\pi', \st) \leftarrow \simul(1, \st, s)$ and $\simul_2(u)$ returns the first output of $(v, \st) \leftarrow \simul(2, \st, u)$.
+where $\simul_1(\cdot)$ is a single query oracle which on input $s'$ returns the first output of $(\pi', \st) \leftarrow \simul(1, \st, s')$ and $\simul_2(u)$ returns the first output of $(v, \st) \leftarrow \simul(2, \st, u)$.
 \end{definition}
+
+Liber~\etal cite{} show that given additively homomorphic encryption scheme, one can build a trapdoor sigma protocol for a language defined below. Moreover, any trapdoor sigma protocol can be turned into unbounded simulation sound NIZK which directly implies existence of a one-time simulation sound NIZK. 
 
 
 
 \paragraph{Complexity assumptions.}
+\todo{Fix this part, wrong group}
 We base our construction on the strong sequential squaring assumption in the group of quadratic residues. Precisely, let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function and by $\qrn$ the cyclic group of quadratic residues modulo $N$ which has order $|\qrn| = \frac{\varphi(N)}{4} = \frac{(p-1)(q-1)}{4}$. To efficiently sample a random element $x$ from $\qrn$, we can sample $r \rand \Zn^*$ and let $x:= r^2 \bmod N$. When the factors $p,q$ are known, then it easy to check if the given element is a generator of $\qrn$ by checking if $x^{p'} \neq 1 \bmod N \land x^{q'} \neq 1 \bmod N$. Therefore we are able to efficiently sample a random generator of $\qrn$. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator $g$ of $\qrn$. Now we state the strong sequential squaring assumption. 
 
 
@@ -291,6 +296,13 @@ Consider the security experiment $\mathsf{ExpDDH}_{\adv}^{b}(\secpar)$ in \Cref{
 If the DDH assumption holds relative to $\genmod$ in the both large prime-order subgroups of $\Zn^*$, then 
 \[\advtg^\ddh_\adv = \abs{\Pr[\mathsf{ExpDDH}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpDDH}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
 \end{theorem} 
+
+\begin{theorem}[Composite Residuosity Assumption]
+Consider the security experiment $\mathsf{ExpDDH}_{\adv}^{b}(\secpar)$ in \Cref{fig:ddh}.
+If the DDH assumption holds relative to $\genmod$ in the both large prime-order subgroups of $\Zn^*$, then 
+\[\advtg^\ddh_\adv = \abs{\Pr[\mathsf{ExpDDH}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpDDH}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
+\end{theorem} 
+
 
 When designing an efficient simulation sound NIZK for our scheme, we rely on factoring assumption. 
 

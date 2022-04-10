@@ -241,7 +241,7 @@ s \notin L \land (s, \pi) \neq (s', \pi') \\
 where $\simul_1(\cdot)$ is a single query oracle which on input $s'$ returns the first output of $(\pi', \st) \leftarrow \simul(1, \st, s')$ and $\simul_2(u)$ returns the first output of $(v, \st) \leftarrow \simul(2, \st, u)$.
 \end{definition}
 
-Liber~\etal cite{} show that given additively homomorphic encryption scheme, one can build a trapdoor sigma protocol for a language defined below. Moreover, any trapdoor sigma protocol can be turned into unbounded simulation sound NIZK which directly implies existence of a one-time simulation sound NIZK. 
+
 
 
 
@@ -272,7 +272,7 @@ Consider the security experiment $\mathsf{ExpSSS}_{\adv}^{b}(\secpar)$ in \Cref{
 \[\advtg^\sss_\adv = \abs{\Pr[\mathsf{ExpSSS}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpSSS}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
 \end{definition}
 
-Next we define DDH experiment in the group of quadratic residues modulo $N$ where the factors of $N$ are given to an adversary. 
+Next we define DDH experiment in the group $\Jn$ as stated by Castagnos \etal \cite{C:CouPetPoi16}. Castagnos \etal have shown that this problem is hard assuming that DDH is hard in the subgroups of $\Zn^*$ of order $p'$ and $q'$ and assuming that quadratic residuosity problem is hard in $\Zn^*$.  
 
 \begin{figure}[h]
 \begin{center}
@@ -280,28 +280,41 @@ Next we define DDH experiment in the group of quadratic residues modulo $N$ wher
 $\mathsf{ExpDDH}_{\adv}^{b}(\secpar)$: \\
 \hline
 $(p, q, N,g) \leftarrow \genmod(\seck)$ \\
-$\alpha, \beta \rand \Z_{\varphi(N)}$ \\
-$\text{if } b = 0: \gamma = a\cdot b \bmod \varphi(N)$\\
-$\text{if } b = 1: \gamma \rand \Z_{\varphi(N)}$ \\
-return	$b' \leftarrow \adv_{\secpar}(N,p,q,g,g^\alpha, g^\beta, g^\gamma)$
+$\alpha, \beta \rand [\varphi(N)/2]$ \\
+$\text{if } b = 0: \gamma = a\cdot b \bmod \varphi(N)/2$\\
+$\text{if } b = 1: \gamma \rand [\varphi(N)/2]$ \\
+return	$b' \leftarrow \adv_{\secpar}(N,g,g^\alpha, g^\beta, g^\gamma)$
 \end{tabular}
 \end{center}
-\caption{\label{fig:ddh}Security experiment for DDH in $\qrn$.}
+\caption{\label{fig:ddh}Security experiment for DDH.}
+\end{figure}
+ 
+
+\begin{definition}[Decisional Diffie-Hellman ]\label{thm:ddh}
+Consider the security experiment $\mathsf{ExpDDH}_{\adv}^{b}(\secpar)$ in \Cref{fig:ddh}.
+The decisional composite residuosity assumption holds relative to $\genmod$ if for every non-uniform polynomial-size adversary $\adv = \{\adv_{\secpar}\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[\advtg^\ddh_\adv = \abs{\Pr[\mathsf{ExpDDH}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpDDH}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
+\end{definition} 
+
+\begin{figure}[h]
+\begin{center}
+\begin{tabular}{l}
+$\mathsf{ExpDCR}_{\adv}^{b}(\secpar)$: \\
+\hline
+$(p, q, N) \leftarrow \genmod(\seck)$ \\
+$y_1 \rand \Zns$ \\
+$y_0 = y_1^N \bmod N^2$\\
+return	$b' \leftarrow \adv_{\secpar}(N,y_b)$
+\end{tabular}
+\end{center}
+\caption{\label{fig:dcr}Security experiment for DCR.}
 \end{figure}
 
-Castagnos \etal \cite{C:CouPetPoi16} have shown that DDH problem is hard in $\qrn$ assuming that DDH is hard in the subgroups of $\Zn^*$ of order $p'$ and $q'$. This is shown in the proof of their Theorem 9. We remark that even though in \cite[Proof of Theorem 9]{C:CouPetPoi16} the prime factors $p,q$ are not given to the DDH adversary in the group $\qrn$, but the proof relies on the fact that the constructed reduction knows factors $p, q$. Therefore the proof holds even if $p,q$ are given to DDH adversary in $\qrn$ as input. 
-
-\begin{theorem}[Decisional Diffie-Hellman in $\qrn$ \cite{C:CouPetPoi16}]\label{thm:ddh}
-Consider the security experiment $\mathsf{ExpDDH}_{\adv}^{b}(\secpar)$ in \Cref{fig:ddh}.
-If the DDH assumption holds relative to $\genmod$ in the both large prime-order subgroups of $\Zn^*$, then 
-\[\advtg^\ddh_\adv = \abs{\Pr[\mathsf{ExpDDH}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpDDH}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
-\end{theorem} 
-
-\begin{theorem}[Composite Residuosity Assumption]
-Consider the security experiment $\mathsf{ExpDDH}_{\adv}^{b}(\secpar)$ in \Cref{fig:ddh}.
-If the DDH assumption holds relative to $\genmod$ in the both large prime-order subgroups of $\Zn^*$, then 
-\[\advtg^\ddh_\adv = \abs{\Pr[\mathsf{ExpDDH}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpDDH}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
-\end{theorem} 
+\begin{definition}[Decisional Composite Residuosity Assumption]
+Consider the security experiment $\mathsf{ExpDCR}_{\adv}^{b}(\secpar)$ in \Cref{fig:dcr}.
+The decisional composite residuosity assumption holds relative to $\genmod$ if for every non-uniform polynomial-size adversary $\adv = \{\adv_{\secpar}\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[\advtg^\dcr_\adv = \abs{\Pr[\mathsf{ExpDCR}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpDCR}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
+\end{definition} 
 
 
 When designing an efficient simulation sound NIZK for our scheme, we rely on factoring assumption. 

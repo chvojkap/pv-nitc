@@ -46,6 +46,25 @@ s \notin L \land \\
 where $\tau_L$ is a membership testing trapdoor for language $L$ chosen by challenger and $\simul_2(\crs, \tau, \cdot)$ is a single query oracle which on input $s'$ returns $\pi' \leftarrow \simul(\crs, \tau, s')$.
 \end{definition}
 
+Liber~\etal \cite{Libert2021OneShotFN} show that given additively homomorphic encryption scheme, one can build a trapdoor sigma protocol for a language defined below. Moreover, any trapdoor sigma protocol can be turned into unbounded simulation sound NIZK which directly implies existence of a one-time simulation sound NIZK. 
+
+\begin{lemma}[Lemma D.1~\cite{Libert2021OneShotFN}]
+Let $(\gen, \enc, \dec)$ be an additively homomorphic encryption scheme where the message space $M$, randomness space $R$ and the ciphertext space $C$ form groups $(M, +), (R,+)$ and $(C, \cdot)$. Let the encryption scheme is such that for any public key $\pk$ generated using $(\pk, \sk) \leftarrow \gen(\seck)$, any messages $m_1, m_2 \in M$ and randomness $r_1, r_2 \in R$ holds
+\[\enc(\pk, m_1;r_1) \cdot \enc(\pk, m_2;r_2) = \enc(\pk, m_1+m_2; r_1+r_2).\]
+Let $S$ be a finite set of public cardinality such that uniform sampling from $S$ is computationally indidstinguishable from uniform sampling from $R$. 
+Then there is an trapdoor sigma protocol for the language $L:= \{c \in C| \exists r \in R: c = \enc(\pk, 0; r)\}$, where $\pk$ is fixed by the language.  
+\end{lemma}
+
+\begin{remark}
+We note that Liber~\etal required that the order of the group $(R,+)$ is public and that this group is efficiently samplable which is used in the arguing of zero-knowledge property. This is however, not necessary, since it is sufficient to be able to sample from distribution which is computationally indistinguishable from the real uniform distribution. This results in computational indistinguishability of the real and simulated transcript. In case of our constructions, we are able to sample randomness from the distribution which is statistically indistinguishable from the uniform distribution over $R$ and hence the real and the simulated transcript are statistically indistinguishable. 
+\end{remark}
+
+Additionally, Liber~\etal construct a simulation sound non-interactive argument system from any trapdoor sigma protocol relying on a strongly unforgeable one-time signature, a lossy public-key encryption scheme and a correlation intractable hash function. 
+
+\begin{theorem}[Thm B.1, Thm. B.2~\cite{Libert2021OneShotFN}]
+Let $(\gen_\param, \gen_L, \prove, \vrfy)$ be a trapdoor sigma protocol for an NP language $L$. Then given a strongly unforgeable one-time signature scheme, $\rel$-lossy public-key encryption scheme, a correlation intractable hash function and an admissible hash function, there is an unbounded simulation sound non-interactive zero-knowledge argument system for the language $L$. 
+\end{theorem}
+
 
 
 

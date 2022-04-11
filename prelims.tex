@@ -193,57 +193,71 @@ Moreover, publicly verifiable NITC must fulfil further properties:
 
 \end{definition}
 
-\include{nizk-def}
-
-
 \paragraph{Non-interactive zero-knowledge proofs.}
 Next we recall definition of a simulation-sound non-interactive proof system (SS-NIZK). 
 
 \begin{definition} 
-A \emph{non-interactive proof system} for an NP language $L$ with relation $\rel$ is a pair of algorithms $(\prove, \vrfy)$, which work as follows:
+A \emph{non-interactive zero-knowledge argument system} $\Pi$ for an NP language $L$ associated with a relation $\rel$ is a tuple of four PPT algorithms $(\gen_\param, \gen_L, \prove, \vrfy)$, which work as follows:
 \begin{itemize}
-\item $\pi \leftarrow \prove(s,w)$ is a PPT algorithm which takes as input a statement $s$ and a witness $w$ such that $(s,w) \in \rel$ and outputs a proof $\pi$.
-\item $\vrfy(s, \pi) \in \{0,1\}$ is a deterministic algorithm which takes as input a statement $s$ and a proof $\pi$ and outputs either 1 or 0, where 1 means that the proof is ``accepted'' and 0 means it is ``rejected''.
+\item $\param \leftarrow \gen_\param(\seck)$ takes as input binary representation of a security parameter $\seck$ and outputs public parameters $\param$.
+\item $\crs \leftarrow \gen_L(\seck, L, \tau_L)$ takes as input binary representation of a security parameter $\seck$, the description of language $L$ which specifies length of statements $n$ and a membership testing trapdoor $\tau_L$ for $L$.  It outputs a language dependent part $\crs_L$ of the common reference string $\crs:=(\param, \crs_L)$. 
+\item $\pi \leftarrow \prove(\crs,s,w)$ is a PPT algorithm which takes as input the common reference sting $\crs$, a statement $s \in \{0,1\}^n$, and a witness $w$ such that $(s,w) \in \rel$ and outputs a proof $\pi$.
+\item $0/1 \leftarrow \vrfy(\crs, s, \pi)$ is a deterministic algorithm which takes as input the common reference string $\crs$, a statement $s\in \{0,1\}^n$ and a proof $\pi$ and outputs either 1 or 0, where 1 means that the proof is ``accepted'' and 0 means it is ``rejected''.
 \end{itemize}
-We say that a non-interactive proof system is \emph{complete}, if for all $(s, w) \in \rel$ holds:
-\[\Pr[\vrfy(s,\pi)=1:\pi \leftarrow \prove(s,w)] =1.\] 
-\end{definition}
-
-Next we define \emph{zero-knowledge} property for non-interactive proof system in the random oracle model. The simulator $\simul$ of a non-interactive zero-knowledge proof system is modelled as a stateful algorithm which has two modes: $(\pi, \st) \leftarrow \simul(1, \st, s)$  for answering proof queries and $(v, \st) \leftarrow \simul(2, \st, u)$ for answering random oracle queries. The common state $\st$ is updated after each operation.
-
-
-
-\begin{definition}[Zero-Knowledge in the Random Oracle Model]
-Let $(\prove, \allowbreak \vrfy)$ be a non-interactive proof system for a relation $\rel$ which may make use of a hash function $H : \hdom \rightarrow \himg$. Let $\funs$ be the set of all functions from the set $\hdom$ to the set $\himg$. We say that $(\prove, \vrfy)$ is \emph{non-interactive zero-knowledge proof in the random oracle model (NIZK)}, if there exists an efficient simulator $\simul$ such that for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
-\[\zk_\adv^\nizk = 
-\left| \Pr\left[ \adv_\secpar^{\prove^H(\cdot, \cdot), H(\cdot)} = 1 \right] -  \Pr\left[\adv_\secpar^{\simul_1(\cdot, \cdot), \simul_2(\cdot)} \right] = 1 \right|
-\leq \negl(\secpar),
-\]
-where 
+Moreover, $\Pi$ should satisfy the following properties. For simplification we denote below by $\setup$ an algorithm that runs successively $\gen_\param$ and $\gen_L$ to generate a common reference string. 
 \begin{itemize}
-\item $H$ is a function sampled uniformly at random from $\funs$,
-\item $\prove^H$ corresponds to the $\prove$ algorithm, having oracle access to $H$,
-\item $\pi \leftarrow \simul_1(s, w)$ takes as input $(s, w) \in \rel$, and outputs the first output of $(\pi, \st) \leftarrow \simul(1, \st, s)$,
-\item $v \leftarrow \simul_2(u)$ takes as input $u \in \hdom$ and outputs the first output of $(v, \st) \leftarrow \simul(2, \st, u)$.
+\item \emph{Completeness:}  for all $(s, w) \in \rel$ holds:
+\[\Pr[\vrfy(\crs, s,\pi)=1:\crs \leftarrow \setup(\seck, L), \pi \leftarrow \prove(\crs, s,w)] =1.\] 
+\item \emph{Soundness:} for all $x \notin L$ and all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$, we have:
+\[\Pr[\vrfy(\crs, s,\pi)=1:\crs \leftarrow \setup(\seck, L), \pi \leftarrow \adv_\secpar(\crs, s)] \leq \negl(\secpar).\] 
+\item \emph{Zero-Knowledge:} there is a PPT simulator $(\simul_1, \simul_2)$, such that for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\begin{align*}
+\zk_\adv^\nizk =& 
+\left| \Pr\left[ \adv_\secpar^{\prove(\crs, \cdot, \cdot),}(\crs) = 1:\crs \leftarrow \setup(\seck, L) \right] \right. \\
+&\left. - \Pr\left[ \adv_\secpar^{\oracle(\crs, \tau, \cdot, \cdot),}(\crs) = 1: (\crs, \tau) \leftarrow \simul_1(\seck, L) \right] \right|
+\leq \negl(\secpar).
+\end{align*}
+Here $\prove(\crs, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,w) \notin \rel$ and outputs a valid proof $\pi \leftarrow \prove(\crs, s, w)$ otherwise; $\oracle(\crs, \tau, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,w) \notin \rel$ and outputs simulated proof $\pi \leftarrow \simul_2(\crs, \tau, s)$ on input $(s,w) \in \rel$. Note that the simulated proof is generated independently of the witness $w$.
 \end{itemize}
+
 \end{definition}
 
 \begin{definition}[One-Time Simulation Soundness]
-Let $(\prove, \vrfy)$ be a non-interactive proof system for an NP language $L$ with zero-knowledge simulator $\simul$. We say that $(\prove, \vrfy)$ is \emph{one-time simulation sound} in the random oracle model, if for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+A NIZK for an NP language $L$ with zero-knowledge simulator $\simul = (\simul_0, \simul_1)$ is \emph{one-time simulation sound}, if for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
 \[
 \simsnd_\adv^\nizk = \Pr\left[
 \begin{aligned}
-s \notin L \land (s, \pi) \neq (s', \pi') \\
-\land \vrfy^{\simul_2(\cdot)}(s, \pi) = 1
+s \notin L \land \\
+(s, \pi) \neq (s', \pi') \land \\
+\vrfy(\crs, s, \pi) = 1
 \end{aligned}
-:(s, \pi) \leftarrow \adv_\secpar^{\simul_1(\cdot), \simul_2(\cdot)} \right] \leq \negl(\secpar),
+:
+\begin{aligned}
+(\crs, \tau) \leftarrow \simul_1(\seck, L) \\
+(s, \pi) \leftarrow \adv_\secpar^{\simul_2(\crs, \tau, \cdot)}(\crs, \tau_L)
+\end{aligned} \right] \leq \negl(\secpar),
 \]
-where $\simul_1(\cdot)$ is a single query oracle which on input $s'$ returns the first output of $(\pi', \st) \leftarrow \simul(1, \st, s')$ and $\simul_2(u)$ returns the first output of $(v, \st) \leftarrow \simul(2, \st, u)$.
+where $\tau_L$ is a membership testing trapdoor for language $L$ chosen by challenger and $\simul_2(\crs, \tau, \cdot)$ is a single query oracle which on input $s'$ returns $\pi' \leftarrow \simul(\crs, \tau, s')$.
 \end{definition}
 
+Liber~\etal \cite{Libert2021OneShotFN} show that given additively homomorphic encryption scheme, one can build a trapdoor sigma protocol for a language defined below. Moreover, any trapdoor sigma protocol can be turned into unbounded simulation sound NIZK which directly implies existence of a one-time simulation sound NIZK. 
 
+\begin{lemma}[Lemma D.1~\cite{Libert2021OneShotFN}]
+Let $(\gen, \enc, \dec)$ be an additively homomorphic encryption scheme where the message space $M$, randomness space $R$ and the ciphertext space $C$ form groups $(M, +), (R,+)$ and $(C, \cdot)$. Let the encryption scheme is such that for any public key $\pk$ generated using $(\pk, \sk) \leftarrow \gen(\seck)$, any messages $m_1, m_2 \in M$ and randomness $r_1, r_2 \in R$ holds
+\[\enc(\pk, m_1;r_1) \cdot \enc(\pk, m_2;r_2) = \enc(\pk, m_1+m_2; r_1+r_2).\]
+Let $S$ be a finite set of public cardinality such that uniform sampling from $S$ is computationally indidstinguishable from uniform sampling from $R$. 
+Then there is an trapdoor sigma protocol for the language $L:= \{c \in C| \exists r \in R: c = \enc(\pk, 0; r)\}$, where $\pk$ is fixed by the language.  
+\end{lemma}
 
+\begin{remark}
+We note that Liber~\etal required that the order of the group $(R,+)$ is public and that this group is efficiently samplable which is used in the arguing of zero-knowledge property. This is however, not necessary, since it is sufficient to be able to sample from distribution which is computationally indistinguishable from the real uniform distribution. This results in computational indistinguishability of the real and simulated transcript. In case of our constructions, we are able to sample randomness from the distribution which is statistically indistinguishable from the uniform distribution over $R$ and hence the real and the simulated transcript are statistically indistinguishable. 
+\end{remark}
 
+Additionally, Liber~\etal construct a simulation sound non-interactive argument system from any trapdoor sigma protocol relying on a strongly unforgeable one-time signature, a lossy public-key encryption scheme and a correlation intractable hash function. 
+
+\begin{theorem}[Thm B.1, Thm. B.2~\cite{Libert2021OneShotFN}]
+Let $(\gen_\param, \gen_L, \prove, \vrfy)$ be a trapdoor sigma protocol for an NP language $L$. Then given a strongly unforgeable one-time signature scheme, $\rel$-lossy public-key encryption scheme, a correlation intractable hash function and an admissible hash function, there is an unbounded simulation sound non-interactive zero-knowledge argument system for the language $L$. 
+\end{theorem}
 
 \paragraph{Complexity assumptions.}
 \todo{Fix this part, wrong group}

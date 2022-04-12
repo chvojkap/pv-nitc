@@ -115,7 +115,7 @@ If  $(\nizk.\gen_\param, \nizk.\gen_L, \nizk.\prove, \nizk.\vrfy)$ is a one-time
 \begin{proof}
 Completeness is implied by the completeness of the NIZK and can be verified by inspection. 
 
-Our construction is based on the Naor-Yung paradigm where we combine three Paillier-type ciphertext with shared randomness.  
+Our construction is based on the Naor-Yung paradigm where we combine three Paillier-type ciphertexts with shared randomness.  
 %Similarly to \cite{SCN:BiaMasVen16} we define a PPT algorithm $\rerand$ in Figure~\ref{fig:rerand}, which takes two ciphertexts generated with independent randomness, both public keys, only one secret key (in our case $k$) and randomness which was used to encrypt a message using the public key $g, h_1$. 
 %%We assume that modulus $N$ is implicitly known.\todo{Why not explicit?} 
 %% which corresponds to the secret key which is given as the input. 
@@ -334,7 +334,7 @@ This can be proven in similar way as \Cref{lem:dcr}. We remark that at this poin
 
 \nextgame{SimSnd}
 
-In $\games_\thisgame$ we answer decommitment queries using $\dec$ with $i:=2$ which means that secret key $k_2$ and ciphertext $c_2$ are used. Moreover,  
+In $\games_\thisgame$ we answer decommitment queries using $\dec$ with $i:=2$ which means that secret key $k_2$ and ciphertext $c_2$ are used. 
 
 \begin{lemma}
 \[
@@ -350,14 +350,14 @@ Let $\event$ denote the event that adversary $\adv$ asks a decommitment query $c
 
 We construct an adversary $\advB$ which breaks one-time simulation soundness of the NIZK. 
 
-The adversary $\advB_{\secpar}^{\simul_1, \simul_2}:$
+The adversary $\advB_{\secpar}^{\simul_2}(k_1, k_2, p, q):$
 \vspace{-2mm}
 \begin{enumerate}
-\item Computes $\crs \leftarrow \pgen(\seck, T)$ as defined in the construction where the value $h_3$ is computed using repeated squaring instead.
+\item Computes $\crs \leftarrow \pgen(\seck, T)$ as defined in the construction using $k_1, k_2$ which are given to adversary $\advB_{\secpar}$ as input and computing $t:=2^T$ using the knowledge of $p, q$ that are also given as input.
 \item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_2$.
-\item Samples $b \rand \bits, x \rand \Jn, y_2, y_3 \rand \Zns$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(x, x^{k_1 N} (1+N)^{m_b}, y_2 (1+N)^{m_b}, y_3 (1+N)^{m_b})$. Forwards $(h_1, h_2, c_0^*, c_1^*, c_2^*, c_3^*)$ to simulation oracle $\simul_1$ and obtains a proof $\pi^*$.
+\item Samples $b \rand \bits, x \rand \Jn, y_2, y_3 \rand \Zns$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(x, x^{k_1 N} (1+N)^{m_b}, y_2 (1+N)^{m_b}, y_3 (1+N)^{m_b})$. Forwards $(c_0^*, c_1^*, c_2^*, c_3^*)$ to simulation oracle $\simul_2$ and obtains a proof $\pi^*$.
 \item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decryption queries using $k_2$.
-\item Find a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\dec(\crs, c, 1) \neq \dec(\crs,c,2)$ and returns $((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$
+\item Find a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\dec(\crs, c, 1) \neq \dec(\crs,c,2)$ and returns $((c_0, c_1, c_2, c_3), \pi)$
 \end{enumerate}
 
 $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, it outputs a valid proof for a statement which is not in the specified language $L$. Therefore
@@ -429,7 +429,7 @@ By combining Lemmas \ref{nitc:flem} - \ref{nitc:llem} we obtain the following:
 which concludes the proof.
 \end{proof}
 
-\begin{theorem}
+\begin{theorem}\label{bnd-cca-lh}
 $(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc} is a BND-CCA-secure non-interactive timed commitment scheme. 
 \end{theorem}
 
@@ -437,7 +437,7 @@ $(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc} is a BND-C
 We show that the construction is actually perfectly binding. This is straightforward to show since Paillier encryption is perfectly binding. Therefore there is exactly one message/randomness pair $(m,r)$ which can pass the check in $\dvrfy$. Therefore the first winning condition of BND-CCA experiment happens with probability 0. Moreover, since $\pgen$ is executed by the challenger, the value $h_3$ is computed correctly and therefore $\fdecom$ reconstructs always the correct message $m$. Therefore the second winning condition of BND-CCA experiment happens with probability 0 as well.
 \end{proof}
 
-\begin{theorem}
+\begin{theorem}\label{pv-lh}
 If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero-knowledge proof system for $L$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy)} defined in \Cref{table:nitc} is a publicly verifiable non-interactive timed commitment scheme.
 \end{theorem}
 

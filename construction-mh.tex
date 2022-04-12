@@ -311,14 +311,14 @@ Let $\event$ denote the event that adversary $\adv$ asks a decommitment query $c
 
 We construct an adversary $\advB$ which breaks one-time simulation soundness of the NIZK. 
 
-The adversary $\advB_{\secpar}^{\simul_1, \simul_2}:$
+The adversary $\advB_{\secpar}^{\simul_2}:$
 \vspace{-2mm}
 \begin{enumerate}
-\item Computes $\crs \leftarrow \pgen(\seck, T)$ as defined in the construction where the value $h_3$ is computed using repeated squaring instead.
+\item Computes $\crs \leftarrow \pgen(\seck, T)$ as defined in the construction using $k_1, k_2$ which are given to adversary $\advB_{\secpar}$ as input and computing $t:=2^T$ using the knowledge of $p, q$ that are also given as input.
 \item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_2$.
-\item Samples $b \rand \bits, x, y_2, y_3 \rand \Jn$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(x, x^{k_1} m_b,\allowbreak y_2 m_b, y_3 m_b)$. Forwards $(h_1, h_2, c_0^*, c_1^*, c_2^*, c_3^*)$ to simulation oracle $\simul_1$ and obtains a proof $\pi^*$.
+\item Samples $b \rand \bits, x, y_2, y_3 \rand \Jn$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(x, x^{k_1} m_b,\allowbreak y_2 m_b, y_3 m_b)$. Forwards $(c_0^*, c_1^*, c_2^*, c_3^*)$ to simulation oracle $\simul_2$ and obtains a proof $\pi^*$.
 \item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decryption queries using $k_2$.
-\item Find a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\dec(\crs, c, 1) \neq \dec(\crs,c,2)$ and returns $((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$
+\item Find a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\dec(\crs, c, 1) \neq \dec(\crs,c,2)$ and returns $((c_0, c_1, c_2, c_3), \pi)$
 \end{enumerate}
 
 $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, it outputs a valid proof for a statement which is not in the specified language $L$. Therefore
@@ -380,25 +380,25 @@ By combining Lemmas \ref{nitc-mh:flem} - \ref{nitc-mh:llem} we obtain the follow
 which concludes the proof.
 \end{proof}
 
-\begin{theorem}
+\begin{theorem}\label{bnd-cca-mh}
 $(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc} is a BND-CCA-secure non-interactive timed commitment scheme. 
 \end{theorem}
 
 \begin{proof}
-We show that the construction is actually perfectly binding. This is straightforward to show since Paillier encryption is perfectly binding. Therefore there is exactly one message/randomness pair $(m,r)$ which can pass the check in $\dvrfy$. Therefore the first winning condition of BND-CCA experiment happens with probability 0. Moreover, since $\pgen$ is executed by the challenger, the value $h_3$ is computed correctly and therefore $\fdecom$ reconstructs always the correct message $m$. Therefore the second winning condition of BND-CCA experiment happens with probability 0 as well.
+We show that the construction is actually perfectly binding. This is straightforward to show since ElGamal encryption is perfectly binding. Therefore there is exactly one message/randomness pair $(m,r)$ which can pass the check in $\dvrfy$. Therefore the first winning condition of BND-CCA experiment happens with probability 0. Moreover, since $\pgen$ is executed by the challenger, the value $h_3$ is computed correctly and therefore $\fdecom$ reconstructs always the correct message $m$. Therefore the second winning condition of BND-CCA experiment happens with probability 0 as well.
 \end{proof}
 
-\begin{theorem}
-If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero-knowledge proof system for $L$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy)} defined in \Cref{table:nitc} is a publicly verifiable non-interactive timed commitment scheme.
-\end{theorem}
-
-\begin{proof}
-Completeness is straightforward to verify. 
-
-To prove the soundness notice that if commitment verifies, then we know that $c_0 = g^r$ and $c_3 = h_3^r(1+N)^m$ for honestly generated $g$ and $h_3$ and some $r$ and $m$. Otherwise, an adversary would be able to break soundness of the proof system. Since there is an isomorphism $f:\Zn^* \times \Zn \rightarrow\Zns$ given by $f(a,b)=a^N(1+N)^b \bmod N^2$ (see e.g. \cite[Proposition 13.6]{books/crc/KatzLindell2014}) there exist unique values $\pi_\fdecom$ and $m$ such that $c_3=\pi_\fdecom^N(1+N)^m \bmod N^2$ and therefore adversary is not able to provide different message $m'$ fulfilling required equation.
-
-Finally, the running time of $\fdvrfy$ is efficient, since it is independent of $T$.
-\end{proof}
+%\begin{theorem}
+%If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero-knowledge proof system for $L$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy)} defined in \Cref{table:nitc} is a publicly verifiable non-interactive timed commitment scheme.
+%\end{theorem}
+%
+%\begin{proof}
+%Completeness is straightforward to verify. 
+%
+%To prove the soundness notice that if commitment verifies, then we know that $c_0 = g^r$ and $c_3 = h_3^r(1+N)^m$ for honestly generated $g$ and $h_3$ and some $r$ and $m$. Otherwise, an adversary would be able to break soundness of the proof system. Since there is an isomorphism $f:\Zn^* \times \Zn \rightarrow\Zns$ given by $f(a,b)=a^N(1+N)^b \bmod N^2$ (see e.g. \cite[Proposition 13.6]{books/crc/KatzLindell2014}) there exist unique values $\pi_\fdecom$ and $m$ such that $c_3=\pi_\fdecom^N(1+N)^m \bmod N^2$ and therefore adversary is not able to provide different message $m'$ fulfilling required equation.
+%
+%Finally, the running time of $\fdvrfy$ is efficient, since it is independent of $T$.
+%\end{proof}
 
  
 

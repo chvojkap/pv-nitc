@@ -431,7 +431,7 @@ $(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc} is a BND-C
 \end{theorem}
 
 \begin{proof}
-We show that the construction is actually perfectly binding. This is straightforward to show since Paillier encryption is perfectly binding. Therefore there is exactly one message/randomness pair $(m,r)$ which can pass the check in $\dvrfy$. Therefore the first winning condition of BND-CCA experiment happens with probability 0. Moreover, since $\pgen$ is executed by the challenger, the value $h_3$ is computed correctly and therefore $\fdecom$ reconstructs always the correct message $m$. Therefore the second winning condition of BND-CCA experiment happens with probability 0 as well.
+This can be proven in the same way as \Cref{bnd-cca-lh}.
 \end{proof}
 
 \begin{theorem}
@@ -439,12 +439,15 @@ If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero-knowledge pro
 \end{theorem}
 
 \begin{proof}
-Completeness is straightforward to verify. 
-
-To prove the soundness notice that if commitment verifies, then we know that $c_0 = g^r$ and $c_3 = h_3^r(1+N)^m$ for honestly generated $g$ and $h_3$ and some $r$ and $m$. Otherwise, an adversary would be able to break soundness of the proof system. Since there is an isomorphism $f:\Zn^* \times \Zn \rightarrow\Zns$ given by $f(a,b)=a^N(1+N)^b \bmod N^2$ (see e.g. \cite[Proposition 13.6]{books/crc/KatzLindell2014}) there exist unique values $\pi_\fdecom$ and $m$ such that $c_3=\pi_\fdecom^N(1+N)^m \bmod N^2$ and therefore adversary is not able to provide different message $m'$ fulfilling required equation.
-
-Finally, the running time of $\fdvrfy$ is efficient, since it is independent of $T$.
+This can be proven in the same way as \Cref{pv-lh}.
 \end{proof}
+
+
+
+
+
+
+
 
 
 \subsection{Multiplicatively Homomorphic NITC}
@@ -831,20 +834,10 @@ $(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc} is a BND-C
 \end{theorem}
 
 \begin{proof}
-We show that the construction is actually perfectly binding. This is straightforward to show since Paillier encryption is perfectly binding. Therefore there is exactly one message/randomness pair $(m,r)$ which can pass the check in $\dvrfy$. Therefore the first winning condition of BND-CCA experiment happens with probability 0. Moreover, since $\pgen$ is executed by the challenger, the value $h_3$ is computed correctly and therefore $\fdecom$ reconstructs always the correct message $m$. Therefore the second winning condition of BND-CCA experiment happens with probability 0 as well.
+This can be proven in the same way as \Cref{bnd-cca-mh}.
 \end{proof}
 
-\begin{theorem}
-If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero-knowledge proof system for $L$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy)} defined in \Cref{table:nitc} is a publicly verifiable non-interactive timed commitment scheme.
-\end{theorem}
 
-\begin{proof}
-Completeness is straightforward to verify. 
-
-To prove the soundness notice that if commitment verifies, then we know that $c_0 = g^r$ and $c_3 = h_3^r(1+N)^m$ for honestly generated $g$ and $h_3$ and some $r$ and $m$. Otherwise, an adversary would be able to break soundness of the proof system. Since there is an isomorphism $f:\Zn^* \times \Zn \rightarrow\Zns$ given by $f(a,b)=a^N(1+N)^b \bmod N^2$ (see e.g. \cite[Proposition 13.6]{books/crc/KatzLindell2014}) there exist unique values $\pi_\fdecom$ and $m$ such that $c_3=\pi_\fdecom^N(1+N)^m \bmod N^2$ and therefore adversary is not able to provide different message $m'$ fulfilling required equation.
-
-Finally, the running time of $\fdvrfy$ is efficient, since it is independent of $T$.
-\end{proof}
 
  
 

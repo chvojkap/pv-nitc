@@ -112,7 +112,9 @@ If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-inte
 \begin{proof}
 Completeness is implied by the completeness of the NIZK and can be verified by inspection. 
 
-Our construction is based on the Naor-Yung paradigm where we combine three Paillier-type ciphertext with shared randomness.  
+%Our construction is based on the Naor-Yung paradigm where we combine three Paillier-type ciphertext with shared randomness.  
+
+
 %Similarly to \cite{SCN:BiaMasVen16} we define a PPT algorithm $\rerand$ in Figure~\ref{fig:rerand}, which takes two ciphertexts generated with independent randomness, both public keys, only one secret key (in our case $k$) and randomness which was used to encrypt a message using the public key $g, h_1$. 
 %%We assume that modulus $N$ is implicitly known.\todo{Why not explicit?} 
 %% which corresponds to the secret key which is given as the input. 
@@ -380,7 +382,7 @@ which concludes the proof of the lemma.
 %\end{lemma}
 
 \nextgame{RndExp4}
-In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/4]$. 
+In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/2]$. 
 
 \begin{lemma}
 \[
@@ -561,7 +563,9 @@ If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-inte
 \begin{proof}
 Completeness is implied by the completeness of the NIZK and can be verified by inspection. 
 
-Our construction is based on the Naor-Yung paradigm where we combine three Paillier-type ciphertext with shared randomness.  
+%Our construction is based on the Naor-Yung paradigm where we combine three ElGamal-type ciphertext with shared randomness.  
+
+
 %Similarly to \cite{SCN:BiaMasVen16} we define a PPT algorithm $\rerand$ in Figure~\ref{fig:rerand}, which takes two ciphertexts generated with independent randomness, both public keys, only one secret key (in our case $k$) and randomness which was used to encrypt a message using the public key $g, h_1$. 
 %%We assume that modulus $N$ is implicitly known.\todo{Why not explicit?} 
 %% which corresponds to the secret key which is given as the input. 
@@ -589,7 +593,7 @@ Our construction is based on the Naor-Yung paradigm where we combine three Paill
 % We note that if we use value $2^T$ as a secret key, then in order to compute $c_2$ we have to execute $T$ repeated squarings, but since $T$ is polynomial in $\secpar$ this computations is considered to be efficient.
 
 \newsequenceofgames{NITC-MH-ROM}
-To prove security we define a sequence of games $\games_0 - \games_12$.  For $i \in \{0,1,\dots,12\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
+To prove security we define a sequence of games $\games_0 - \games_{9}$.  For $i \in \{0,1,\dots,9\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
 In individual games we use the algorithm $\decom$ define in \Cref{fig:deco} to answer decommitment queries efficiently. 
 \begin{figure}[h!]
 \begin{center}
@@ -793,7 +797,7 @@ which concludes the proof of the lemma.
 %\end{lemma}
 
 \nextgame{RndExp4}
-In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/4]$. 
+In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/2]$. 
 
 \begin{lemma}
 \[

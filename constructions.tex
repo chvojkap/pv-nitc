@@ -12,7 +12,7 @@ L = \left\{(c_0, c_1, c_2)| \exists (m,r):
 \]
 where $g, h_1, h_2, h_3, N$ are parameters specifying the language.
 
-In the following we use $\crs_\nizk \leftarrow \nizk.\setup(\seck, L, \tau_L)$ to denote the following sequence of instructions: $\param \leftarrow \nizk.\gen_\param(\seck)$, $\crs_L \leftarrow \nizk.\gen_L(\seck, L, k_1)$, $\crs_\nizk:=(\param, \crs_L)$ .
+In the following we use $\crs_\nizk \leftarrow \nizk.\setup(\seck, L)$ to denote the following sequence of instructions: $\param \leftarrow \nizk.\gen_\param(\seck)$, $\crs_L \leftarrow \nizk.\gen_L(\seck, L)$, $\crs_\nizk:=(\param, \crs_L)$ .
 
 
 \begin{figure}[h!]
@@ -27,7 +27,8 @@ $k_1, k_2 \rand \smplset$ & $\Phi := (c_0, c_1, c_2, c_3), w := (m, r)$ \\
 $t:= 2^T \bmod \varphi(N)/2$ &  $\pi \leftarrow \nizk.\prove(\crs_\nizk, \Phi, w)$\\
 For $i \in [2]: h_i:= g^{k_i} \bmod N$ &  $c := (c_0, c_1, c_2, c_3, \pi)$\\
 $h_3:=g^{t} \bmod N$ &  $\pi_\com:= \bot, \pi_\dec: = r$ \\
-$\crs_\nizk \leftarrow \nizk.\setup(\seck, L, (k_1, k_2, p,q))$ & return $(c, \pi_\com, \pi_\dec)$\\
+$\crs_\nizk \leftarrow \nizk.\setup(\seck, L)$ & return $(c, \pi_\com, \pi_\dec)$\\
+%$\crs_\nizk \leftarrow \nizk.\setup(\seck, L, (k_1, k_2, p,q))$ & return $(c, \pi_\com, \pi_\dec)$\\
 %$\crs_L \leftarrow \nizk.\gen_L(\seck, L, k_1)$ & \\ 
 %$\crs_\nizk:=(\param, \crs_\nizk)$ & \\
 return $\crs:= (N,T,g,h_1,h_2, h_3, \crs_\nizk)$ & \\
@@ -115,7 +116,9 @@ If  $(\nizk.\gen_\param, \nizk.\gen_L, \nizk.\prove, \nizk.\vrfy)$ is a one-time
 \begin{proof}
 Completeness is implied by the completeness of the NIZK and can be verified by inspection. 
 
-Our construction is based on the Naor-Yung paradigm where we combine three Paillier-type ciphertexts with shared randomness.  
+%Our construction is based on the Naor-Yung paradigm where we combine three Paillier-type ciphertexts with shared randomness.  
+
+
 %Similarly to \cite{SCN:BiaMasVen16} we define a PPT algorithm $\rerand$ in Figure~\ref{fig:rerand}, which takes two ciphertexts generated with independent randomness, both public keys, only one secret key (in our case $k$) and randomness which was used to encrypt a message using the public key $g, h_1$. 
 %%We assume that modulus $N$ is implicitly known.\todo{Why not explicit?} 
 %% which corresponds to the secret key which is given as the input. 
@@ -301,7 +304,7 @@ We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against D
 $\advB_{\secpar}(N,g,g^\alpha, g^\beta, g^\gamma):$
 \vspace{-2mm}
 \begin{enumerate}
-\item Samples $k_1 \rand \smplset$, computes $h_1 := g^{k_1} \bmod N,  h_3 := g^{2^{T}} \bmod N$ and sets $\crs:=(N, T, g, h_1, h_2:=g^\alpha, h_3, \crs_\nizk)$.
+\item Samples $k_1 \rand \smplset$, computes $h_1 := g^{k_1} \bmod N,  h_3 := g^{2^{T}} \bmod N$, runs $(\crs_\nizk, \tau) \leftarrow \nizk.\simul_1(\seck, L)$ and sets $\crs:=(N, T, g, h_1, h_2:=g^\alpha, h_3, \crs_\nizk)$.
 \item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
 \item Samples $b \rand \bits, y_3 \rand \Zns$ such that it has Jacobi symbol 1 and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(g^\beta, (g^\beta)^{k_1 N}(1+N)^{m_b}, (g^{\gamma})^N(1+N)^{m_b}, y_3(1+N)^{m_b}).$ Runs $\pi^* \leftarrow \simul_2(\crs_\nizk, \tau, (c_0^*, c_1^*, c_2^*, c_3^*))$.
 \item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*,c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
@@ -348,12 +351,12 @@ Let $\event$ denote the event that adversary $\adv$ asks a decommitment query $c
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
 \]
 
-We construct an adversary $\advB$ which breaks one-time simulation soundness of the NIZK. 
+We construct an adversary $\advB$ that breaks one-time simulation soundness of the NIZK and it is given as input $\crs_\nizk$ together with a membership testing trapdoor $\tau_L:=(k_1, k_2, t)$ where $t:=2^T \bmod \varphi(N)/2$. 
 
-The adversary $\advB_{\secpar}^{\simul_2}(k_1, k_2, p, q):$
+The adversary $\advB_{\secpar}^{\simul_2}(\crs_\nizk, \tau_L):$
 \vspace{-2mm}
 \begin{enumerate}
-\item Computes $\crs \leftarrow \pgen(\seck, T)$ as defined in the construction using $k_1, k_2$ which are given to adversary $\advB_{\secpar}$ as input and computing $t:=2^T$ using the knowledge of $p, q$ that are also given as input.
+\item Computes $h_1:= g^{k_1} \bmod N, h_2:= g^{k_2} \bmod N, h_3:= g^{t} \bmod N$ using the membership testing trapdoor $\tau_L$ and sets $\crs:=(N, T, g, h_1, h_2, h_3, \crs_\nizk)$.
 \item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_2$.
 \item Samples $b \rand \bits, x \rand \Jn, y_2, y_3 \rand \Zns$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(x, x^{k_1 N} (1+N)^{m_b}, y_2 (1+N)^{m_b}, y_3 (1+N)^{m_b})$. Forwards $(c_0^*, c_1^*, c_2^*, c_3^*)$ to simulation oracle $\simul_2$ and obtains a proof $\pi^*$.
 \item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decryption queries using $k_2$.
@@ -383,7 +386,7 @@ which concludes the proof of the lemma.
 %\end{lemma}
 
 \nextgame{RndExp4}
-In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/4]$. 
+In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/2]$. 
 
 \begin{lemma}
 \[

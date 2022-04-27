@@ -200,7 +200,8 @@ Next we recall definition of a simulation-sound non-interactive proof system (SS
 A \emph{non-interactive zero-knowledge argument system} $\Pi$ for an NP language $L$ associated with a relation $\rel$ is a tuple of four PPT algorithms $(\gen_\param, \gen_L, \prove, \vrfy)$, which work as follows:
 \begin{itemize}
 \item $\param \leftarrow \gen_\param(\seck)$ takes as input binary representation of a security parameter $\seck$ and outputs public parameters $\param$.
-\item $\crs \leftarrow \gen_L(\seck, L, \tau_L)$ takes as input binary representation of a security parameter $\seck$, the description of language $L$ which specifies length of statements $n$ and a membership testing trapdoor $\tau_L$ for $L$.  It outputs a language dependent part $\crs_L$ of the common reference string $\crs:=(\param, \crs_L)$. 
+\item $\crs \leftarrow \gen_L(\seck, L)$ takes as input binary representation of a security parameter $\seck$ and the description of language $L$ which specifies length of statements $n$.  It outputs a language dependent part $\crs_L$ of the common reference string $\crs:=(\param, \crs_L)$. 
+%\item $\crs \leftarrow \gen_L(\seck, L, \tau_L)$ takes as input binary representation of a security parameter $\seck$, the description of language $L$ which specifies length of statements $n$ and a membership testing trapdoor $\tau_L$ for $L$.  It outputs a language dependent part $\crs_L$ of the common reference string $\crs:=(\param, \crs_L)$. 
 \item $\pi \leftarrow \prove(\crs,s,w)$ is a PPT algorithm which takes as input the common reference sting $\crs$, a statement $s \in \{0,1\}^n$, and a witness $w$ such that $(s,w) \in \rel$ and outputs a proof $\pi$.
 \item $0/1 \leftarrow \vrfy(\crs, s, \pi)$ is a deterministic algorithm which takes as input the common reference string $\crs$, a statement $s\in \{0,1\}^n$ and a proof $\pi$ and outputs either 1 or 0, where 1 means that the proof is ``accepted'' and 0 means it is ``rejected''.
 \end{itemize}
@@ -242,10 +243,10 @@ where $\tau_L$ is a membership testing trapdoor for language $L$ chosen by chall
 
 Liber~\etal \cite{Libert2021OneShotFN} show that given additively homomorphic encryption scheme, one can build a trapdoor sigma protocol for a language defined below. Moreover, any trapdoor sigma protocol can be turned into unbounded simulation sound NIZK which directly implies existence of a one-time simulation sound NIZK. 
 
-\begin{lemma}[Lemma D.1~\cite{Libert2021OneShotFN}]
+\begin{lemma}[Lemma D.1~\cite{Libert2021OneShotFN}]\label{lem:tsp}
 Let $(\gen, \enc, \dec)$ be an additively homomorphic encryption scheme where the message space $M$, randomness space $R$ and the ciphertext space $C$ form groups $(M, +), (R,+)$ and $(C, \cdot)$. Let the encryption scheme is such that for any public key $\pk$ generated using $(\pk, \sk) \leftarrow \gen(\seck)$, any messages $m_1, m_2 \in M$ and randomness $r_1, r_2 \in R$ holds
 \[\enc(\pk, m_1;r_1) \cdot \enc(\pk, m_2;r_2) = \enc(\pk, m_1+m_2; r_1+r_2).\]
-Let $S$ be a finite set of public cardinality such that uniform sampling from $S$ is computationally indidstinguishable from uniform sampling from $R$. 
+Let $S$ be a finite set of public cardinality such that uniform sampling from $S$ is computationally indistinguishable from uniform sampling from $R$. 
 Then there is an trapdoor sigma protocol for the language $L:= \{c \in C| \exists r \in R: c = \enc(\pk, 0; r)\}$, where $\pk$ is fixed by the language.  
 \end{lemma}
 
@@ -255,13 +256,14 @@ We note that Liber~\etal required that the order of the group $(R,+)$ is public 
 
 Additionally, Liber~\etal construct a simulation sound non-interactive argument system from any trapdoor sigma protocol relying on a strongly unforgeable one-time signature, a lossy public-key encryption scheme and a correlation intractable hash function. 
 
-\begin{theorem}[Thm B.1, Thm. B.2~\cite{Libert2021OneShotFN}]
+\begin{theorem}[Thm B.1, Thm. B.2~\cite{Libert2021OneShotFN}]\label{thm:nizk}
 Let $(\gen_\param, \gen_L, \prove, \vrfy)$ be a trapdoor sigma protocol for an NP language $L$. Then given a strongly unforgeable one-time signature scheme, $\rel$-lossy public-key encryption scheme, a correlation intractable hash function and an admissible hash function, there is an unbounded simulation sound non-interactive zero-knowledge argument system for the language $L$. 
 \end{theorem}
 
 \paragraph{Complexity assumptions.}
-\todo{Fix this part, wrong group}
-We base our construction on the strong sequential squaring assumption in the group of quadratic residues. Precisely, let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function and by $\qrn$ the cyclic group of quadratic residues modulo $N$ which has order $|\qrn| = \frac{\varphi(N)}{4} = \frac{(p-1)(q-1)}{4}$. To efficiently sample a random element $x$ from $\qrn$, we can sample $r \rand \Zn^*$ and let $x:= r^2 \bmod N$. When the factors $p,q$ are known, then it easy to check if the given element is a generator of $\qrn$ by checking if $x^{p'} \neq 1 \bmod N \land x^{q'} \neq 1 \bmod N$. Therefore we are able to efficiently sample a random generator of $\qrn$. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator $g$ of $\qrn$. Now we state the strong sequential squaring assumption. 
+We base our constructions on the strong sequential squaring assumption. Precisely, let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function, by $\Zn^*$ the group $\{x \in \Zn: \gcd(N,x) = 1\}$ and by $\Jn$ the cyclic subgroup of elements of $\Zn^*$ with Jacobi symbol 1 which has order $|\Jn| = \frac{\varphi(N)}{2} = \frac{(p-1)(q-1)}{2}$. To efficiently sample a random generator $g$ from $\Jn$ when the factorization of $N$ is unknown, we can sample $r \rand \Zn^*$ and let $g:= -r^2 \bmod N$ which yields a generator with all but negligible probability. When the factors $p,q$ are known, then it easy to check if the given element is a generator of $\Jn$ by testing possible orders of a sampled element. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator $g$ of $\Jn$. Now we state the strong sequential squaring assumption. 
+
+%We base our construction on the strong sequential squaring assumption in the group of quadratic residues. Precisely, let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function and by $\qrn$ the cyclic group of quadratic residues modulo $N$ which has order $|\qrn| = \frac{\varphi(N)}{4} = \frac{(p-1)(q-1)}{4}$. To efficiently sample a random element $x$ from $\qrn$, we can sample $r \rand \Zn^*$ and let $x:= r^2 \bmod N$. When the factors $p,q$ are known, then it easy to check if the given element is a generator of $\qrn$ by checking if $x^{p'} \neq 1 \bmod N \land x^{q'} \neq 1 \bmod N$. Therefore we are able to efficiently sample a random generator of $\qrn$. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator $g$ of $\qrn$. Now we state the strong sequential squaring assumption. 
 
 
 \begin{figure}[h]
@@ -355,8 +357,10 @@ Let $(p,q,N)  \leftarrow \genmod(\seck)$ and let $M = \alpha\varphi(N)$ for some
 \end{lemma}
 
 
-\paragraph{On sampling random exponents for $\qrn$.}
-Since in our construction the order $\ord$ of the group $\qrn$ is unknown, we use the set $\smplset$ whenever we should sample from the set $[\ord]$ without knowing the factorization of $N$. Sampling from $\smplset$ is statistically indistinguishable from sampling from $[\ord]$. 
+\paragraph{On sampling random exponents for $\Jn$.}
+Since in our construction the order $\ord$ of the group $\Jn$ is unknown, we use the set $\smplset$ whenever we should sample from the set $[\ord]$ without knowing the factorization of $N$. Sampling from $\smplset$ is statistically indistinguishable from sampling from $[\ord]$. 
+
+%Since in our construction the order $\ord$ of the group $\qrn$ is unknown, we use the set $\smplset$ whenever we should sample from the set $[\ord]$ without knowing the factorization of $N$. Sampling from $\smplset$ is statistically indistinguishable from sampling from $[\ord]$. 
 
 \begin{definition}[Statistical Distance]
 Let $X$ and $Y$ be two random variables over a finite set $S$. The statistical distance between $X$ and $Y$ is defined as 
@@ -364,7 +368,7 @@ Let $X$ and $Y$ be two random variables over a finite set $S$. The statistical d
 \end{definition}
 
 
-\begin{lemma}\label{sampling-lemma}
+\begin{restatable}{lemma}{primelemma}\label{sampling-lemma}
 Let $p,q$ be strong primes, $N=pq$ and  $X$ and $Y$ be random variables defined on domain $[\floor{N/2}]$ as follows:
 \[
 \Pr[X = r] = 1/\floor{N/2} \; \forall r \in [\floor{N/2}] \text{ and } \Pr[Y = r] = 
@@ -377,25 +381,27 @@ Then
 \[
 \sd(X, Y) \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
 \]
-\end{lemma}
+\end{restatable}
+
+We defer the proof of this lemma to \ref{proof:smpl-lemma}.
 
 
-\todo{Move to appendix.}
-\begin{proof}
-The following computation proves the lemma:
-\begin{align*}
-\sd(X, Y) = \half \sum_{r \in [\floor{N/2}]} \abs{\Pr[X = r] - \Pr[Y = r]} = \\ 
-\half \left( \sum_{r = 1}^{\varphi(N)/2} \abs{\Pr[X = r] - \Pr[Y = r]} + \sum_{r = \varphi(N)/2+1}^{\floor{N/2}} \abs{\Pr[X = r] - \Pr[Y = r]} \right) = 
-\\
-\half \left( \sum_{r = 1}^{\varphi(N)/2} \abs{\frac{1}{\floor{N/2}} - \frac{2}{\varphi(N)}} + \sum_{r = \varphi(N)/2+1}^{\floor{N/2}} \abs{\frac{1}{\floor{N/2}} - 0} \right) \leq \\
-\half \left( \sum_{r = 1}^{\varphi(N)/2} \abs{\frac{2}{N} - \frac{2}{\varphi(N)}} + \sum_{r = \varphi(N)/2+1}^{\floor{N/2}} \abs{\frac{1}{\floor{N/2}} - 0} \right) = \\
-\half \left( \varphi(N)/2 \abs{\frac{2(\varphi(N) - N)}{\varphi(N)N}} + (\floor{N/2}-\varphi(N)/2) \frac{1}{\floor{N/2}} \right) = \\
- \half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/2}{{\floor{N/2}}} \right) \leq 
-\half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/2}{{N/2}} \right) = \\
- \half\frac{2(N-\varphi(N))}{N} = 
-\frac{(N-(N-p-q+1))}{N} = \frac{p+q-1}{N} = \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
-\end{align*}
-\end{proof}
+
+%\begin{proof}
+%The following computation proves the lemma:
+%\begin{align*}
+%\sd(X, Y) = \half \sum_{r \in [\floor{N/2}]} \abs{\Pr[X = r] - \Pr[Y = r]} = \\ 
+%\half \left( \sum_{r = 1}^{\varphi(N)/2} \abs{\Pr[X = r] - \Pr[Y = r]} + \sum_{r = \varphi(N)/2+1}^{\floor{N/2}} \abs{\Pr[X = r] - \Pr[Y = r]} \right) = 
+%\\
+%\half \left( \sum_{r = 1}^{\varphi(N)/2} \abs{\frac{1}{\floor{N/2}} - \frac{2}{\varphi(N)}} + \sum_{r = \varphi(N)/2+1}^{\floor{N/2}} \abs{\frac{1}{\floor{N/2}} - 0} \right) \leq \\
+%\half \left( \sum_{r = 1}^{\varphi(N)/2} \abs{\frac{2}{N} - \frac{2}{\varphi(N)}} + \sum_{r = \varphi(N)/2+1}^{\floor{N/2}} \abs{\frac{1}{\floor{N/2}} - 0} \right) = \\
+%\half \left( \varphi(N)/2 \abs{\frac{2(\varphi(N) - N)}{\varphi(N)N}} + (\floor{N/2}-\varphi(N)/2) \frac{1}{\floor{N/2}} \right) = \\
+% \half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/2}{{\floor{N/2}}} \right) \leq 
+%\half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/2}{{N/2}} \right) = \\
+% \half\frac{2(N-\varphi(N))}{N} = 
+%\frac{(N-(N-p-q+1))}{N} = \frac{p+q-1}{N} = \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
+%\end{align*}
+%\end{proof}
 
 
 

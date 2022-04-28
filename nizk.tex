@@ -12,7 +12,7 @@ L_3 = \left\{(h_1, h_2, c_0, c_1, c_2)| \exists (m,r):
 \[
 L_4 = \left\{(h_1, h_2, c_0, c_1, c_2)| \exists (m,r):
 \begin{aligned}
-       (\land_{i=1}^3 c_i = h_i^{r}(m \bmod N) \land
+       (\land_{i=1}^3 c_i = h_i^{r}m \bmod N) \land
        c_0 = g^r \bmod N\\
     \end{aligned}
     \right\}, 
@@ -67,9 +67,72 @@ Faust \etal \cite{INDOCRYPT:FKMV12} have shown that Sigma protocol fulfilling th
 Consider a non-trivial three-round public-coin honest verifier zero-knowledge interactive proof system $(\prv, \vrf)$ for an NP language $L$, with quasi unique responses. In the random oracle model, the proof system $(\prove, \vrfy)$ derived from $(\prv, \vrf)$ via the Fiat-Shamir transform is a simulation-sound NIZK with respect to its canonical simulator $\simul$.
 \end{theorem}
 
-Now we are ready to describe our Sigma protocol $\Sigma = (\prv, \vrf)$ for language $L$:
+Now we are ready to describe our Sigma protocol $\Sigma = (\prv, \vrf)$ for language $L_3$. At first, we recall that $f:\Zn^* \times \Zn \rightarrow \Zns$ defined as $f(x,y)=x^N(1+N)^y$ is isomorphism. Since $g$ is generator of $\Jn$ and has order $\ord$, also $g^N \bmod N^2$ has order $\ord$. 
 \begin{enumerate}
-\item $\prv$ samples $\alpha \rand \smplset$, computes $a_0:=g^\alpha, a_1:= (h_1\cdot h_2^{-1})^\alpha, a_1:= (h_3\cdot h_2^{-1})^\alpha$ and sends $(a_0, a_1, a_2)$ to $\vrf$.
+\item $\prv$ samples $\alpha \rand \smplset$, computes $a_0:=g^{N\alpha}, a_1:= (h_1\cdot h_2^{-1})^{N\alpha}, a_2:= (h_3\cdot h_2^{-1})^{N\alpha} \bmod N^2$ and sends $(a_0, a_1, a_2)$ to $\vrf$.
+\item $\vrf$ samples $v \rand [2^d]$ and sends $v$ to $\prv$.
+\item $\prv$ computes the response $z:= \alpha + v \cdot r$ and sends it to $\vrf$.
+\item $\vrf$ accepts if and only if $g^{Nz} = a_0 \cdot c_0^{Nv} \land (h_1\cdot h_2^{-1})^{Nz} = a_1 \cdot (c_1\cdot c_2^{-1})^v  \land (h_3\cdot h_2^{-1})^{Nz} = a_2 \cdot (c_3\cdot c_2^{-1})^v$ where all computation are done $\bmod N^2$ and $z \in [\estord + v\estord]$.
+\end{enumerate}
+
+\begin{theorem}
+If the factoring assumption holds relative $\genmod$, then the above defined protocol $\Sigma = (\prv, \vrf)$ is a Sigma protocol for language $L$ that is perfectly complete, honest verifier zero-knowledge, sound and has quasi-unique responses. 
+\end{theorem}
+
+\begin{proof} 
+We prove required properties. 
+
+\paragraph{Completeness.} We verify the given requirements:
+\begin{enumerate}
+\item $g^{Nz} = g^{N(\alpha + v \cdot r)} = g^{N\alpha} + (g^r)^{Nv} = a_0 \cdot c_0^{Nv} \bmod N^2$;
+\item $(h_1\cdot h_2^{-1})^{Nz} = (h_1\cdot h_2^{-1})^{N(\alpha + v \cdot r)} = (h_1\cdot h_2^{-1})^{N\alpha} \cdot (h_1^{Nr}\cdot (h_2^{Nr})^{-1})^v = a_1 \cdot (h_1^{Nr} \cdot m \cdot (h_2^{Nr} \cdot m)^{-1})^v = a_1 \cdot (c_1\cdot c_2^{-1})^v \bmod N^2$;
+\item $(h_3\cdot h_2^{-1})^{Nz} = (h_3\cdot h_2^{-1})^{N(\alpha + v \cdot r)} = (h_3\cdot h_2^{-1})^{N\alpha} \cdot (h_3^{Nr}\cdot (h_2^{Nr})^{-1})^v = a_1 \cdot (h_3^{Nr} \cdot m \cdot (h_2^{Nr} \cdot m)^{-1})^v = a_2 \cdot (c_3\cdot c_2^{-1})^v \bmod N^2$;
+\item since $r, \alpha \in \smplset$ and $v \in [2^d]$, therefore $z:= \alpha + v \cdot r \in [\estord + v\estord]$. 
+\end{enumerate}
+
+\paragraph{HVZK.} The simulator $\simul((h_1, h_2, c_0, c_1, c_2))$ works as follows:
+\begin{enumerate}
+\item Samples $v \rand [2^d], z \rand [\estord + v\estord]$.
+\item Computes $a_0:= g^{Nz} \cdot c_0^{-v}, a_1:= (h_1 \cdot h_2^{-1})^{Nz} \cdot (c_1 \cdot c_2^{-1})^{-v}, a_2:= (h_3 \cdot h_2^{-1})^{Nz} \cdot (c_3 \cdot c_2^{-1})^{-v} \bmod N^2$ and returns $((a_0, a_1, a_2), v, z)$.
+\end{enumerate}
+It is easy to verify that produced transcript is accepting and moreover it has the same distribution as a honest transcript. 
+
+%\paragraph{SHVZK.} The simulator $\simul((c_0, c_1, c_2), v)$ works as follows:
+%\begin{enumerate}
+%\item Samples $z \rand [\estord + v\estord]$.
+%\item Computes $a_0:= g^z \cdot c_0^{-v}, a_1:= (h_1 \cdot h_2^{-1})^z \cdot (c_1 \cdot c_2^{-1})^{-v}$ and returns $(a_0, a_1), z$.
+%\end{enumerate}
+%It is easy to verify that produced transcript is accepting and moreover if $v$ is sampled uniformly at random from $[2^d]$, then the given transcript has the same distribution as a honest transcript. 
+
+\paragraph{Soundness.} Let $((a_0, a_1, a_2), v, z)$ is accepting transcript for $(h_1, h_2, c_0, c_1, c_2) \notin L_3$. That means $c_0 = g^{Nr_0}, (c_1\cdot (c_2)^{-1}) = (h_1\cdot (h_2)^{-1})^{Nr_1} \bmod N, (c_3\cdot (c_2)^{-1}) = (h_3\cdot (h_2)^{-1})^{Nr_2} \bmod N$ and $r_0 \neq r_1 \mod \varphi(N)/2$ or $r_0 \neq r_2 \mod \varphi(N)/2$. Let $a_0 = g^{N\alpha_0} \bmod N^2, a_1 = (h_1\cdot (h_2)^{-1})^{N\alpha_1} \bmod N^2, a_2 = (h_3\cdot (h_2)^{-1})^{N\alpha_2} \bmod N^2$. Considering the first verification equation with respect to discrete logarithm with bases $g^N$, the second verification equation with respect to discrete logarithm with bases $(h_1 \cdot h_2^{-1})^N$, and the third verification equation with respect to discrete logarithm with bases $(h_3 \cdot h_2^{-1})^N$.  We obtain following equations:
+\begin{align}
+z = \alpha_0 + r_0 v \bmod \ord\\
+z = \alpha_1 + r_1 v \bmod \ord \\
+z = \alpha_2 + r_2 v \bmod \ord
+\end{align}
+Computing (1)-(2) we obtain
+\begin{align*}
+0 = (\alpha_0 - \alpha_1)+ (r_0-r_1)v \bmod \ord \\
+v = \frac{\alpha_1 - \alpha_0}{r_0-r_1} \bmod \ord
+\end{align*}
+Computing (1)-(3) we obtain
+\begin{align*}
+0 = (\alpha_0 - \alpha_2)+ (r_0-r_2)v \bmod \ord \\
+v = \frac{\alpha_2 - \alpha_0}{r_0-r_2} \bmod \ord
+\end{align*}
+Now notice that at least one of $(r_0 - r_1)$ and $(r_0 - r_2)$ is not zero and values $\alpha_0, \alpha_1, \alpha_1, r_0, r_1, r_2$ are fixed before challenge $v$ is provided by $\vrf$. Therefore in order to provide accepting proof, the adversary has to correctly guess value $v$. If we choose $2^d < \ord$ value $v$ is unique and therefore probability the adversary produce accepting transcript for a statement that is not in $L_3$ is at most $2^{-d}$ which can be set to be negligible in $\secpar$. This holds even for unbounded adversaries. 
+
+%Let $((a_0, a_1), v, z), ((a_0, a_1), v', z')$ are two accepting transcripts such that $v \neq v'$. Then $g^z = a_0 \cdot g^{rv} \bmod N$ and $g^{z'} = a_0 \cdot g^{rv'} \bmod N$. Hence $r = (z-z') \cdot (v-v')^{-1}$ a since $v \neq v'$
+
+
+\paragraph{Quasi Unique Responses.} We show that our sigma protocol has quasi unique responses, otherwise we are able to factorize $N$. Assume that an adversary can output a statement $((h_1, h_2, c_0, c_1, c_2), (a_0, a_1), v, z, z')$ such that $(a_0, a_1, a_2), v, z)$ and $(a_0, a_1, a_2), v, z')$ are accepting transcripts for $(h_1, h_2, c_0, c_1, c_2)$ and $z \neq z'$. Therefore using the first verification equation it holds $g^{Nz} = a_0 \cdot c_0^v = g^{Nz'} \bmod N \implies z = z' \bmod \varphi(N)$. Hence, $z-z' = \alpha \cdot \ord \implies 2(z-z') = \alpha \cdot \varphi(N) $ for some $\alpha \neq 0$. Applying \Cref{factor-lemma} for $M=2(z-z')$ we are able to factorize $N$.
+
+This concludes the proof.
+\end{proof}
+
+Next we to describe our Sigma protocol $\Sigma = (\prv, \vrf)$ for language $L_4$:
+\begin{enumerate}
+\item $\prv$ samples $\alpha \rand \smplset$, computes $a_0:=g^\alpha, a_1:= (h_1\cdot h_2^{-1})^\alpha, a_2:= (h_3\cdot h_2^{-1})^\alpha$ and sends $(a_0, a_1, a_2)$ to $\vrf$.
 \item $\vrf$ samples $v \rand [2^d]$ and sends $v$ to $\prv$.
 \item $\prv$ computes the response $z:= \alpha + v \cdot r$ and sends it to $\vrf$.
 \item $\vrf$ accepts if and only if $g^z = a_0 \cdot c_0^v \land (h_1\cdot h_2^{-1})^z = a_1 \cdot (c_1\cdot c_2^{-1})^v  \land (h_3\cdot h_2^{-1})^z = a_2 \cdot (c_3\cdot c_2^{-1})^v$ where all computation are done $\bmod N$ and $z \in [\estord + v\estord]$.
@@ -86,7 +149,7 @@ We prove required properties.
 \begin{enumerate}
 \item $g^z = g^{\alpha + v \cdot r} = g^\alpha + (g^r)^v = a_0 \cdot c_0^v \bmod N$;
 \item $(h_1\cdot h_2^{-1})^z = (h_1\cdot h_2^{-1})^{\alpha + v \cdot r} = (h_1\cdot h_2^{-1})^\alpha \cdot (h_1^r\cdot (h_2^r)^{-1})^v = a_1 \cdot (h_1^r \cdot m \cdot (h_2^r \cdot m)^{-1})^v = a_1 \cdot (c_1\cdot c_2^{-1})^v$;
-\item $(h_3\cdot h_2^{-1})^z = (h_3\cdot h_2^{-1})^{\alpha + v \cdot r} = (h_3\cdot h_2^{-1})^\alpha \cdot (h_3^r\cdot (h_2^r)^{-1})^v = a_2 \cdot (h_3^r \cdot m \cdot (h_2^r \cdot m)^{-1})^v = a_2 \cdot (c_1\cdot c_2^{-1})^v$;
+\item $(h_3\cdot h_2^{-1})^z = (h_3\cdot h_2^{-1})^{\alpha + v \cdot r} = (h_3\cdot h_2^{-1})^\alpha \cdot (h_3^r\cdot (h_2^r)^{-1})^v = a_2 \cdot (h_3^r \cdot m \cdot (h_2^r \cdot m)^{-1})^v = a_2 \cdot (c_3\cdot c_2^{-1})^v$;
 \item since $r, \alpha \in \smplset$ and $v \in [2^d]$, therefore $z:= \alpha + v \cdot r \in [ \estord + v\estord]$. 
 \end{enumerate}
 
@@ -104,7 +167,7 @@ It is easy to verify that produced transcript is accepting and moreover it has t
 %\end{enumerate}
 %It is easy to verify that produced transcript is accepting and moreover if $v$ is sampled uniformly at random from $[2^d]$, then the given transcript has the same distribution as a honest transcript. 
 
-\paragraph{Soundness.} Let $((a_0, a_1, a_2), v, z)$ is accepting transcript for $(h_1, h_2, c_0, c_1, c_2) \notin L$. That means $c_0 = g^{r_0}, (c_1\cdot (c_2)^{-1}) = (h_1\cdot (h_2)^{-1})^{r_1} \bmod N, (c_3\cdot (c_2)^{-1}) = (h_3\cdot (h_2)^{-1})^{r_2} \bmod N$ and $r_0 \neq r_1 \mod \varphi(N)/2$ or $r_0 \neq r_2 \mod \varphi(N)/2$. Let $a_0 = g^{\alpha_0} \bmod N, a_1 = (h_1\cdot (h_2)^{-1})^{\alpha_1} \bmod N, a_2 = (h_3\cdot (h_2)^{-1})^{\alpha_1} \bmod N$. Considering the first verification equation with respect to discrete logarithm with bases $g$, the second verification equation with respect to discrete logarithm with bases $(h_1 \cdot h_2^{-1})$, and the third verification equation with respect to discrete logarithm with bases $(h_3 \cdot h_2^{-1})$.  We obtain following equations:
+\paragraph{Soundness.} Let $((a_0, a_1, a_2), v, z)$ is accepting transcript for $(h_1, h_2, c_0, c_1, c_2) \notin L_4$. That means $c_0 = g^{r_0}, (c_1\cdot (c_2)^{-1}) = (h_1\cdot (h_2)^{-1})^{r_1} \bmod N, (c_3\cdot (c_2)^{-1}) = (h_3\cdot (h_2)^{-1})^{r_2} \bmod N$ and $r_0 \neq r_1 \mod \varphi(N)/2$ or $r_0 \neq r_2 \mod \varphi(N)/2$. Let $a_0 = g^{\alpha_0} \bmod N, a_1 = (h_1\cdot (h_2)^{-1})^{\alpha_1} \bmod N, a_2 = (h_3\cdot (h_2)^{-1})^{\alpha_2} \bmod N$. Considering the first verification equation with respect to discrete logarithm with bases $g$, the second verification equation with respect to discrete logarithm with bases $(h_1 \cdot h_2^{-1})$, and the third verification equation with respect to discrete logarithm with bases $(h_3 \cdot h_2^{-1})$.  We obtain following equations:
 \begin{align}
 z = \alpha_0 + r_0 v \bmod \ord\\
 z = \alpha_1 + r_1 v \bmod \ord \\
@@ -120,17 +183,17 @@ Computing (1)-(3) we obtain
 0 = (\alpha_0 - \alpha_2)+ (r_0-r_2)v \bmod \ord \\
 v = \frac{\alpha_2 - \alpha_0}{r_0-r_2} \bmod \ord
 \end{align*}
-Now notice that at least one of $(r_0 - r_1)$ and $(r_0 - r_2)$ is not zero and values $\alpha_0, \alpha_1, r_0, r_1$ are fixed before challenge $v$ is provided by $\vrf$. Therefore in order to provide accepting proof, the adversary has to correctly guess value $v$. If we choose $2^d < \ord$ value $v$ is unique and therefore probability the adversary produce accepting transcript for a statement that is not in $L_4$ is at most $2^{-d}$ which can be set to be negligible in $\secpar$. This holds even for unbounded adversaries. 
+Now notice that at least one of $(r_0 - r_1)$ and $(r_0 - r_2)$ is not zero and values $\alpha_0, \alpha_1, \alpha_1, r_0, r_1, r_2$ are fixed before challenge $v$ is provided by $\vrf$. Therefore in order to provide accepting proof, the adversary has to correctly guess value $v$. If we choose $2^d < \ord$ value $v$ is unique and therefore probability the adversary produce accepting transcript for a statement that is not in $L_4$ is at most $2^{-d}$ which can be set to be negligible in $\secpar$. This holds even for unbounded adversaries. 
 
 %Let $((a_0, a_1), v, z), ((a_0, a_1), v', z')$ are two accepting transcripts such that $v \neq v'$. Then $g^z = a_0 \cdot g^{rv} \bmod N$ and $g^{z'} = a_0 \cdot g^{rv'} \bmod N$. Hence $r = (z-z') \cdot (v-v')^{-1}$ a since $v \neq v'$
 
 
-\paragraph{Quasi Unique Responses.} We show that our sigma protocol has quasi unique responses, otherwise we are able to factorize $N$. Assume that an adversary can output a statement $((h_1, h_2, c_0, c_1, c_2), (a_0, a_1), v, z, z')$ such that $((a_0, a_1, a_2), v, z), (a_0, a_1, a_2), v, z')$ are accepting transcripts for $(h_1, h_2, c_0, c_1, c_2)$ and $z \neq z'$. Therefore using the first verification equation it holds $g^z = a_0 \cdot c_0^v = g^{z'} \bmod N \implies z = z' \bmod \ord$. Hence, $z-z' = \alpha \cdot \ord$ for some $\alpha \neq 0$. Applying \Cref{factor-lemma} we are able to factorize $N$.
+\paragraph{Quasi Unique Responses.} We show that our sigma protocol has quasi unique responses, otherwise we are able to factorize $N$. Assume that an adversary can output a statement $((h_1, h_2, c_0, c_1, c_2), (a_0, a_1), v, z, z')$ such that $(a_0, a_1, a_2), v, z)$ and $(a_0, a_1, a_2), v, z')$ are accepting transcripts for $(h_1, h_2, c_0, c_1, c_2)$ and $z \neq z'$. Therefore using the first verification equation it holds $g^z = a_0 \cdot c_0^v = g^{z'} \bmod N \implies z = z' \bmod \ord$. Hence, $z-z' = \alpha \cdot \ord \implies 2(z-z') = \alpha \cdot \varphi(N) $ for some $\alpha \neq 0$. Applying \Cref{factor-lemma} for $M=2(z-z')$ we are able to factorize $N$.
 
 This concludes the proof.
 \end{proof}
 
-By \Cref{thm:fs} our Sigma protocol can be turned into simulation-sound NIZK via the Fiat-Shamir transform. 
+By \Cref{thm:fs} our Sigma protocols can be turned into simulation-sound NIZKs via the Fiat-Shamir transform. 
 
 
 

@@ -1,5 +1,5 @@
 %!TEX root=./main.tex
-\section{Construction of Non-Malleable NITC}
+\subsection{Construction of Multiplicatively Homomorphic Non-Malleable NITC}
 In our construction we rely on SS-NIZK for the following language: 
 
 \[
@@ -55,8 +55,8 @@ return $m$ & return 0\\
 
 \hline          
 \end{tabular}
-\caption{NY Construction of NITC}
-\label{table:nitc}
+\caption{Construction of Multiplicatively Homomorphic NITC in Standard Model}
+\label{table:nitc-mh}
 \end{center}
 \end{figure}
 
@@ -107,7 +107,7 @@ return $m$ & return 0\\
 
 
 \begin{theorem}
-If $(\nizk.\gen_\param, \nizk.\gen_L, \nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
+If $(\nizk.\gen_\param, \nizk.\gen_L, \nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-mh} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
 \end{theorem}
 
 \begin{proof}

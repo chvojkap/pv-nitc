@@ -1,5 +1,5 @@
 %!TEX root=./main.tex
-\section{Construction of Non-Malleable NITC}
+\subsection{Construction of Linearly Homomorphic Non-Malleable NITC}
 In our construction we rely on SS-NIZK for the following language: 
 
 \[
@@ -58,8 +58,8 @@ return $(m,\pi_\fdecom)$ & return 0\\
 
 \hline          
 \end{tabular}
-\caption{NY Construction of NITC}
-\label{table:nitc}
+\caption{Construction of Linearly Homomorphic NITC in Standard Model}
+\label{table:nitc-lh}
 \end{center}
 \end{figure}
 
@@ -110,7 +110,7 @@ return $(m,\pi_\fdecom)$ & return 0\\
 
 
 \begin{theorem}
-If  $(\nizk.\gen_\param, \nizk.\gen_L, \nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
+If  $(\nizk.\gen_\param, \nizk.\gen_L, \nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-lh} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
 \end{theorem}
 
 \begin{proof}
@@ -188,6 +188,15 @@ Game $\games_\thisgame$ proceeds exactly as the previous game but we run the zer
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \zk^\nizk_\advB.
 \]
 \end{lemma}
+
+We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against zero-knowledge security of NIZK as follows:
+$\advB_\secpar(\crs_\nizk):$
+\vspace{-2mm}
+\begin{enumerate}
+\item Sets $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, h_3, \crs_\nizk)$. and runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
+\item Outputs $(N,g,k_1, k_2, h_1,h_2,h_3, \crs_\nizk, \tau, m_0, m_1, \st)$
+\end{enumerate}
+
 
 \nextgame{RndExp}
 In $\games_\thisgame$ we sample $r$ uniformly at random from $[\varphi(N)/2]$. 

@@ -1,6 +1,6 @@
 %!TEX root=./main.tex
-\section{Constructions of Non-Malleable NITC using NIZK in ROM}
-\subsection{Linearly Homomorphic NITC}
+%\section{Constructions of Non-Malleable NITC using NIZK in ROM}
+\subsection{Constructions of Linearly Homomorphic Non-Malleable NITC}
 We define language for our construction of a linearly homomorphic NITC which relies on NIZKs in the ROM in the following way:
 
 \[
@@ -54,8 +54,8 @@ return $(m,\pi_\fdecom)$ & return 0\\
 
 \hline          
 \end{tabular}
-\caption{NY Construction of NITC}
-\label{table:nitc}
+\caption{Construction of Linearly Homomorphic NITC in ROM}
+\label{table:nitc-lh-rom}
 \end{center}
 \end{figure}
 
@@ -106,7 +106,7 @@ return $(m,\pi_\fdecom)$ & return 0\\
 
 
 \begin{theorem}
-If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
+If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-lh-rom} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
 \end{theorem}
 
 \begin{proof}
@@ -184,6 +184,18 @@ Game $\games_\thisgame$ proceeds exactly as the previous game but we use the zer
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \zk^\nizk_\advB.
 \]
 \end{lemma}
+
+We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against zero-knowledge security of NIZK as follows:
+\vspace{-2mm}
+\begin{enumerate}
+\item Samples $k_1, k_2 \rand \smplset$, computes $h_1 := g^{k_1} \bmod N, h_2 := g^{k_2} \bmod N$ and sets $\crs:=(N, T(\secpar), g, h_1, h_2, h_3)$. 
+\item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
+\item Samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{rN}(1+N)^{m_b}, c_2^*:=h_2^{rN}(1+N)^{m_b}, c_3^*:=h_3^{rN}(1+N)^{m_b}$. It submits $(s:=\mathlist(h_1,h_2,c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ to its oracle and obtains proof $\pi^*$ as answer.
+\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
+\item Returns the truth value of $b=b'$.
+\end{enumerate}
+If the proof $\pi^*$ is generated using $\nizk.\prove$, then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $\pi^*$ is generated using $\simul_1$ and $\advB$ simulates $\games_\thisgame$ perfectly. This proofs the lemma.
+
 
 \nextgame{RndExp}
 In $\games_\thisgame$ we sample $r$ uniformly at random from $[\varphi(N)/2]$. 
@@ -452,7 +464,7 @@ This can be proven in the same way as \Cref{pv-lh}.
 
 
 
-\subsection{Multiplicatively Homomorphic NITC}
+\subsection{Constructions of Multiplicatively Homomorphic Non-Malleable NITC}
 We define language for our construction of a linearly homomorphic NITC which relies on NIZKs in the ROM in the following way:
 \[
 L = \left\{(h_1, h_2, c_0, c_1, c_2)| \exists (m,r):
@@ -505,8 +517,8 @@ return $m$ & return 0\\
 
 \hline          
 \end{tabular}
-\caption{NY Construction of NITC}
-\label{table:nitc}
+\caption{Construction of Multiplicatively Homomorphic NITC in ROM}
+\label{table:nitc-mh-rom}
 \end{center}
 \end{figure}
 
@@ -557,7 +569,7 @@ return $m$ & return 0\\
 
 
 \begin{theorem}
-If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
+If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-mh-rom} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
 \end{theorem}
 
 \begin{proof}
@@ -638,6 +650,18 @@ Game $\games_\thisgame$ proceeds exactly as the previous game but we use the zer
 
 \nextgame{RndExp}
 In $\games_\thisgame$ we sample $r$ uniformly at random from $[\varphi(N)/2]$. 
+
+We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against zero-knowledge security of NIZK as follows:
+\vspace{-2mm}
+\begin{enumerate}
+\item Samples $k_1, k_2 \rand \smplset$, computes $h_1 := g^{k_1} \bmod N, h_2 := g^{k_2} \bmod N$ and sets $\crs:=(N, T(\secpar), g, h_1, h_2, h_3)$. 
+\item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
+\item Samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b, c_3^*:=h_3^{r}m_b$. It submits $(s:=\mathlist(h_1,h_2,c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ to its oracle and obtains proof $\pi^*$ as answer.
+\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
+\item Returns the truth value of $b=b'$.
+\end{enumerate}
+If the proof $\pi^*$ is generated using $\nizk.\prove$, then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $\pi^*$ is generated using $\simul_1$ and $\advB$ simulates $\games_\thisgame$ perfectly. This proofs the lemma.
+
 
 \begin{lemma}
 \[
@@ -729,7 +753,7 @@ $\advB_{\secpar}(N,g,g^\alpha, g^\beta, g^\gamma):$
 \begin{enumerate}
 \item Samples $k_1 \rand \smplset$, computes $h_1 := g^{k_1} \bmod N,  h_3 := g^{2^{T}} \bmod N$ and sets $\crs:=(N, T, g, h_1, h_2:=g^\alpha, h_3)$.
 \item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
-\item Samples $b \rand \bits, y_3 \rand \Jn$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(g^\beta, (g^\beta)^{k_1} m_b, (g^{\gamma}) m_b, y_3 m_b).$ Runs $\pi^* \leftarrow \simul(1, \st', (h_1, h_2, c_0^*, c_1^*, c_2^*, c_3^*))$.
+\item Samples $b \rand \bits, y_3 \rand \Jn$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=\mathlist(g^\beta, (g^\beta)^{k_1} m_b, (g^{\gamma}) m_b, y_3 m_b).$ Runs $\pi^* \leftarrow \simul(1, \st', (h_1, h_2, c_0^*, c_1^*, c_2^*, c_3^*))$.
 \item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*,c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
 \item Returns the truth value of $b=b'$.
 \end{enumerate}

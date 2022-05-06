@@ -39,12 +39,12 @@ return $\nizk.\vrfy(\crs_\nizk,(c_0, c_1, c_2, c_3), \pi)$  & if $ \land_{i=1}^3
  & \tab return 1 \\
 & return 0 \\
                                              &\\
-$\underline{\fdecom(\crs,c)}$ & $\underline{\fdvrfy(\crs,c, m, \pi_\fdecom)}$ \\
-Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$\\
-
-Compute $ y:=c_0^{2^T} \bmod N$ &  if $c_3 = \pi_\fdecom^N (1+N)^m \bmod N^2$\\
-$m:=c_3 \cdot y^{-1} \bmod N$ &\tab return 1\\
-return $m$ & return 0\\
+$\underline{\fdecom(\crs,c)}$ & $\underline{\eval(\crs,\otimes, c_1, \dots, c_n)}$ \\
+Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2}, c_{i,3}, \pi_i)$\\
+Compute $ y:=c_0^{2^T} \bmod N$ &  Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N$ \\
+$m:=c_3 \cdot y^{-1} \bmod N$ & Compute $c_3 := \prod_{i=1}^n c_{i,3} \bmod N $\\
+return $m$ & $c_1:= \bot, c_2:=\bot, \pi:= \bot$\\
+& return $c := (c_0, c_1, c_2, c_3, \pi)$\\
 
 %$\underline{\decom(\crs, \sk, c)}$     & $\underline{\fdecom(\crs,c)}$ \\
 %Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
@@ -384,12 +384,17 @@ which concludes the proof.
 \end{proof}
 
 \begin{theorem}\label{bnd-cca-mh}
-$(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc} is a BND-CCA-secure non-interactive timed commitment scheme. 
+$(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc-mh} is a BND-CCA-secure non-interactive timed commitment scheme. 
 \end{theorem}
 
 \begin{proof}
 We show that the construction is actually perfectly binding. This is straightforward to show since ElGamal encryption is perfectly binding. Therefore there is exactly one message/randomness pair $(m,r)$ which can pass the check in $\dvrfy$. Therefore the first winning condition of BND-CCA experiment happens with probability 0. Moreover, since $\pgen$ is executed by the challenger, the value $h_3$ is computed correctly and therefore $\fdecom$ reconstructs always the correct message $m$. Therefore the second winning condition of BND-CCA experiment happens with probability 0 as well.
 \end{proof}
+
+It is straightforward to verify that considering $\eval$ algorithm, our construction yields multiplicatively homomorphic NITC. 
+\begin{theorem}\label{hom-mh}
+The NITC \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy, \eval)} defined in \Cref{table:nitc-mh} is a multiplicatively homomorphic non-interactive timed commitment scheme.
+\end{theorem}
 
 %\begin{theorem}
 %If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero-knowledge proof system for $L$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy)} defined in \Cref{table:nitc} is a publicly verifiable non-interactive timed commitment scheme.

@@ -150,7 +150,7 @@ A non-interactive timed commitment scheme $\nitc$ is \emph{BND-CCA secure} if fo
 %\]
 %\end{definition}
 
-Next we define a novel property of NITC which allows for efficient verification that forced decommitment was executed correctly without the need to execute expensive sequential computation. This was first suggested in terms of time-lock puzzles by cite{} and denoted as public verifiability.
+Next we define a novel property of NITC which allows for efficient verification that forced decommitment was executed correctly without the need to execute expensive sequential computation. This was first suggested in terms of time-lock puzzles by \cite{EPRINT:EFKP20a} and denoted as public verifiability.
 
 \begin{definition}
 \label{def:nitc_pubver}
@@ -193,6 +193,29 @@ Moreover, publicly verifiable NITC must fulfil further properties:
 
 \end{definition}
 
+As we discussed in the introduction, it is useful also consider homomorphic properties for non-interactive timed commitments. The following definition is inspired by the definition of homomorphic time-lock puzzle of Malavolta~\etal \cite{C:MalThy19}. 
+
+\begin{definition}
+\label{def:nitc_hom}
+A non-interactive timed commitments scheme $\nitc$ is homomorphic with respect to a class of circuits $\mathcal{C} = \{\mathcal{C}_\secpar\}_{\secpar \in \N}$ if there is an additional algorithm $\eval$ with the following syntax:
+\begin{itemize}
+\item $c \leftarrow \eval(\crs, C, c_1, \dots, c_n)$ is a probabilistic algorithm that takes as input a common reference string $\crs$, a circuit $C \in \mathcal{C}_\secpar$, and set of $n$ commitments $(c_1, \dots, c_n)$. It outputs a commitment $c$. 
+\end{itemize}
+Additionally, a homomorphic NITC fulfils the following properties:
+\item \emph{Correctness} for all $\secpar, T \in \N$, $C \in \mathcal{C}_\secpar$, $(m_1, \dots, m_n) \in \msgspace^n$, all $\crs$ in the support of $\pgen(\seck, T)$, all $c_i$ in the support of $\com(\crs, m_i)$, the following two conditions are satisfied:
+\begin{enumerate}
+\item There exists a negligible function $\negl$ such that 
+\[\Pr\left[\fdecom(\crs, \eval(\crs, C, c_1, \dots, c_n)) \neq C(m_1, \dots, m_n) \right] \leq \negl(\secpar).
+\]
+\item The exists a fixed polynomial $\poly$ such that the runtime of $\fdecom(\crs, c)$ is bounded by $\poly(\secpar, T)$, where $c \leftarrow \eval(\crs, C, c_1, \dots, c_n)$.
+\end{enumerate}
+\item \emph{Compactness} for all $\secpar, T \in \N$, $C \in \mathcal{C}_\secpar$, $(m_1, \dots, m_n) \in \msgspace^n$, all $\crs$ in the support of $\pgen(\seck, T)$, all $c_i$ in the support of $\com(\crs, m_i)$, the following two conditions are satisfied:
+\begin{enumerate}
+\item The exists a fixed polynomial $\hat{\poly}$ such that $|c|=\hat{\poly}(\secpar, |C(m_1, \dots, m_n)|)$, where $c \leftarrow \eval(\crs, C, c_1, \dots, c_n)$.
+\item The exists a fixed polynomial $\tilde{\poly}$ such that the runtime of $\eval(\crs, C, c_1, \dots, c_n)$ is bounded by $\tilde{\poly}(\secpar, |C|)$.
+\end{enumerate}
+\end{definition}
+
 
 \paragraph{Complexity assumptions.}
 We base our constructions on the strong sequential squaring assumption. Precisely, let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function, by $\Zn^*$ the group $\{x \in \Zn: \gcd(N,x) = 1\}$ and by $\Jn$ the cyclic subgroup of elements of $\Zn^*$ with Jacobi symbol 1 which has order $|\Jn| = \frac{\varphi(N)}{2} = \frac{(p-1)(q-1)}{2}$. To efficiently sample a random generator $g$ from $\Jn$ when the factorization of $N$ is unknown, we can sample $r \rand \Zn^*$ and let $g:= -r^2 \bmod N$ which yields a generator with all but negligible probability. When the factors $p,q$ are known, then it easy to check if the given element is a generator of $\Jn$ by testing possible orders of a sampled element. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator $g$ of $\Jn$. Now we state the strong sequential squaring assumption. 
@@ -207,7 +230,7 @@ $\mathsf{ExpSSS}_{\adv}^{b}(\secpar)$: \\
 \hline
 $(p, q, N,g) \leftarrow \genmod(\seck)$ \\
 $\st \leftarrow \adv_{1, \secpar}(N, T(\lambda),g)$\\
-$x \rand \qrn$ \\
+$x \rand \Jn$ \\
 $\text{if } b = 0: y:=x^{2^{T(\secpar)}} \bmod N$\\
 $\text{if } b = 1: y \rand \Jn$\\
 return	$b' \leftarrow \adv_{2,\secpar}(x, y, \st)$

@@ -1,6 +1,6 @@
 %!TEX root=./main.tex
 %\section{Constructions of Non-Malleable NITC using NIZK in ROM}
-\subsection{Constructions of Linearly Homomorphic Non-Malleable NITC}
+\subsection{Construction of Linearly Homomorphic Non-Malleable NITC}
 We define language for our construction of a linearly homomorphic NITC which relies on NIZKs in the ROM in the following way:
 
 \[
@@ -44,14 +44,17 @@ Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c$ as $(c_0, c_1, c_2, c_3, \p
 Compute $ \pi_\fdecom:=c_0^{2^T} \bmod N$ &  if $c_3 = \pi_\fdecom^N (1+N)^m \bmod N^2$\\
 $m:=\frac{c_3 \cdot \pi_\fdecom^{-N} (\bmod N^2) -1}{N}$ &\tab return 1\\
 return $(m,\pi_\fdecom)$ & return 0\\
-
+                                             &\\
+$\underline{\eval(\crs,\oplus, c_1, \dots, c_n)}$ &  \\
+Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2}, c_{i,3}, \pi_i)$ & \\
+\multicolumn{2}{|l|}{Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N, c_1:= \bot, c_2:=\bot, c_3 := \prod_{i=1}^n c_{i,3} \bmod N^2, \pi:= \bot$} \\
+return $c := (c_0, c_1, c_2, c_3, \pi)$ & \\
 %$\underline{\decom(\crs, \sk, c)}$     & $\underline{\fdecom(\crs,c)}$ \\
 %Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
 %if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$  & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$\\
 %\tab Compute $y_1:= c_0^{k} \bmod N$  &   \tab Compute $ y_2:=c_0^{2^T} \bmod N$ \\
 %\tab return $c_1 \cdot y_1^{-1} \bmod N$ & \tab return $c_2 \cdot y_2^{-1} \bmod N$ \\
 %return $\bot$ & return $\bot$\\
-
 \hline          
 \end{tabular}
 \caption{Construction of Linearly Homomorphic NITC in ROM}
@@ -441,7 +444,7 @@ which concludes the proof.
 \end{proof}
 
 \begin{theorem}
-$(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc} is a BND-CCA-secure non-interactive timed commitment scheme. 
+$(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc-lh-rom} is a BND-CCA-secure non-interactive timed commitment scheme. 
 \end{theorem}
 
 \begin{proof}
@@ -449,13 +452,17 @@ This can be proven in the same way as \Cref{bnd-cca-lh}.
 \end{proof}
 
 \begin{theorem}
-If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero-knowledge proof system for $L$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy)} defined in \Cref{table:nitc} is a publicly verifiable non-interactive timed commitment scheme.
+If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero-knowledge proof system for $L$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy)} defined in \Cref{table:nitc-lh-rom} is a publicly verifiable non-interactive timed commitment scheme.
 \end{theorem}
 
 \begin{proof}
 This can be proven in the same way as \Cref{pv-lh}.
 \end{proof}
 
+It is straightforward to verify that considering $\eval$ algorithm, our construction yields linearly homomorphic NITC. 
+\begin{theorem}\label{hom-lh-rom}
+The NITC \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy, \eval)} defined in \Cref{table:nitc-lh-rom} is a linearly homomorphic non-interactive timed commitment scheme.
+\end{theorem}
 
 
 
@@ -464,7 +471,8 @@ This can be proven in the same way as \Cref{pv-lh}.
 
 
 
-\subsection{Constructions of Multiplicatively Homomorphic Non-Malleable NITC}
+
+\subsection{Construction of Multiplicatively Homomorphic Non-Malleable NITC}
 We define language for our construction of a linearly homomorphic NITC which relies on NIZKs in the ROM in the following way:
 \[
 L = \left\{(h_1, h_2, c_0, c_1, c_2)| \exists (m,r):
@@ -501,12 +509,12 @@ return $\nizk.\vrfy((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$  & if $ \land_{i=1}^3 
  & \tab return 1 \\
 & return 0 \\
                                              &\\
-$\underline{\fdecom(\crs,c)}$ & $\underline{\fdvrfy(\crs,c, m, \pi_\fdecom)}$ \\
-Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$\\
-
-Compute $ y:=c_0^{2^T} \bmod N$ &  if $c_3 = \pi_\fdecom^N (1+N)^m \bmod N^2$\\
-$m:=c_3 \cdot y^{-1} \bmod N$ &\tab return 1\\
-return $m$ & return 0\\
+$\underline{\fdecom(\crs,c)}$ & $\underline{\eval(\crs,\otimes, c_1, \dots, c_n)}$ \\
+Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2}, c_{i,3}, \pi_i)$\\
+Compute $ y:=c_0^{2^T} \bmod N$ &  Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N$ \\
+$m:=c_3 \cdot y^{-1} \bmod N$ & Compute $c_3 := \prod_{i=1}^n c_{i,3} \bmod N $\\
+return $m$ & $c_1:= \bot, c_2:=\bot, \pi:= \bot$\\
+& return $c := (c_0, c_1, c_2, c_3, \pi)$\\
 
 %$\underline{\decom(\crs, \sk, c)}$     & $\underline{\fdecom(\crs,c)}$ \\
 %Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
@@ -858,12 +866,17 @@ which concludes the proof.
 \end{proof}
 
 \begin{theorem}
-$(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc} is a BND-CCA-secure non-interactive timed commitment scheme. 
+$(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc-mh-rom} is a BND-CCA-secure non-interactive timed commitment scheme. 
 \end{theorem}
 
 \begin{proof}
 This can be proven in the same way as \Cref{bnd-cca-mh}.
 \end{proof}
+
+It is straightforward to verify that considering $\eval$ algorithm, our construction yields multiplicatively homomorphic NITC. 
+\begin{theorem}\label{hom-mh-rom}
+The NITC \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy, \eval)} defined in \Cref{table:nitc-mh-rom} is a multiplicatively homomorphic non-interactive timed commitment scheme.
+\end{theorem}
 
 
 

@@ -4,7 +4,7 @@
 We recall definition of a simulation-sound non-interactive proof system (SS-NIZK). 
 
 \begin{definition} 
-A \emph{non-interactive zero-knowledge argument system} $\Pi$ for an NP language $L$ associated with a relation $\rel$ is a tuple of four PPT algorithms $(\gen_\param, \gen_L, \prove, \vrfy)$, which work as follows:
+A \emph{non-interactive zero-knowledge proof system} $\Pi$ for an NP language $L$ associated with a relation $\rel$ is a tuple of four PPT algorithms $(\gen_\param, \gen_L, \prove, \vrfy)$, which work as follows:
 \begin{itemize}
 \item $\param \leftarrow \gen_\param(\seck)$ takes as input binary representation of a security parameter $\seck$ and outputs public parameters $\param$.
 \item $\crs \leftarrow \gen_L(\seck, L)$ takes as input binary representation of a security parameter $\seck$ and the description of language $L$ which specifies length of statements $n$.  It outputs a language dependent part $\crs_L$ of the common reference string $\crs:=(\param, \crs_L)$. 
@@ -61,10 +61,10 @@ Then there is an trapdoor sigma protocol for the language $L:= \{c \in C| \exist
 We note that Liber~\etal required that the order of the group $(R,+)$ is public and that this group is efficiently samplable which is used in the arguing of zero-knowledge property. This is however, not necessary, since it is sufficient to be able to sample from distribution which is computationally indistinguishable from the real uniform distribution. This results in computational indistinguishability of the real and simulated transcript. In case of our constructions, we are able to sample randomness from the distribution which is statistically indistinguishable from the uniform distribution over $R$ and hence the real and the simulated transcript are statistically indistinguishable. 
 \end{remark}
 
-Additionally, Liber~\etal construct a simulation sound non-interactive argument system from any trapdoor sigma protocol relying on a strongly unforgeable one-time signature, a lossy public-key encryption scheme and a correlation intractable hash function. 
+Additionally, Liber~\etal construct a simulation sound non-interactive argument system from any trapdoor sigma protocol relying on a strongly unforgeable one-time signature, a lossy public-key encryption scheme, an admissible hash function and a correlation intractable hash function. 
 
 \begin{theorem}[Thm B.1, Thm. B.2~\cite{Libert2021OneShotFN}]\label{thm:nizk}
-Let $(\gen_\param, \gen_L, \prove, \vrfy)$ be a trapdoor sigma protocol for an NP language $L$. Then given a strongly unforgeable one-time signature scheme, $\rel$-lossy public-key encryption scheme, a correlation intractable hash function and an admissible hash function, there is an unbounded simulation sound non-interactive zero-knowledge argument system for the language $L$. 
+Let $(\gen_\param, \gen_L, \prove, \vrfy)$ be a trapdoor sigma protocol for an NP language $L$. Then given a strongly unforgeable one-time signature scheme, $\rel$-lossy public-key encryption scheme, a correlation intractable hash function and an admissible hash function, there is an unbounded simulation sound non-interactive zero-knowledge proof system for the language $L$. 
 \end{theorem}
 
 \subsection{Efficient Instantiation of SS-NIZK}\label{sec:nizk-crs}

@@ -1,6 +1,6 @@
 %!TEX root=main.tex
-\subsection{Non-interactive zero-knowledge proofs in the Random Oracle Model}
-Since we can build a very efficient NIZK proof system for our constructions in the random oracle model (ROM), we recall the definition of NIZKs in the ROM.  
+\subsection{Non-Interactive Zero-Knowledge Proofs in the Random Oracle Model}
+%Since we can build a very efficient NIZK proof system for our constructions in the random oracle model (ROM), we recall the definition of NIZKs in the ROM.  
 
 \begin{definition} 
 A \emph{non-interactive proof system} for an NP language $L$ with relation $\rel$ is a pair of algorithms $(\prove, \vrfy)$, which work as follows:
@@ -44,8 +44,8 @@ s \notin L \land (s, \pi) \neq (s', \pi') \\
 where $\simul_1(\cdot)$ is a single query oracle which on input $s'$ returns the first output of $(\pi', \st) \leftarrow \simul(1, \st, s')$ and $\simul_2(u)$ returns the first output of $(v, \st) \leftarrow \simul(2, \st, u)$.
 \end{definition}
 
-\subsection{Efficient Instantiation of SS-NIZK in ROM}\label{sec:nizk}
-In this section we provide an efficient NIZK proof system in ROM for the languages 
+\subsection{Efficient Instantiation of SS-NIZK in ROM}\label{sec:nizk} 
+In this section we provide efficient simulation sound NIZK proof systems in ROM for languages $L_3$ and $L_4$ that are used in our constructions. The languages are defined in the following way:
 \[
 L_3 = \left\{(h_1, h_2, c_0, c_1, c_2)| \exists (m,r):
 \begin{aligned}

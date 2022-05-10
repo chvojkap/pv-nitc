@@ -63,7 +63,8 @@ forms a DDH-tuple. Note that this can be achieved using a simple Sigma-protocol-
 %\todo{However, we realize that to obtain SS-NIZK, it is sufficient to prove that the constructed Sigma protocol has negligible soundness and we do not have to care about special soundness. In this way we are able to avoid the strong RSA assumption and therefore we are able to achieve proofs of smaller size. Usually in Sigma protocols in hidden order groups, the first value is sampled from very large interval which increases the overall size of the proof. } Since sampling from $\smplset$ is statistically indistinguishable from sampling from $[\ord]$ this additionally reduces the size of the resulting proof.
 
 
-We stress that our construction does not require \emph{special soundness}, which is usually more expensive to achieve in hidden-order groups since it requires larger proofs, since the integers contained in the proof must be chosen from larger intervals. Instead, for our construction a negligible soundness error is sufficient, so that we can use smaller integers, which reduces computational complexity and proof size further.
+We stress that our construction does not require \emph{special soundness}, which is usually more expensive to achieve in hidden-order groups since to obtain reasonable security guarantees one has to either run the underlying protocols several times in parallel or use large modulus $N$ \cite{SPEED:BKSST}. Instead, for our construction a negligible soundness error is sufficient and therefore our constructions do not suffer with the mentioned drawbacks.
+%so that we can use smaller integers, which reduces computational complexity and proof size further.
 
 %%% Local Variables:
 %%% mode: latex

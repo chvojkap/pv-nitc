@@ -21,15 +21,15 @@ where $g, h_3, N$ are parameters specifying the language.
 \begin{tabular}{|ll|}
 \hline
 $\underline{\pgen(\seck, T)}$ 							   & $\underline{\com(\crs, m)}$ \\
-$(p, q_, N) \leftarrow \genmod(\seck)$ & $r \rand \smplset$  \\
+$(p, q_, N, g) \leftarrow \genmod(\seck)$ & $r \rand \smplset$  \\
 $\varphi(N):= (p-1)(q-1)$   & $c_0:= g^r \bmod N$ \\
-Sample random generator $g$ of $\Jn$ & For $i \in [3]: c_i:= h_i^{rN}(1+N)^m \bmod N^2$\\
-$k_1, k_2 \rand \smplset$ & $\Phi := (h_1, h_2, c_0, c_1, c_2, c_3), w := (m, r)$ \\
-$t:= 2^T \bmod \varphi(N)/2$ &  $\pi \leftarrow \nizk.\prove(\Phi, w)$\\
-For $i \in [2]: h_i:= g^{k_i} \bmod N$ &  $c := (c_0, c_1, c_2, c_3, \pi)$\\
-$h_3:=g^{t} \bmod N$ &  $\pi_\com:= \bot, \pi_\dec: = r$ \\
+$k_1, k_2 \rand \smplset$ & For $i \in [3]: c_i:= h_i^{rN}(1+N)^m \bmod N^2$\\
+$t:= 2^T \bmod \varphi(N)/2$ & $\Phi := (h_1, h_2, c_0, c_1, c_2, c_3), w := (m, r)$ \\
+For $i \in [2]: h_i:= g^{k_i} \bmod N$ &  $\pi \leftarrow \nizk.\prove(\Phi, w)$\\
+$h_3:=g^{t} \bmod N$ &  $c := (c_0, c_1, c_2, c_3, \pi)$\\
+return $\crs:= (N,T,g,h_1,h_2, h_3)$ &  $\pi_\com:= \bot, \pi_\dec: = r$ \\
 %$\crs \leftarrow \nizk.\setup(\seck)$ & \\
-return $\crs:= (N,T,g,h_1,h_2, h_3)$ & return $(c, \pi_\com, \pi_\dec)$\\
+ & return $(c, \pi_\com, \pi_\dec)$\\
 %return $\crs$     & \\
                                              &\\
 $\underline{\cvrfy(\crs, c, \pi_\com)}$     & $\underline{\dvrfy(\crs,c, m, \pi_\dec)}$ \\
@@ -492,15 +492,15 @@ where $g, h_3, N$ are parameters specifying the language.
 \begin{tabular}{|ll|}
 \hline
 $\underline{\pgen(\seck, T)}$ 							   & $\underline{\com(\crs, m)}$ \\
-$(p, q_, N) \leftarrow \genmod(\seck)$ & $r \rand \smplset$  \\
+$(p, q_, N, g) \leftarrow \genmod(\seck)$ & $r \rand \smplset$  \\
 $\varphi(N):= (p-1)(q-1)$   & $c_0:= g^r \bmod N$ \\
-Sample random generator $g$ of $\Jn$ & For $i \in [3]: c_i:= h_i^{r}m \bmod N$\\
-$k_1, k_2 \rand \smplset$ & $\Phi := (h_1, h_2, c_0, c_1, c_2, c_3), w := (m, r)$ \\
-$t:= 2^T \bmod \varphi(N)/2$ &  $\pi \leftarrow \nizk.\prove(\Phi, w)$\\
-For $i \in [2]: h_i:= g^{k_i} \bmod N$ &  $c := (c_0, c_1, c_2, c_3, \pi)$\\
-$h_3:=g^{t} \bmod N$ &  $\pi_\com:= \bot, \pi_\dec: = r$ \\
+$k_1, k_2 \rand \smplset$ & For $i \in [3]: c_i:= h_i^{r}m \bmod N$\\
+$t:= 2^T \bmod \varphi(N)/2$ & $\Phi := (h_1, h_2, c_0, c_1, c_2, c_3), w := (m, r)$ \\
+For $i \in [2]: h_i:= g^{k_i} \bmod N$ &  $\pi \leftarrow \nizk.\prove(\Phi, w)$\\
+$h_3:=g^{t} \bmod N$ &  $c := (c_0, c_1, c_2, c_3, \pi)$\\
+return $\crs:= (N,T,g,h_1,h_2, h_3)$ &  $\pi_\com:= \bot, \pi_\dec: = r$ \\
 %$\crs \leftarrow \nizk.\setup(\seck)$ & \\
-return $\crs:= (N,T,g,h_1,h_2, h_3)$ & return $(c, \pi_\com, \pi_\dec)$\\
+ & return $(c, \pi_\com, \pi_\dec)$\\
 %return $\crs$     & \\
                                              &\\
 $\underline{\cvrfy(\crs, c, \pi_\com)}$     & $\underline{\dvrfy(\crs,c, m, \pi_\dec)}$ \\

@@ -179,7 +179,7 @@ Moreover, publicly verifiable NITC must fulfil further properties:
     \end{aligned}
 \right] = 1.
 \]
-\item \emph{Soundness} for all non-uniform polynomial-size adversaries $\adv = \{\adv_{\secpar}\}_{\secpar \in \nats}$ there is a negligible function $\negl(\cdot)$ such that for all $\secpar \in \N$ \todo{should I require to output the proof that c was correctly committed?}
+\item \emph{Soundness} for all non-uniform polynomial-size adversaries $\adv = \{\adv_{\secpar}\}_{\secpar \in \nats}$ there is a negligible function $\negl(\cdot)$ such that for all $\secpar \in \N$
 \[\Pr\left[
 \begin{aligned}
 \fdvrfy(\crs, c, m', \pi_\fdecom') = 1 \\
@@ -223,7 +223,10 @@ Additionally, a homomorphic NITC fulfils the following properties:
 
 
 \paragraph{Complexity assumptions.}
-We base our constructions on the strong sequential squaring assumption. Precisely, let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function, by $\Zn^*$ the group $\{x \in \Zn: \gcd(N,x) = 1\}$ and by $\Jn$ the cyclic subgroup of elements of $\Zn^*$ with Jacobi symbol 1 which has order $|\Jn| = \frac{\varphi(N)}{2} = \frac{(p-1)(q-1)}{2}$. To efficiently sample a random generator $g$ from $\Jn$ when the factorization of $N$ is unknown, we can sample $r \rand \Zn^*$ and let $g:= -r^2 \bmod N$ which yields a generator with all but negligible probability. When the factors $p,q$ are known, then it easy to check if the given element is a generator of $\Jn$ by testing possible orders of a sampled element. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator $g$ of $\Jn$. Now we state the strong sequential squaring assumption. 
+We base our constructions on the strong sequential squaring assumption. Precisely, let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function, by $\Zn^*$ the group $\{x \in \Zn: \gcd(N,x) = 1\}$ and by $\Jn$ the cyclic subgroup of elements of $\Zn^*$ with Jacobi symbol 1 which has order $|\Jn| = \frac{\varphi(N)}{2} = \frac{(p-1)(q-1)}{2}$. To efficiently sample a random generator $g$ from $\Jn$, it is sufficient to be able sample random element from $\Jn \setminus \qrn$, since with all but negligible probability a random element of $\Jn \setminus \qrn$ is a generator. To sample random element of $\Jn \setminus \qrn$, we can sample $r \rand \Zn^*$ and let $g:= -r^2 \bmod N$. Now notice that $r^2 \bmod N$ is a random element in the group of quadratic residues and $-1 \bmod N \in \Jn \setminus \qrn$. To see this, at first notice that for any strong prime $p$ holds that $p = 3 \bmod 4$. By Euler's criterion $\left( \frac{x}{p} \right)= x^{\frac{p-1}{2}} \bmod p$ for odd prime $p$ and every $x$ which is coprime to $p$.  Therefore $\left( \frac{-1}{p} \right)= \left( \frac{-1}{q} \right) = -1$ meaning that $-1 \bmod N \in \Jn \setminus \qrn$. By multiplying fixed element of $\Jn \setminus \qrn$ with random element of $\qrn$ we obtain random element of $\Jn \setminus \qrn$.
+
+
+%To efficiently sample a random generator $g$ from $\Jn$ when the factorization of $N$ is unknown, we can sample $r \rand \Zn^*$ and let $g:= -r^2 \bmod N$ which yields a generator with all but negligible probability. When the factors $p,q$ are known, then it easy to check if the given element $g$ is a generator of $\Jn$ by testing possible orders of $g$. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator $g$ of $\Jn$. Now we state the strong sequential squaring assumption. 
 
 %We base our construction on the strong sequential squaring assumption in the group of quadratic residues. Precisely, let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function and by $\qrn$ the cyclic group of quadratic residues modulo $N$ which has order $|\qrn| = \frac{\varphi(N)}{4} = \frac{(p-1)(q-1)}{4}$. To efficiently sample a random element $x$ from $\qrn$, we can sample $r \rand \Zn^*$ and let $x:= r^2 \bmod N$. When the factors $p,q$ are known, then it easy to check if the given element is a generator of $\qrn$ by checking if $x^{p'} \neq 1 \bmod N \land x^{q'} \neq 1 \bmod N$. Therefore we are able to efficiently sample a random generator of $\qrn$. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator $g$ of $\qrn$. Now we state the strong sequential squaring assumption. 
 
@@ -279,7 +282,7 @@ The decisional composite residuosity assumption holds relative to $\genmod$ if f
 \begin{tabular}{l}
 $\mathsf{ExpDCR}_{\adv}^{b}(\secpar)$: \\
 \hline
-$(p, q, N) \leftarrow \genmod(\seck)$ \\
+$(p, q, N, g) \leftarrow \genmod(\seck)$ \\
 $y_1 \rand \Zns$ \\
 $y_0 = y_1^N \bmod N^2$\\
 return	$b' \leftarrow \adv_{\secpar}(N,y_b)$
@@ -304,7 +307,7 @@ The \emph{factoring assumption} holds relative to $\genmod$ if  for every non-un
 		N = p'q'
 		\;:\;
     \begin{aligned}
-    	(p, q, N) \leftarrow \genmod(\seck) \\
+    	(p, q, N, g) \leftarrow \genmod(\seck) \\
 			p',q' \leftarrow \adv_{\secpar}(N), \\
 			\text{ such that }  p', q' \in \N; p', q'>1
     \end{aligned}

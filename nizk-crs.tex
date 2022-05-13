@@ -16,25 +16,37 @@ Moreover, $\Pi$ should satisfy the following properties. For simplification we d
 \begin{itemize}
 \item \emph{Completeness:}  for all $(s, w) \in \rel$ holds:
 \[\Pr[\vrfy(\crs, s,\pi)=1:\crs \leftarrow \setup(\seck, L), \pi \leftarrow \prove(\crs, s,w)] =1.\] 
-\item \emph{Soundness:} for all $x \notin L$ and all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$, we have:
-\[\Pr[\vrfy(\crs, s,\pi)=1:\crs \leftarrow \setup(\seck, L), \pi \leftarrow \adv_\secpar(\crs, s)] \leq \negl(\secpar).\] 
+\item \emph{Soundness:} for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in N$
+\[
+\simsnd_\adv^\nizk = \Pr\left[
+\begin{aligned}
+s \notin L \land \\
+\vrfy(\crs, s, \pi) = 1
+\end{aligned}
+:
+\begin{aligned}
+(\crs \leftarrow \setup(\seck, L) \\
+(\pi, s) \leftarrow \adv_\secpar(\crs, \tau_L)
+\end{aligned} \right] \leq \negl(\secpar),
+\]
+where $\tau_L$ is membership testing trapdoor. 
 \item \emph{Zero-Knowledge:} there is a PPT simulator $(\simul_1, \simul_2)$, such that for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
 \begin{align*}
 \zk_\adv^\nizk =& 
-\left| \Pr\left[ \adv_\secpar^{\prove(\crs, \cdot, \cdot),}(\crs) = 1:\crs \leftarrow \setup(\seck, L) \right] \right. \\
-&\left. - \Pr\left[ \adv_\secpar^{\oracle(\crs, \tau, \cdot, \cdot),}(\crs) = 1: (\crs, \tau) \leftarrow \simul_1(\seck, L) \right] \right|
+\left| \Pr\left[ \adv_\secpar^{\prove(\crs, \cdot, \cdot),}(\crs, \tau_L) = 1:\crs \leftarrow \setup(\seck, L) \right] \right. \\
+&\left. - \Pr\left[ \adv_\secpar^{\oracle(\crs, \tau, \cdot, \cdot),}(\crs, \tau_L) = 1: (\crs, \tau) \leftarrow \simul_1(\seck, L) \right] \right|
 \leq \negl(\secpar).
 \end{align*}
-Here $\prove(\crs, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,w) \notin \rel$ and outputs a valid proof $\pi \leftarrow \prove(\crs, s, w)$ otherwise; $\oracle(\crs, \tau, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,w) \notin \rel$ and outputs simulated proof $\pi \leftarrow \simul_2(\crs, \tau, s)$ on input $(s,w) \in \rel$. Note that the simulated proof is generated independently of the witness $w$.
+Here $\tau_L$ is a membership testing trapdoor for language $L$; $\prove(\crs, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,w) \notin \rel$ and outputs a valid proof $\pi \leftarrow \prove(\crs, s, w)$ otherwise; $\oracle(\crs, \tau, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,w) \notin \rel$ and outputs simulated proof $\pi \leftarrow \simul_2(\crs, \tau, s)$ on input $(s,w) \in \rel$. Note that the simulated proof is generated independently of the witness $w$.
 \end{itemize}
 
 \end{definition}
 
 \begin{remark} 
-The zero-knowledge definition of \cite{Libert2021OneShotFN} let an adversary to generate the language $L$, which works in our constructions, but we prefer to base our constructions on weaker zero-knowledge definition. Therefore we have decided to deviate slightly from the original definition. 
+We have slightly modified the soundness and zero-knowledge definitions compared to \cite{Libert2021OneShotFN}. Our soundness definition is adaptive and an adversary is given as input also a membership testing trapdoor $\tau_L$. This notion is implied by the simulation-soundness as defined in \Cref{def:simsnd}. Our zero-knowledge definition provides a membership testing trapdoor $\tau_L$ as an input for an adverary where the zero-knowledge definition of \cite{Libert2021OneShotFN} let an adversary to generate the language $L$ itself. The definition of \cite{Libert2021OneShotFN} works in our constructions, but we prefer to base our constructions on a weaker definition. 
 \end{remark}
 
-\begin{definition}[One-Time Simulation Soundness]
+\begin{definition}[One-Time Simulation Soundness]\label{def:simsnd}
 A NIZK for an NP language $L$ with zero-knowledge simulator $\simul = (\simul_0, \simul_1)$ is \emph{one-time simulation sound}, if for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
 \[
 \simsnd_\adv^\nizk = \Pr\left[
@@ -49,7 +61,7 @@ s \notin L \land \\
 (s, \pi) \leftarrow \adv_\secpar^{\simul_2(\crs, \tau, \cdot)}(\crs, \tau_L)
 \end{aligned} \right] \leq \negl(\secpar),
 \]
-where $\tau_L$ is a membership testing trapdoor for language $L$ chosen by challenger and $\simul_2(\crs, \tau, \cdot)$ is a single query oracle which on input $s'$ returns $\pi' \leftarrow \simul(\crs, \tau, s')$.
+where $\tau_L$ is a membership testing trapdoor for language $L$ and $\simul_2(\crs, \tau, \cdot)$ is a single query oracle which on input $s'$ returns $\pi' \leftarrow \simul(\crs, \tau, s')$.
 \end{definition}
 
 Liber~\etal \cite{Libert2021OneShotFN} show that given additively homomorphic encryption scheme, one can build a trapdoor sigma protocol for a language defined below. Moreover, any trapdoor sigma protocol can be turned into unbounded simulation sound NIZK which directly implies existence of a one-time simulation sound NIZK. Since we use the term \emph{trapdoor sigma protocol} only as intermediate notion and never instantiate it, we do not state formal definition and only reference it for brevity. For more details about trapdoor sigma protocols see e.g. \cite{Libert2021OneShotFN}. 

@@ -34,6 +34,10 @@ We say $\nitc$ is correct if for all $\secpar, T \in \nats$ and all $m \in \msgs
 \]
 \end{definition}
 
+\begin{remark}
+Note that by following \cite{TCC:KatLosXu20} we make $\pi_\com$ explicit, however, $\pi_\com$ can be seen as part of a commitment $c$ and is empty for our actual construction, since c is standalone verifiable.  
+\end{remark}
+
 %As the names of the decryption algorithms in \Cref{def:tpke_syntax} suggest, it should hold that $\tfd$ is much smaller than $\tsd$. Now we state the original security definition, however, adjusted to the computational model which is used in this paper. 
 
 %\paragraph{Timed commitments.}
@@ -91,6 +95,7 @@ We say $\nitc$ is correct if for all $\secpar, T \in \nats$ and all $m \in \msgs
 %where $|m_0|=|m_1|$ and the oracle ${\deco(c)}$ returns value which is equal to $\fdecom(\crs, c)$ with the restriction that $\adv_{2, \secpar}$ is not allowed to query the oracle $\deco(\cdot)$ for decommitment of the challenge commitment $c^*$. We require that $\deco(\cdot)$ must be able to answer decommitment queries in time which is independent of $T$.
 %\end{definition}
 
+The following definition is based on \cite{TCC:KatLosXu20}, however, adjusted to computational model considered by Bitansky \etal \cite{ITCS:BGJPVW16}. 
 \begin{definition}
 \label{def:nitc_cca}
 A non-interactive timed commitment scheme $\nitc$ is \emph{IND-CCA secure} with gap $0 < \gap < 1$ if there exists a polynomial $\tilde{T}(\cdot)$ such that for all polynomials $T(\cdot) \geq \tilde{T}(\cdot)$ and every non-uniform polynomial-size adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$, where the depth of $\adv_{2, \secpar}$ is at most $T^{\gap}(\secpar)$, there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ it holds 
@@ -108,10 +113,10 @@ A non-interactive timed commitment scheme $\nitc$ is \emph{IND-CCA secure} with 
     \right] -  \half \right|
 \leq \negl(\secpar),  
 \]
-where $|m_0|=|m_1|$ and the oracle ${\deco(c)}$ returns value which is equal to $\fdecom(\crs, c)$ with the restriction that $\adv_{2, \secpar}$ is not allowed to query the oracle $\deco(\cdot)$ for decommitment of the challenge commitment $c^*$. We require that $\deco(\cdot)$ must be able to answer decommitment queries in time which is independent of $T$. In case of an interactive timed commitment $\com(\crs, m_b)$ corresponds to interactive protocol between $C(\crs, m_b)$ and $\adv_{2,\secpar}^{\deco(\cdot)}(\st)$.
+where $|m_0|=|m_1|$ and the oracle ${\deco(c)}$ returns value which is equal to $\fdecom(\crs, c)$ with the restriction that $\adv_{2, \secpar}$ is not allowed to query the oracle $\deco(\cdot)$ for decommitment of the challenge commitment $c^*$. %We require that $\deco(\cdot)$ must be able to answer decommitment queries in time which is independent of $T$. 
 \end{definition}
 
-We remark that requirement that $\deco(\cdot)$ should answer oracle queries in time independent of $T$ is necessary to obtain sound proof when reducing to a time sensitive assumption such as the strong sequential squaring assumption. This in particular means that in the security proof decommitment queries can not be simply answered by $\fdecom$ algorithm whose runtime depends on $T$, but there must exist another way to answer them. 
+A challenge for our construction and the proof is that reduction must answer decommitment queries in time which is independent of $T$ otherwise, we are not able to obtain sound proof when reducing to a time sensitive assumption such as the strong sequential squaring assumption. This in particular means that in the security proof decommitment queries can not be simply answered by $\fdecom$ algorithm whose runtime depends on $T$, but there must exist another way to answer them. 
 
 %Now we state a binding property for a non-interactive timed commitment scheme. 
 

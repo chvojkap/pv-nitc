@@ -1,7 +1,7 @@
 %!TEX root=main.tex
 
 \subsection{Non-Interactive Zero-Knowledge Proofs}
-We recall definition of a simulation-sound non-interactive proof system (SS-NIZK). 
+We recall definition of a simulation-sound non-interactive proof system (SS-NIZK) that we take from Liber~\etal \cite{Libert2021OneShotFN}. 
 
 \begin{definition} 
 A \emph{non-interactive zero-knowledge proof system} $\Pi$ for an NP language $L$ associated with a relation $\rel$ is a tuple of four PPT algorithms $(\gen_\param, \gen_L, \prove, \vrfy)$, which work as follows:
@@ -30,6 +30,10 @@ Here $\prove(\crs, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,
 
 \end{definition}
 
+\begin{remark} 
+The zero-knowledge definition of \cite{Libert2021OneShotFN} let an adversary to generate the language $L$, which works in our constructions, but we prefer to base our constructions on weaker zero-knowledge definition. Therefore we have decided to deviate slightly from the original definition. 
+\end{remark}
+
 \begin{definition}[One-Time Simulation Soundness]
 A NIZK for an NP language $L$ with zero-knowledge simulator $\simul = (\simul_0, \simul_1)$ is \emph{one-time simulation sound}, if for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
 \[
@@ -48,7 +52,7 @@ s \notin L \land \\
 where $\tau_L$ is a membership testing trapdoor for language $L$ chosen by challenger and $\simul_2(\crs, \tau, \cdot)$ is a single query oracle which on input $s'$ returns $\pi' \leftarrow \simul(\crs, \tau, s')$.
 \end{definition}
 
-Liber~\etal \cite{Libert2021OneShotFN} show that given additively homomorphic encryption scheme, one can build a trapdoor sigma protocol for a language defined below. Moreover, any trapdoor sigma protocol can be turned into unbounded simulation sound NIZK which directly implies existence of a one-time simulation sound NIZK. 
+Liber~\etal \cite{Libert2021OneShotFN} show that given additively homomorphic encryption scheme, one can build a trapdoor sigma protocol for a language defined below. Moreover, any trapdoor sigma protocol can be turned into unbounded simulation sound NIZK which directly implies existence of a one-time simulation sound NIZK. Since we use the term \emph{trapdoor sigma protocol} only as intermediate notion and never instantiate it, we do not state formal definition and only reference it for brevity. For more details about trapdoor sigma protocols see e.g. \cite{Libert2021OneShotFN}. 
 
 \begin{lemma}[Lemma D.1~\cite{Libert2021OneShotFN}]\label{lem:tsp}
 Let $(\gen, \enc, \dec)$ be an additively homomorphic encryption scheme where the message space $M$, randomness space $R$ and the ciphertext space $C$ form groups $(M, +), (R,+)$ and $(C, \cdot)$. Let the encryption scheme is such that for any public key $\pk$ generated using $(\pk, \sk) \leftarrow \gen(\seck)$, any messages $m_1, m_2 \in M$ and randomness $r_1, r_2 \in R$ holds

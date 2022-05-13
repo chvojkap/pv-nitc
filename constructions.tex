@@ -49,7 +49,7 @@ Compute $ \pi_\fdecom:=c_0^{2^T} \bmod N$ &  if $c_3 = \pi_\fdecom^N (1+N)^m \bm
 $m:=\frac{c_3 \cdot \pi_\fdecom^{-N} (\bmod N^2) -1}{N}$ &\tab return 1\\
 return $(m,\pi_\fdecom)$ & return 0\\
                                              &\\
-$\underline{\eval(\crs,\oplus, c_1, \dots, c_n)}$ &  \\
+$\underline{\eval(\crs,\oplus_N, c_1, \dots, c_n)}$ &  \\
 Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2}, c_{i,3}, \pi_i)$ & \\
 \multicolumn{2}{|l|}{Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N, c_1:= \bot, c_2:=\bot, c_3 := \prod_{i=1}^n c_{i,3} \bmod N^2, \pi:= \bot$}  \\
 return $c := (c_0, c_1, c_2, c_3, \pi)$ & \\
@@ -61,7 +61,7 @@ return $c := (c_0, c_1, c_2, c_3, \pi)$ & \\
 %return $\bot$ & return $\bot$\\
 \hline          
 \end{tabular}
-\caption{Construction of Linearly Homomorphic NITC in Standard Model}
+\caption{Construction of Linearly Homomorphic NITC in Standard Model. \\ $\oplus_N$ refers to addition $\bmod N$}
 \label{table:nitc-lh}
 \end{center}
 \end{figure}
@@ -290,7 +290,7 @@ $\advB_{\secpar}(N,y):$
 \item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
 \item Returns the truth value of $b=b'$.
 \end{enumerate}
-If $y = v^N \bmod N^2$ then $yw^N = v^N w^N = (vw)^N$ and hence $yw^N$ is N-th residue. Moreover, the Jacobi symbol of $yw$ is 1, since the Jacobi symbol is multiplicatively homomorphic. Therefore $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $y$ is uniform random element in $\Zns$ then $yw^N$ is also uniform in $\Zns$ and $\advB$ simulates $\games_\thisgame$ perfectly. This proofs the lemma. We remark that at this point $c_3^*$ does not reveal any information about $m_b$. 
+If $y = v^N \bmod N^2$ then $yw^N = v^N w^N = (vw)^N$ and hence $yw^N$ is N-th residue. Moreover, the Jacobi symbol of $yw$ is 1, since the Jacobi symbol is multiplicatively homomorphic. Therefore $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $y$ is uniform random element in $\Zns$ then $yw^N$ is also uniform among all elements of $\Zns$ that have Jacobi symbol 1 and $\advB$ simulates $\games_\thisgame$ perfectly. This proofs the lemma. We remark that at this point $c_3^*$ does not reveal any information about $m_b$. To argue this we rely on the facts that  if $x = y \bmod N$ then $\left( \frac{x}{N} \right)= \left( \frac{y}{N} \right)$ and that there is an isomorphism $f:\Zn^* \times \Zn \rightarrow\Zns$ given by $f(u,v)=u^N(1+N)^v = u^N(1+vN) \bmod N^2$ (see e.g. \cite[Proposition 13.6]{books/crc/KatzLindell2014}).  Since $f(u,v) \bmod N = u^N + u^NvN \bmod N = u^N \bmod N$, then if $\left( \frac{f(u,v)}{N} = 1 \right)$ then it must hold that $\left( \frac{f(u,r)}{N} = 1 \right)$ for all $r \in \Zn$. This implies that random element $f(u,v)$ in $\Zns$ with $\left( \frac{f(u,v)}{N} \right) = 1$ has uniformly random distribution of $v$ in $\Zn$. Therefore if $yw^N = u^N(1+N)^v \bmod N^2$ then  $yw^N(1+N)^{m_b}  = u^N(1+N)^{m_b+v} \bmod N^2$. Since $v$ is uniform in $\Zn$, $(m_b + v)$ is also uniform in $\Zn$, which means that ciphertext $c_3^*$ does not reveal any information about $m_b$.    
 
 \nextgame{RndExp2}
 In $\games_\thisgame$ we sample $k_2$ uniformly at random from $[\varphi(N)/2]$. 

@@ -39,7 +39,7 @@ return $\nizk.\vrfy(\crs_\nizk,(c_0, c_1, c_2, c_3), \pi)$  & if $ \land_{i=1}^3
  & \tab return 1 \\
 & return 0 \\
                                              &\\
-$\underline{\fdecom(\crs,c)}$ & $\underline{\eval(\crs,\otimes, c_1, \dots, c_n)}$ \\
+$\underline{\fdecom(\crs,c)}$ & $\underline{\eval(\crs,\otimes_N, c_1, \dots, c_n)}$ \\
 Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2}, c_{i,3}, \pi_i)$\\
 Compute $ y:=c_0^{2^T} \bmod N$ &  Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N$ \\
 $m:=c_3 \cdot y^{-1} \bmod N$ & Compute $c_3 := \prod_{i=1}^n c_{i,3} \bmod N $\\
@@ -55,7 +55,7 @@ return $m$ & $c_1:= \bot, c_2:=\bot, \pi:= \bot$\\
 
 \hline          
 \end{tabular}
-\caption{Construction of Multiplicatively Homomorphic NITC in Standard Model}
+\caption{Construction of Multiplicatively Homomorphic NITC in Standard Model. \\ $\otimes_N$ refers to multiplication $\bmod N$}
 \label{table:nitc-mh}
 \end{center}
 \end{figure}

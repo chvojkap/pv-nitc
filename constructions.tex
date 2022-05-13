@@ -12,7 +12,7 @@ L = \left\{(c_0, c_1, c_2)| \exists (m,r):
 \]
 where $g, h_1, h_2, h_3, N$ are parameters specifying the language.
 
-In the following we use $\crs_\nizk \leftarrow \nizk.\setup(\seck, L)$ to denote the following sequence of instructions: $\param \leftarrow \nizk.\gen_\param(\seck)$, $\crs_L \leftarrow \nizk.\gen_L(\seck, L)$, $\crs_\nizk:=(\param, \crs_L)$ .
+%In the following we use $\crs_\nizk \leftarrow \nizk.\setup(\seck, L)$ to denote the following sequence of instructions: $\param \leftarrow \nizk.\gen_\param(\seck)$, $\crs_L \leftarrow \nizk.\gen_L(\seck, L)$, $\crs_\nizk:=(\param, \crs_L)$ .
 
 
 \begin{figure}[h!]
@@ -43,10 +43,11 @@ return $\nizk.\vrfy(\crs_\nizk, (c_0, c_1, c_2, c_3), \pi)$  & if $ \land_{i=1}^
                                              &\\
 $\underline{\fdecom(\crs,c)}$ & $\underline{\fdvrfy(\crs,c, m, \pi_\fdecom)}$ \\
 Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$\\
-
-Compute $ \pi_\fdecom:=c_0^{2^T} \bmod N$ &  if $c_3 = \pi_\fdecom^N (1+N)^m \bmod N^2$\\
-$m:=\frac{c_3 \cdot \pi_\fdecom^{-N} (\bmod N^2) -1}{N}$ &\tab return 1\\
-return $(m,\pi_\fdecom)$ & return 0\\
+if $\nizk.\vrfy(\crs_\nizk, (c_0, c_1, c_2, c_3), \pi)$ &if $c_3 = \pi_\fdecom^N (1+N)^m \bmod N^2$ \\
+\tab Compute $ \pi_\fdecom:=c_0^{2^T} \bmod N$ & \tab return 1 \\
+\tab $m:=\frac{c_3 \cdot \pi_\fdecom^{-N} (\bmod N^2) -1}{N}$ & return 0\\
+\tab return $(m,\pi_\fdecom)$ & \\
+return $\bot$ &\\
                                              &\\
 $\underline{\eval(\crs,\oplus_N, c_1, \dots, c_n)}$ &  \\
 Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2}, c_{i,3}, \pi_i)$ & \\
@@ -112,7 +113,7 @@ return $c := (c_0, c_1, c_2, c_3, \pi)$ & \\
 
 
 \begin{theorem}
-If  $(\nizk.\gen_\param, \nizk.\gen_L, \nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-lh} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
+If  $(\nizk.\setup, \nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-lh} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
 \end{theorem}
 
 \begin{proof}
@@ -173,9 +174,9 @@ Game $\games_\thisgame$ corresponds to the original security experiment where de
 \nextgame{DecOracle}
 In game $\games_\thisgame$ decommitment queries are answered using $\decom$ with $i:=1$ meaning that secret key $k_1$ and ciphertext $c_1$ are used.
 
-\begin{lemma}\label{nitc:flem}
+\begin{lemma}\label{nitc-lh:flem}
 \[
-\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \zk^\nizk_\advB.
+\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \snd^\nizk_\advB.
 \]
 \end{lemma}
 
@@ -198,7 +199,7 @@ The adversary $\advB_{\secpar}(\crs_\nizk, \tau_L):$
 \end{enumerate}
 
 $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, it outputs a valid proof for a statement which is not in the specified language $L$. Therefore
-\[\Pr[\event] \leq \simsnd^\nizk_\advB,\]
+\[\Pr[\event] \leq \snd^\nizk_\advB,\]
 which concludes the proof of the lemma.  
 
 %Let $\gnr$ denote the event that the sampled $g$ in $\kgen$ is a generator of $\qrn$. Recall that $N = pq$ where $p = 2p'+1$ and $q = 2q'+1$. Because $g$ is sampled uniformly at random and $\qrn$ has $\varphi(|\qrn|) = (p'-1)(q'-1)$ generators, this event happens with overwhelming probability. Concretely, $\Pr[\gnr] = 1-\frac{1}{p'}-\frac{1}{q'}+\frac{1}{p'q'}$.
@@ -405,7 +406,7 @@ The adversary $\advB_{\secpar}^{\simul_2}(\crs_\nizk, \tau_L):$
 \item Computes $h_1:= g^{k_1} \bmod N, h_2:= g^{k_2} \bmod N, h_3:= g^{t} \bmod N$ using the membership testing trapdoor $\tau_L$ and sets $\crs:=(N, T, g, h_1, h_2, h_3, \crs_\nizk)$.
 \item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_2$.
 \item Samples $b \rand \bits, x \rand \Jn, y_2, y_3 \rand \Zns$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(x, x^{k_1 N} (1+N)^{m_b}, y_2 (1+N)^{m_b}, y_3 (1+N)^{m_b})$. Forwards $(c_0^*, c_1^*, c_2^*, c_3^*)$ to simulation oracle $\simul_2$ and obtains a proof $\pi^*$.
-\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decryption queries using $k_2$.
+\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_2$.
 \item Find a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\dec(\crs, c, 1) \neq \dec(\crs,c,2)$ and returns $((c_0, c_1, c_2, c_3), \pi)$
 \end{enumerate}
 
@@ -462,7 +463,7 @@ In $\games_\thisgame$ we sample $y_1 \rand \Zns$ such that it has Jacobi symbol 
 \end{lemma}
 This can be proven in similar way as \Cref{lem:dcr}. We remark that at this point $c_1^*$ does not reveal any information about $m_b$.
 
-\begin{lemma}\label{nitc:llem}
+\begin{lemma}\label{nitc-lh:llem}
 \[
 \Pr[\games_\thisgame = 1] = \half.
 \]
@@ -470,10 +471,10 @@ This can be proven in similar way as \Cref{lem:dcr}. We remark that at this poin
 
 Clearly, $c_0^*$ is uniform random element in $\Jn$ and hence it does not contain any information about the challenge message. Since $y_1, y_2, y_3$ are sampled uniformly at random from $\Zns$ the ciphertexts $c_1^*, c_2^*, c_3^*$ are also uniform random elements in $\Zns$ and hence do not contain any information about the challenge message $m_b$. Therefore, an adversary can not do better than guessing.
 
-By combining Lemmas \ref{nitc:flem} - \ref{nitc:llem} we obtain the following:
+By combining Lemmas \ref{nitc-lh:flem} - \ref{nitc-lh:llem} we obtain the following:
 \begin{align*}
-&\advtg^{\nitc}_{\adv} = \left| \Pr[\games_0 = 1] - \half \right| \leq \sum_{i=0}^11 \left|\Pr[\games_i = 1] - \Pr[\games_{i+1} = 1] \right| + \left|\Pr[\games_{12}- \half\right| \\
- &\leq \zk^\nizk_\advB + \advtg^{\sss}_{\advB} + \simsnd^{\nizk}_{\advB} + 2 \advtg^{\ddh}_{\advB} + 3 \advtg^{\dcr}_{\advB} + 4 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right),
+\advtg^{\nitc}_{\adv} &= \left| \Pr[\games_0 = 1] - \half \right| \leq \sum_{i=0}^{12} \left|\Pr[\games_i = 1] - \Pr[\games_{i+1} = 1] \right| + \left|\Pr[\games_{13}- \half\right| \\
+ &\leq  \snd^\nizk_\advB + \zk^\nizk_\advB + \advtg^{\sss}_{\advB} + \simsnd^{\nizk}_{\advB} + 2 \advtg^{\ddh}_{\advB} + 3 \advtg^{\dcr}_{\advB} \\ &+ 4 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right),
 \end{align*}
 which concludes the proof.
 \end{proof}
@@ -487,7 +488,7 @@ We show that the construction is actually perfectly binding. This is straightfor
 \end{proof}
 
 \begin{theorem}\label{pv-lh}
-If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero-knowledge proof system for $L$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy)} defined in \Cref{table:nitc-lh} is a publicly verifiable non-interactive timed commitment scheme.
+If $\nizk = (\nizk.\setup, \nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero-knowledge proof system for $L$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy)} defined in \Cref{table:nitc-lh} is a publicly verifiable non-interactive timed commitment scheme.
 \end{theorem}
 
 \begin{proof}

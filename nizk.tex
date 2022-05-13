@@ -177,7 +177,7 @@ This concludes the proof.
 
 Next we to describe our Sigma protocol $\Sigma = (\prv, \vrf)$ for language $L_4$:
 \begin{enumerate}
-\item $\prv$ samples $\alpha \rand \smplset$, computes $a_0:=g^\alpha, a_1:= (h_1\cdot h_2^{-1})^\alpha, a_2:= (h_3\cdot h_2^{-1})^\alpha$ and sends $(a_0, a_1, a_2)$ to $\vrf$.
+\item $\prv$ samples $\alpha \rand \smplset$, computes $a_0:=g^\alpha, a_1:= (h_1\cdot h_2^{-1})^\alpha, a_2:= (h_3\cdot h_2^{-1})^\alpha \bmod N$ and sends $(a_0, a_1, a_2)$ to $\vrf$.
 \item $\vrf$ samples $v \rand [2^d]$ and sends $v$ to $\prv$.
 \item $\prv$ computes the response $z:= \alpha + v \cdot r$ and sends it to $\vrf$.
 \item $\vrf$ accepts if and only if $g^z = a_0 \cdot c_0^v \land (h_1\cdot h_2^{-1})^z = a_1 \cdot (c_1\cdot c_2^{-1})^v  \land (h_3\cdot h_2^{-1})^z = a_2 \cdot (c_3\cdot c_2^{-1})^v$ where all computation are done $\bmod N$ and $z \in [\estord + v\estord]$.

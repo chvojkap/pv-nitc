@@ -6,19 +6,21 @@ We recall definition of a simulation-sound non-interactive proof system (SS-NIZK
 \begin{definition} 
 A \emph{non-interactive zero-knowledge proof system} $\Pi$ for an NP language $L$ associated with a relation $\rel$ is a tuple of four PPT algorithms $(\gen_\param, \gen_L, \prove, \vrfy)$, which work as follows:
 \begin{itemize}
-\item $\param \leftarrow \gen_\param(\seck)$ takes as input binary representation of a security parameter $\seck$ and outputs public parameters $\param$.
-\item $\crs \leftarrow \gen_L(\seck, L)$ takes as input binary representation of a security parameter $\seck$ and the description of language $L$ which specifies length of statements $n$.  It outputs a language dependent part $\crs_L$ of the common reference string $\crs:=(\param, \crs_L)$. 
+%\item $\param \leftarrow \gen_\param(\seck)$ takes as input binary representation of a security parameter $\seck$ and outputs public parameters $\param$.
+\item $\crs \leftarrow \setup(\seck, L)$ takes as input binary representation of a security parameter $\seck$ and the description of language $L$.  It outputs a a common reference string $\crs$. 
+%\item $\crs \leftarrow \gen_L(\seck, L)$ takes as input binary representation of a security parameter $\seck$ and the description of language $L$ which specifies length of statements $n$.  It outputs a language dependent part $\crs_L$ of the common reference string $\crs:=(\param, \crs_L)$. 
 %\item $\crs \leftarrow \gen_L(\seck, L, \tau_L)$ takes as input binary representation of a security parameter $\seck$, the description of language $L$ which specifies length of statements $n$ and a membership testing trapdoor $\tau_L$ for $L$.  It outputs a language dependent part $\crs_L$ of the common reference string $\crs:=(\param, \crs_L)$. 
-\item $\pi \leftarrow \prove(\crs,s,w)$ is a PPT algorithm which takes as input the common reference sting $\crs$, a statement $s \in \{0,1\}^n$, and a witness $w$ such that $(s,w) \in \rel$ and outputs a proof $\pi$.
-\item $0/1 \leftarrow \vrfy(\crs, s, \pi)$ is a deterministic algorithm which takes as input the common reference string $\crs$, a statement $s\in \{0,1\}^n$ and a proof $\pi$ and outputs either 1 or 0, where 1 means that the proof is ``accepted'' and 0 means it is ``rejected''.
+\item $\pi \leftarrow \prove(\crs,s,w)$ is a PPT algorithm which takes as input the common reference sting $\crs$, a statement $s$, and a witness $w$ such that $(s,w) \in \rel$ and outputs a proof $\pi$.
+\item $0/1 \leftarrow \vrfy(\crs, s, \pi)$ is a deterministic algorithm which takes as input the common reference string $\crs$, a statement $s$ and a proof $\pi$ and outputs either 1 or 0, where 1 means that the proof is ``accepted'' and 0 means it is ``rejected''.
 \end{itemize}
-Moreover, $\Pi$ should satisfy the following properties. For simplification we denote below by $\setup$ an algorithm that runs successively $\gen_\param$ and $\gen_L$ to generate a common reference string. 
+Moreover, $\Pi$ should satisfy the following properties. 
+%For simplification we denote below by $\setup$ an algorithm that runs successively $\gen_\param$ and $\gen_L$ to generate a common reference string. 
 \begin{itemize}
 \item \emph{Completeness:}  for all $(s, w) \in \rel$ holds:
 \[\Pr[\vrfy(\crs, s,\pi)=1:\crs \leftarrow \setup(\seck, L), \pi \leftarrow \prove(\crs, s,w)] =1.\] 
 \item \emph{Soundness:} for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in N$
 \[
-\simsnd_\adv^\nizk = \Pr\left[
+\snd_\adv^\nizk = \Pr\left[
 \begin{aligned}
 s \notin L \land \\
 \vrfy(\crs, s, \pi) = 1

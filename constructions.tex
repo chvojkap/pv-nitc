@@ -285,7 +285,7 @@ The adversary $\advB_{2,\secpar}(x,y,(N,g,k_1, k_2, h_1,h_2,h_3, \crs_\nizk, \ta
 \item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*), \st)$ and answers decommitment queries using $k_1$.
 \item Returns the truth value of $b=b'$.
 \end{enumerate}
-Since $g$ is a generator of $\Jn$ and $x$ is sampled uniformly at random from $\Jn$ there exists some $r \in [\varphi(N)/2]$ such that $x = g^{r}$. Therefore when $y = x^{2^T} = (g^{2^T})^{r} \bmod N$, then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $y$ is random value and $\advB$ simulates $\games_\thisgame$ perfectly. 
+Since $g$ is a generator of $\Jn$ and $x$ is sampled uniformly at random from $\Jn$ there exists some $r \in [\varphi(N)/2]$ such that $x = g^{r}$. Therefore when $y = x^{2^T} = (g^{2^T})^{r} \bmod N$, then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $y$ is random value and $\advB$ simulates $\games_\thisgame$ perfectly. \todo{Verify that this indeed hides $b$ properly.}
 
 Now we analyse the running time of the constructed adversary. Adversary $\advB_1$ computes $h_3$ by $T(\secpar)$ consecutive squarings and because $T(\secpar)$ is polynomial in $\secpar$, $\advB_1$ is efficient. Moreover, $\advB_2$ fulfils the depth constraint:
 \[ \dep(\advB_{2,\secpar}) = \poly_\advB(\secpar) + \dep(\adv_{2,\secpar}) \leq \undT^{\ugap}(\secpar) + T^{\ugap}(\secpar) \leq 2 T^{\ugap}(\secpar) = o(T^{\gap}(\secpar)). \] 

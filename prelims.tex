@@ -35,7 +35,7 @@ We say $\nitc$ is correct if for all $\secpar, T \in \nats$ and all $m \in \msgs
 \end{definition}
 
 \begin{remark}
-Note that by following \cite{TCC:KatLosXu20} we make $\pi_\com$ explicit, however, $\pi_\com$ can be seen as part of a commitment $c$ and is empty for our actual construction, since c is standalone verifiable.  
+Following \cite{TCC:KatLosXu20} we make $\pi_\com$ explicit, however, $\pi_\com$ could alternatively be seen as part of a commitment $c$. In particular, for our constructions we will have $\pi_\com = \bot$ empty, since our commitments $c$ will be standalone verifiable.  
 \end{remark}
 
 %As the names of the decryption algorithms in \Cref{def:tpke_syntax} suggest, it should hold that $\tfd$ is much smaller than $\tsd$. Now we state the original security definition, however, adjusted to the computational model which is used in this paper. 
@@ -113,20 +113,20 @@ A non-interactive timed commitment scheme $\nitc$ is \emph{IND-CCA secure} with 
     \right] -  \half \right|
 \leq \negl(\secpar),  
 \]
-where $|m_0|=|m_1|$ and the oracle ${\deco(c)}$ returns value which is equal to $\fdecom(\crs, c)$ with the restriction that $\adv_{2, \secpar}$ is not allowed to query the oracle $\deco(\cdot)$ for decommitment of the challenge commitment $c^*$. %We require that $\deco(\cdot)$ must be able to answer decommitment queries in time which is independent of $T$. 
+where $|m_0|=|m_1|$ and the oracle ${\deco(c)}$ returns the result of $\fdecom(\crs, c)$, with the restriction that $\adv_{2, \secpar}$ is not allowed to query the oracle $\deco(\cdot)$ for a decommitment of the challenge commitment $c^*$. %We require that $\deco(\cdot)$ must be able to answer decommitment queries in time which is independent of $T$. 
 \end{definition}
 
-A challenge for our construction and the proof is that reduction must answer decommitment queries in time which is independent of $T$ otherwise, we are not able to obtain sound proof when reducing to a time sensitive assumption such as the strong sequential squaring assumption. This in particular means that in the security proof decommitment queries can not be simply answered by $\fdecom$ algorithm whose runtime depends on $T$, but there must exist another way to answer them. 
+As already observed in \cite{TCC:KatLosXu20}, a challenge for a security proof of a concrete timed commitment construction is that the reduction must be able to answer decommitment queries to $\deco(\cdot)$ in time which is independent of $T$, as otherwise one is not able to obtain a sound proof when reducing to a time-sensitive assumption, such as the strong sequential squaring assumption. This in particular means that decommitment queries in the security proof can not be simply answered by executing the forced decommitment algorithm $\fdecom$, as its runtime depends on $T$, but there must exist another way.  Thus, as in \cite{TCC:KatLosXu20}, $\deco(\cdot)$ must be able to answer decommitment queries in time independent of $T$. 
 
 %Now we state a binding property for a non-interactive timed commitment scheme. 
 
 \begin{definition}
 \label{def:nitc-bnd}
-We define $\mathsf{BND \mhyphen CCA}_\adv(\secpar)$ experiment as follows:
+We define the $\mathsf{BND \mhyphen CCA}_\adv(\secpar)$ experiment as follows:
 \begin{enumerate}
 \item $\crs \leftarrow \pgen(\seck, T(\secpar))$;
-\item $(m, c, \pi_\com, \pi_\dec, m', \pi_\dec') \leftarrow \adv_{\secpar}^{\deco(\cdot)}(\crs)$, where the oracle $\deco(c)$ returns the value which is equal to $\fdecom(\crs, c)$;
-\item Outputs 1 iff $\cvrfy(\crs, c, \pi_\com)= 1$ and either:
+\item $(m, c, \pi_\com, \pi_\dec, m', \pi_\dec') \leftarrow \adv_{\secpar}^{\deco(\cdot)}(\crs)$, where the oracle $\deco(c)$ returns $\fdecom(\crs, c)$;
+\item Output 1 iff $\cvrfy(\crs, c, \pi_\com)= 1$ and either:
 \begin{itemize}
 \item $m \neq m' \; \land \; \dvrfy(\crs, c, m, \pi_\dec) = \dvrfy(\crs, c, m', \pi_\dec') = 1$;
 \item $\dvrfy(\crs, c, m, \pi_\dec) = 1 \; \land \; \fdecom(\crs, c) \neq m$.
@@ -155,16 +155,15 @@ A non-interactive timed commitment scheme $\nitc$ is \emph{BND-CCA secure} if fo
 %\]
 %\end{definition}
 
-Next we define a novel property of NITC which allows for efficient verification that forced decommitment was executed correctly without the need to execute expensive sequential computation. This was first suggested in terms of time-lock puzzles by \cite{EPRINT:EFKP20a} and denoted as public verifiability.
+Next we define a new property of NITCs, which allows for efficient verification that a forced decommitment was executed correctly, without the need to execute expensive sequential computation. \todo{emphasize in intro} This property was first suggested for time-lock puzzles by \cite{EPRINT:EFKP20a} and denoted as public verifiability.
 
 \begin{definition}
 \label{def:nitc_pubver}
-A non-interactive timed commitments scheme $\nitc$ is publicly verifiable if $\fdecom$ additionally outputs a proof $\pi_\fdecom$ and it has an additional algorithm $\fdvrfy$ with the following syntax:
+A non-interactive timed commitments scheme $\nitc$ is \emph{publicly verifiable} if $\fdecom$ additionally outputs a proof $\pi_\fdecom$ and has an additional algorithm $\fdvrfy$ with the following syntax:
 \begin{itemize}
-\item $0/1 \leftarrow \fdvrfy(\crs, c, m, \pi_\fdecom)$ is a deterministic algorithm that takes as input a common reference string $\crs$, a commitment $c$, a message $m$ and a proof $\pi_\fdecom$ and outputs 0 (reject) or 1 (accept) in time $\poly(\log T, \secpar)$.
+\item $0/1 \leftarrow \fdvrfy(\crs, c, m, \pi_\fdecom)$ is a deterministic algorithm that takes as input a common reference string $\crs$, a commitment $c$, a message $m$, and a proof $\pi_\fdecom$ and outputs 0 (reject) or 1 (accept) in time $\poly(\log T, \secpar)$.
 \end{itemize}
-
-Moreover, publicly verifiable NITC must fulfil further properties:
+Moreover, a publicly verifiable NITC must have the following properties:
 \begin{itemize}
 \item \emph{Completeness} for all $\secpar, T \in \nats$ and all $m \in \msgspace$ holds:
 \[\Pr\left[
@@ -198,23 +197,23 @@ Moreover, publicly verifiable NITC must fulfil further properties:
 
 \end{definition}
 
-As we discussed in the introduction, it is useful also consider homomorphic properties for non-interactive timed commitments. The following definition is inspired by the definition of homomorphic time-lock puzzle of Malavolta~\etal \cite{C:MalThy19}. 
+As we discussed in the introduction \todo{discuss!}, it is useful also consider homomorphic properties for non-interactive timed commitments. The following definition is inspired by the definition of homomorphic time-lock puzzles of Malavolta~\etal \cite{C:MalThy19}. 
 
 \begin{definition}
 \label{def:nitc_hom}
-A non-interactive timed commitments scheme $\nitc$ is homomorphic with respect to a class of circuits $\mathcal{C} = \{\mathcal{C}_\secpar\}_{\secpar \in \N}$ if there is an additional algorithm $\eval$ with the following syntax:
+A non-interactive timed commitments scheme $\nitc$ is homomorphic with respect to a class of circuits $\mathcal{C} = \{\mathcal{C}_\secpar\}_{\secpar \in \N}$, if there is an additional algorithm $\eval$ with the following syntax:
 \begin{itemize}
 \item $c \leftarrow \eval(\crs, C, c_1, \dots, c_n)$ is a probabilistic algorithm that takes as input a common reference string $\crs$, a circuit $C \in \mathcal{C}_\secpar$, and set of $n$ commitments $(c_1, \dots, c_n)$. It outputs a commitment $c$. 
 \end{itemize}
 Additionally, a homomorphic NITC fulfils the following properties:
-\item \emph{Correctness} for all $\secpar, T \in \N$, $C \in \mathcal{C}_\secpar$, $(m_1, \dots, m_n) \in \msgspace^n$, all $\crs$ in the support of $\pgen(\seck, T)$, all $c_i$ in the support of $\com(\crs, m_i)$, the following two conditions are satisfied:
+\item \emph{Correctness:} for all $\secpar, T \in \N$, $C \in \mathcal{C}_\secpar$, $(m_1, \dots, m_n) \in \msgspace^n$, all $\crs$ in the support of $\pgen(\seck, T)$, all $c_i$ in the support of $\com(\crs, m_i)$ we have:
 \begin{enumerate}
 \item There exists a negligible function $\negl$ such that 
 \[\Pr\left[\fdecom(\crs, \eval(\crs, C, c_1, \dots, c_n)) \neq C(m_1, \dots, m_n) \right] \leq \negl(\secpar).
 \]
 \item The exists a fixed polynomial $\poly$ such that the runtime of $\fdecom(\crs, c)$ is bounded by $\poly(\secpar, T)$, where $c \leftarrow \eval(\crs, C, c_1, \dots, c_n)$.
 \end{enumerate}
-\item \emph{Compactness} for all $\secpar, T \in \N$, $C \in \mathcal{C}_\secpar$, $(m_1, \dots, m_n) \in \msgspace^n$, all $\crs$ in the support of $\pgen(\seck, T)$, all $c_i$ in the support of $\com(\crs, m_i)$, the following two conditions are satisfied:
+\item \emph{Compactness:} for all $\secpar, T \in \N$, $C \in \mathcal{C}_\secpar$, $(m_1, \dots, m_n) \in \msgspace^n$, all $\crs$ in the support of $\pgen(\seck, T)$, all $c_i$ in the support of $\com(\crs, m_i)$, the following two conditions are satisfied:
 \begin{enumerate}
 \item The exists a fixed polynomial $\hat{\poly}$ such that $|c|=\hat{\poly}(\secpar, |C(m_1, \dots, m_n)|)$, where $c \leftarrow \eval(\crs, C, c_1, \dots, c_n)$.
 \item The exists a fixed polynomial $\tilde{\poly}$ such that the runtime of $\eval(\crs, C, c_1, \dots, c_n)$ is bounded by $\tilde{\poly}(\secpar, |C|)$.
@@ -223,7 +222,9 @@ Additionally, a homomorphic NITC fulfils the following properties:
 
 
 \paragraph{Complexity assumptions.}
-We base our constructions on the strong sequential squaring assumption. Precisely, let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function, by $\Zn^*$ the group $\{x \in \Zn: \gcd(N,x) = 1\}$ and by $\Jn$ the cyclic subgroup of elements of $\Zn^*$ with Jacobi symbol 1 which has order $|\Jn| = \frac{\varphi(N)}{2} = \frac{(p-1)(q-1)}{2}$. To efficiently sample a random generator $g$ from $\Jn$, it is sufficient to be able sample random element from $\Jn \setminus \qrn$, since with all but negligible probability a random element of $\Jn \setminus \qrn$ is a generator. To sample random element of $\Jn \setminus \qrn$, we can sample $r \rand \Zn^*$ and let $g:= -r^2 \bmod N$. Now notice that $r^2 \bmod N$ is a random element in the group of quadratic residues and $-1 \bmod N \in \Jn \setminus \qrn$. To see this, at first notice that for any strong prime $p$ holds that $p = 3 \bmod 4$. By Euler's criterion $\left( \frac{x}{p} \right)= x^{\frac{p-1}{2}} \bmod p$ for odd prime $p$ and every $x$ which is coprime to $p$.  Therefore $\left( \frac{-1}{p} \right)= \left( \frac{-1}{q} \right) = -1$ meaning that $-1 \bmod N \in \Jn \setminus \qrn$. By multiplying fixed element of $\Jn \setminus \qrn$ with random element of $\qrn$ we obtain random element of $\Jn \setminus \qrn$.
+We base our constructions on the strong sequential squaring assumption. Let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function, by $\Zn^*$ the group $\{x \in \Zn: \gcd(N,x) = 1\}$ and by $\Jn$ the cyclic subgroup of elements of $\Zn^*$ with Jacobi symbol 1 which has order $|\Jn| = \frac{\varphi(N)}{2} = \frac{(p-1)(q-1)}{2}$. To efficiently sample a random generator $g$ from $\Jn$, it is sufficient to be able sample random element from $\Jn \setminus \qrn$, since with all but negligible probability a random element of $\Jn \setminus \qrn$ is a generator. 
+
+To sample a random element of $\Jn \setminus \qrn$, we can sample $r \rand \Zn^*$ and let $g:= -r^2 \bmod N$. Now notice that $r^2 \bmod N$ is a random element in the group of the quadratic residues and $-1 \bmod N \in \Jn \setminus \qrn$. To see this, notice that for any strong prime $p$ it holds that $p = 3 \bmod 4$. By Euler's criterion we have $\left( \frac{x}{p} \right)= x^{\frac{p-1}{2}} \bmod p$ for odd primes $p$ and every $x$ which is coprime to $p$.  Therefore $\left( \frac{-1}{p} \right)= \left( \frac{-1}{q} \right) = -1$, meaning that $-1 \bmod N \in \Jn \setminus \qrn$. By multiplying a fixed element of $\Jn \setminus \qrn$ with a random element of $\qrn$ we obtain a random element of $\Jn \setminus \qrn$.
 
 
 %To efficiently sample a random generator $g$ from $\Jn$ when the factorization of $N$ is unknown, we can sample $r \rand \Zn^*$ and let $g:= -r^2 \bmod N$ which yields a generator with all but negligible probability. When the factors $p,q$ are known, then it easy to check if the given element $g$ is a generator of $\Jn$ by testing possible orders of $g$. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator $g$ of $\Jn$. Now we state the strong sequential squaring assumption. 
@@ -253,7 +254,7 @@ Consider the security experiment $\mathsf{ExpSSS}_{\adv}^{b}(\secpar)$ in \Cref{
 \[\advtg^\sss_\adv = \abs{\Pr[\mathsf{ExpSSS}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpSSS}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
 \end{definition}
 
-Next we define DDH experiment in the group $\Jn$ as stated by Castagnos \etal \cite{C:CouPetPoi16}. Castagnos \etal have shown that this problem is hard assuming that DDH is hard in the subgroups of $\Zn^*$ of order $p'$ and $q'$ and assuming that quadratic residuosity problem is hard in $\Zn^*$.  
+Next we define the DDH experiment in the group $\Jn$, as originally stated by Castagnos \etal \cite{C:CouPetPoi16}. Castagnos \etal have shown that this problem is hard assuming that DDH is hard in the subgroups of $\Zn^*$ of order $p'$ and $q'$ and that the quadratic residuosity problem is hard in $\Zn^*$.  
 
 \begin{figure}[h]
 \begin{center}
@@ -316,7 +317,7 @@ The \emph{factoring assumption} holds relative to $\genmod$ if  for every non-un
 \]
 \end{definition}
 
-To argue that our proof system fulfils required properties, we make of use the following lemma which states that it is possible factorize $N$ if a positive multiple of $\varphi(N)$ is known. The proof of this lemma is part of an analysis of \cite[Theorem 8.50]{books/crc/KatzLindell2014}.
+To argue that our proof system fulfils required properties, we make of use the following lemma, which states that it is possible factorize $N$ if a positive multiple of $\varphi(N)$ is known. The proof of this lemma is part of an analysis of \cite[Theorem 8.50]{books/crc/KatzLindell2014}.
 \begin{lemma}\label{factor-lemma}
 Let $(p,q,N)  \leftarrow \genmod(\seck)$ and let $M = \alpha\varphi(N)$ for some positive integer $\alpha\in \Z^+$. There exists a PPT algorithm $\factor(N, M)$ which, on input $(N,M)$, outputs $p',q' \in \N$, $p', q'>1$ such that $N = p'q'$ with probability at least $1-2^{-\secpar}$. 
 \end{lemma}
@@ -348,7 +349,7 @@ Then
 \]
 \end{restatable}
 
-We defer the proof of this lemma to \ref{proof:smpl-lemma}.
+We defer the proof of this lemma to \Cref{proof:smpl-lemma}.
 
 
 

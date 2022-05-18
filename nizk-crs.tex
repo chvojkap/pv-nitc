@@ -1,16 +1,16 @@
 %!TEX root=main.tex
 
 \subsection{Non-Interactive Zero-Knowledge Proofs}
-We recall definition of a simulation-sound non-interactive proof system (SS-NIZK) that we take from Liber~\etal \cite{Libert2021OneShotFN}. 
+We recall the definition of a simulation-sound non-interactive proof system (SS-NIZK) that we take from Libert~\etal \cite{Libert2021OneShotFN}. 
 
 \begin{definition} 
 A \emph{non-interactive zero-knowledge proof system} $\Pi$ for an NP language $L$ associated with a relation $\rel$ is a tuple of four PPT algorithms $(\gen_\param, \gen_L, \prove, \vrfy)$, which work as follows:
 \begin{itemize}
 %\item $\param \leftarrow \gen_\param(\seck)$ takes as input binary representation of a security parameter $\seck$ and outputs public parameters $\param$.
-\item $\crs \leftarrow \setup(\seck, L)$ takes as input binary representation of a security parameter $\seck$ and the description of language $L$.  It outputs a a common reference string $\crs$. 
+\item $\crs \leftarrow \setup(\seck, L)$ takes a security parameter $\seck$ and the description of a language $L$.  It outputs a a common reference string $\crs$. 
 %\item $\crs \leftarrow \gen_L(\seck, L)$ takes as input binary representation of a security parameter $\seck$ and the description of language $L$ which specifies length of statements $n$.  It outputs a language dependent part $\crs_L$ of the common reference string $\crs:=(\param, \crs_L)$. 
 %\item $\crs \leftarrow \gen_L(\seck, L, \tau_L)$ takes as input binary representation of a security parameter $\seck$, the description of language $L$ which specifies length of statements $n$ and a membership testing trapdoor $\tau_L$ for $L$.  It outputs a language dependent part $\crs_L$ of the common reference string $\crs:=(\param, \crs_L)$. 
-\item $\pi \leftarrow \prove(\crs,s,w)$ is a PPT algorithm which takes as input the common reference sting $\crs$, a statement $s$, and a witness $w$ such that $(s,w) \in \rel$ and outputs a proof $\pi$.
+\item $\pi \leftarrow \prove(\crs,s,w)$ is a PPT algorithm which takes as input the common reference string $\crs$, a statement $s$, and a witness $w$ such that $(s,w) \in \rel$ and outputs a proof $\pi$.
 \item $0/1 \leftarrow \vrfy(\crs, s, \pi)$ is a deterministic algorithm which takes as input the common reference string $\crs$, a statement $s$ and a proof $\pi$ and outputs either 1 or 0, where 1 means that the proof is ``accepted'' and 0 means it is ``rejected''.
 \end{itemize}
 Moreover, $\Pi$ should satisfy the following properties. 
@@ -32,20 +32,20 @@ s \notin L \land \\
 \end{aligned} \right] \leq \negl(\secpar),
 \]
 where $\tau_L$ is membership testing trapdoor. 
-\item \emph{Zero-Knowledge:} there is a PPT simulator $(\simul_1, \simul_2)$, such that for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\item \emph{Zero-Knowledge:} there is a PPT simulator $(\simul_1, \simul_2)$, such that for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$:
 \begin{align*}
 \zk_\adv^\nizk =& 
 \left| \Pr\left[ \adv_\secpar^{\prove(\crs, \cdot, \cdot),}(\crs, \tau_L) = 1:\crs \leftarrow \setup(\seck, L) \right] \right. \\
 &\left. - \Pr\left[ \adv_\secpar^{\oracle(\crs, \tau, \cdot, \cdot),}(\crs, \tau_L) = 1: (\crs, \tau) \leftarrow \simul_1(\seck, L) \right] \right|
 \leq \negl(\secpar).
 \end{align*}
-Here $\tau_L$ is a membership testing trapdoor for language $L$; $\prove(\crs, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,w) \notin \rel$ and outputs a valid proof $\pi \leftarrow \prove(\crs, s, w)$ otherwise; $\oracle(\crs, \tau, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,w) \notin \rel$ and outputs simulated proof $\pi \leftarrow \simul_2(\crs, \tau, s)$ on input $(s,w) \in \rel$. Note that the simulated proof is generated independently of the witness $w$.
+Here $\tau_L$ is a membership testing trapdoor for language $L$; $\prove(\crs, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,w) \notin \rel$ and outputs a valid proof $\pi \leftarrow \prove(\crs, s, w)$ otherwise; $\oracle(\crs, \tau, \cdot, \cdot)$ is an oracle that outputs $\bot$ on input $(s,w) \notin \rel$ and outputs a simulated proof $\pi \leftarrow \simul_2(\crs, \tau, s)$ on input $(s,w) \in \rel$. Note that the simulated proof is generated independently of the witness $w$.
 \end{itemize}
 
 \end{definition}
 
 \begin{remark} 
-We have slightly modified the soundness and zero-knowledge definitions compared to \cite{Libert2021OneShotFN}. Our soundness definition is adaptive and an adversary is given as input also a membership testing trapdoor $\tau_L$. This notion is implied by the simulation-soundness as defined in \Cref{def:simsnd}. Our zero-knowledge definition provides a membership testing trapdoor $\tau_L$ as an input for an adverary where the zero-knowledge definition of \cite{Libert2021OneShotFN} let an adversary to generate the language $L$ itself. The definition of \cite{Libert2021OneShotFN} works in our constructions, but we prefer to base our constructions on a weaker definition. 
+We have slightly modified the soundness and zero-knowledge definitions compared to \cite{Libert2021OneShotFN}. Our soundness definition is adaptive and an adversary is given as input also a membership testing trapdoor $\tau_L$. This notion is implied by the simulation-soundness as defined in \Cref{def:simsnd}. Our zero-knowledge definition provides a membership testing trapdoor $\tau_L$ as an input for an adversary, whereas the definition of \cite{Libert2021OneShotFN} lets an adversary generate the language $L$ itself. The definition of \cite{Libert2021OneShotFN} works in our constructions, too, but we prefer to base our constructions on a slightly weaker definition. 
 \end{remark}
 
 \begin{definition}[One-Time Simulation Soundness]\label{def:simsnd}
@@ -66,26 +66,26 @@ s \notin L \land \\
 where $\tau_L$ is a membership testing trapdoor for language $L$ and $\simul_2(\crs, \tau, \cdot)$ is a single query oracle which on input $s'$ returns $\pi' \leftarrow \simul(\crs, \tau, s')$.
 \end{definition}
 
-Liber~\etal \cite{Libert2021OneShotFN} show that given additively homomorphic encryption scheme, one can build a trapdoor sigma protocol for a language defined below. Moreover, any trapdoor sigma protocol can be turned into unbounded simulation sound NIZK which directly implies existence of a one-time simulation sound NIZK. Since we use the term \emph{trapdoor sigma protocol} only as intermediate notion and never instantiate it, we do not state formal definition and only reference it for brevity. For more details about trapdoor sigma protocols see e.g. \cite{Libert2021OneShotFN}. 
+Libert~\etal \cite{Libert2021OneShotFN} show that given an additively homomorphic encryption scheme, one can build a trapdoor Sigma protocol for the language defined below. Moreover, any trapdoor Sigma protocol can be turned into an unbounded simulation sound NIZK which directly implies existence of a one-time simulation sound NIZK. Since we use the term \emph{trapdoor Sigma protocol} only as intermediate notion and never instantiate it, we do not state formal definition and only reference it for brevity. For more details about trapdoor Sigma protocols see e.g. \cite{Libert2021OneShotFN}. 
 
 \begin{lemma}[Lemma D.1~\cite{Libert2021OneShotFN}]\label{lem:tsp}
-Let $(\gen, \enc, \dec)$ be an additively homomorphic encryption scheme where the message space $M$, randomness space $R$ and the ciphertext space $C$ form groups $(M, +), (R,+)$ and $(C, \cdot)$. Let the encryption scheme is such that for any public key $\pk$ generated using $(\pk, \sk) \leftarrow \gen(\seck)$, any messages $m_1, m_2 \in M$ and randomness $r_1, r_2 \in R$ holds
+Let $(\gen, \enc, \dec)$ be an additively homomorphic encryption scheme where the message space $M$, randomness space $R$ and the ciphertext space $C$ form groups $(M, +), (R,+)$ and $(C, \cdot)$. Let the encryption scheme be such that for any public key $\pk$ generated using $(\pk, \sk) \leftarrow \gen(\seck)$, any messages $m_1, m_2 \in M$ and randomness $r_1, r_2 \in R$ holds
 \[\enc(\pk, m_1;r_1) \cdot \enc(\pk, m_2;r_2) = \enc(\pk, m_1+m_2; r_1+r_2).\]
 Let $S$ be a finite set of public cardinality such that uniform sampling from $S$ is computationally indistinguishable from uniform sampling from $R$. 
-Then there is an trapdoor sigma protocol for the language $L:= \{c \in C| \exists r \in R: c = \enc(\pk, 0; r)\}$, where $\pk$ is fixed by the language.  
+Then there is an trapdoor Sigma protocol for the language $L:= \{c \in C| \exists r \in R: c = \enc(\pk, 0; r)\}$ of encryptions of zero, where $\pk$ is fixed by the language.  
 \end{lemma}
 
 \begin{remark}
-We note that Liber~\etal required that the order of the group $(R,+)$ is public and that this group is efficiently samplable which is used in the arguing of zero-knowledge property. This is however, not necessary, since it is sufficient to be able to sample from distribution which is computationally indistinguishable from the real uniform distribution. This results in computational indistinguishability of the real and simulated transcript. In case of our constructions, we are able to sample randomness from the distribution which is statistically indistinguishable from the uniform distribution over $R$ and hence the real and the simulated transcript are statistically indistinguishable. 
+We note that Libert~\etal required that the order of the group $(R,+)$ is public and that this group is efficiently samplable, which is used in their proof of the zero-knowledge property. This is however, not necessary, since it is sufficient to be able to sample from a distribution which is computationally indistinguishable from the uniform distribution. This results in computational indistinguishability of real and simulated transcripts. In case of our constructions, we will sample randomness from a distribution which is statistically close and hence indistinguishable from the uniform distribution over $R$, which yields that the real and the simulated transcripts are statistically indistinguishable. 
 \end{remark}
 
-Additionally, Liber~\etal construct a simulation sound non-interactive argument system from any trapdoor sigma protocol relying on a strongly unforgeable one-time signature, a lossy public-key encryption scheme, an admissible hash function and a correlation intractable hash function. 
+Additionally, Libert~\etal construct a simulation sound non-interactive argument system from any trapdoor Sigma protocol relying on a strongly unforgeable one-time signature, a lossy public-key encryption scheme, an admissible hash function and a correlation intractable hash function. 
 
 \begin{theorem}[Thm B.1, Thm. B.2~\cite{Libert2021OneShotFN}]\label{thm:nizk}
-Let $(\gen_\param, \gen_L, \prove, \vrfy)$ be a trapdoor sigma protocol for an NP language $L$. Then given a strongly unforgeable one-time signature scheme, $\rel$-lossy public-key encryption scheme, a correlation intractable hash function and an admissible hash function, there is an unbounded simulation sound non-interactive zero-knowledge proof system for the language $L$. 
+Let $(\gen_\param, \gen_L, \prove, \vrfy)$ be a trapdoor Sigma protocol for an NP language $L$. Then given a strongly unforgeable one-time signature scheme, $\rel$-lossy public-key encryption scheme, a correlation intractable hash function and an admissible hash function, there is an unbounded simulation sound non-interactive zero-knowledge proof system for the language $L$. 
 \end{theorem}
 
-\subsection{Efficient Instantiation of SS-NIZK}\label{sec:nizk-crs}
+\subsection{Standard-Model Instantiation of SS-NIZKs}\label{sec:nizk-crs}
 In this section we provide simulation sound NIZK proof systems for languages $L_1$ and $L_2$ that are used in our constructions. The languages are defined in the following way:  
 \[
 L_1 = \left\{(c_0, c_1, c_2)| \exists (m,r):
@@ -103,7 +103,9 @@ L_2 = \left\{(c_0, c_1, c_2)| \exists (m,r):
     \end{aligned}
     \right\},   
 \]
-where $g, h_1, h_2, h_3, N$ are parameters defining the language. One can observe that this is equivalent to proving that the ciphertext defined as $(c_0, c_1\cdot (c_2)^{-1}, c_3\cdot (c_2)^{-1})$ is encryption of zero for public-key encryption scheme where a public key is defined as $\pk:=(g, (h_1\cdot (h_2)^{-1}), (h_3\cdot (h_2)^{-1}), N)$ and encryption is defined for $L_1$ as $\enc(\pk:=(g,h,h'),m): c:=g^r \bmod N, c':=h^{rN}(1+N)^m \bmod N^2, c':=h'^{rN}(1+N)^m \bmod N^2$ and for $L_2$ as $\enc(\pk:=(g,h,h'),m): c:=g^r, c':=hg^m, c':=h'g^m \bmod N$. Hence, both encryption schemes are additively homomorphic and by \Cref{lem:tsp} we obtain a trapdoor sigma protocol for the languages $L_1, L_2$ which in turn by \Cref{thm:nizk} yields an unbounded simulation-sound NIZKs for the same languages.  
+where $g, h_1, h_2, h_3, N$ are parameters defining the language. 
+
+Note that these languages consists of all ciphertexts $(c_0, c_1\cdot (c_2)^{-1}, c_3\cdot (c_2)^{-1})$ that are encryptions of zero, where the corresponding public key is defined as $\pk:=(g, (h_1\cdot (h_2)^{-1}), (h_3\cdot (h_2)^{-1}), N)$. For $L_1$ encryption is defined as $\enc(\pk:=(g,h,h'),m): c:=g^r \bmod N, c':=h^{rN}(1+N)^m \bmod N^2, c':=h'^{rN}(1+N)^m \bmod N^2$. For $L_2$ encryption is defined as $\enc(\pk:=(g,h,h'),m): c:=g^r, c':=hg^m, c':=h'g^m \bmod N$. Hence, both encryption schemes are additively homomorphic and by \Cref{lem:tsp} we obtain a trapdoor Sigma protocol for the languages $L_1, L_2$. By \Cref{thm:nizk} this yields unbounded simulation-sound NIZKs for these languages.
 
 
 

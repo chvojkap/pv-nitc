@@ -27,18 +27,21 @@ In order to achieve non-malleability for timed commitments, a recent line of wor
 Existing constructions of timed commitments are either malleable, rely on the random oracle model, or require the sender of the commitment to invest as much effort to commit to a value as for the receiver to forcibly open the commitment. \todo{refs} On top of this, the only known standard model construction due to Katz \etal \cite{TCC:KatLosXu20} relies on of zero-knowledge proofs (NIZK) for general NP relations with very specific properties. 
 We provide a simpler and more efficient design paradigm for non-malleable timed commitments, which extends the classical Naor-Yung paradigm \cite{STOC:NaoYun90} to timed commitments, allows for efficient committing in the standard model, and avoids general-purpose ZK proofs by relying on ZK proofs for simple algebraic languages.
 
-\paragraph{Public verifiability.}
-Another interesting property, which has previously not been achieved \todo{for general or for NM timed commitments?} is to achieve public verifiability of a timed commitment. Intuitively, this requires that one can efficiently check whether a commitment is well-formed, such that a forced decommitment will yield a correct result.
-
-Without public verifiability, timed commitments might not provide practical solutions for certain applications. For instance, a malicious party could output a malformed commitment that cannot be opened in time $T$, such that a protocol would fail again in case the malicious party refuses to open the commitment. This could pose a problem in time-sensitive applications, in particular if a large time parameter $T$ is used, and also give rise do Denial-of-Service (DoS) attacks.\todo{stronge arguments?}
-
-
 
 \paragraph{Homomorphic commitments.}
 Yet another interesting property for practical timed commitments is to allow for homomorphic computations on commitments. This idea was originally introduced by Malavolta and Thyagarajan~\cite{C:MalThy19}, who introduced homomorphic \emph{time-lock puzzles}. Suppose that
 
 \todo{cite versatile }
 
+\paragraph{Public verifiability.}
+Another interesting property, which has previously not been achieved \todo{for general or for NM timed commitments?} is to achieve public verifiability of a timed commitment. Intuitively, this requires that one can efficiently check whether a commitment is well-formed, such that a forced decommitment will yield a correct result.
+
+Without public verifiability, timed commitments might not provide practical solutions for certain applications. For instance, a malicious party could output a malformed commitment that cannot be opened in time $T$, such that a protocol would fail again in case the malicious party refuses to open the commitment. This could pose a problem in time-sensitive applications, in particular if a large time parameter $T$ is used, and also give rise do Denial-of-Service (DoS) attacks.\todo{stronge arguments?}
+
+\todo{explain this is particularly interesting for homomorphisms}
+
+
+Even in the ROM, this rules out approaches like Fujisaki-Okamoto to achieve NM, since not publicly verifiable. Seems that ZK proofs are required. (But still the Katz et al. construction also doesn't have public verifiability?)
 
 
 
@@ -54,7 +57,6 @@ We give an overview of our contributions.
 \end{enumerate}
 
 We give a comparison of our schemes with these works in ....
-
 
 
 

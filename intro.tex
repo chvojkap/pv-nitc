@@ -13,7 +13,9 @@ Now suppose that after the first $(n-1)$ bidders $B_1, \ldots, B_{n-1}$ have ope
 \end{itemize}
 Timed commitments can resolve this situation very elegantly and without the need to resort to a trusted third party. To this end, the parties would create their timed commitments $c_i = \com(x_i,r_i, T)$ with respect to a suitable time parameter $T$ for the given application. In case one party indeed is not able to or refuses to open its commitment, the other parties can force the commitment open in time $T$ and thus resolve the dispute. 
 
-Note that it is essential for a timed commitment to guarantee that the alternative way of opening a commitment, by using the forced decommitment procedure, does not break the \emph{binding} property of the commitment scheme. That is, it is essential that standard opening and forced opening are always guaranteed to decommit to the same message. Otherwise, a malicious party could create a commitment where standard and forced commitments decommit to different values. Then it could decide in the opening phase whether it provide the ``real'' opening or whether it makes the other parties perform the forced opening.
+Note that it is essential \todo{first challenge is} for a timed commitment to guarantee that the alternative way of opening a commitment, by using the forced decommitment procedure, does not break the \emph{binding} property of the commitment scheme. That is, it is essential that standard opening and forced opening are always guaranteed to decommit to the same message. Otherwise, a malicious party could create a commitment where standard and forced commitments decommit to different values. Then it could decide in the opening phase whether it provide the ``real'' opening or whether it makes the other parties perform the forced opening.
+
+\todo{non-interactive to be practvical}
 
 
 \paragraph{Non-malleability of commitments.}
@@ -23,25 +25,27 @@ For instance, in the above example of an auction, $B_n$ could first wait for all
 
 In order to achieve non-malleability for timed commitments, a recent line of works has explored the idea of \emph{non-malleable time-locked commitments} (and \emph{puzzles}) \todo{what exactly?} \cite{TCC:KatLosXu20,EPRINT:EFKP20a,EC:BDDNO21}.
 
+% Ephraim is FO with TLPs, not homomorphic
+% EC21 TLPs in UC, automatically achieve NM, RO, no public verifiability, not homomorphic
 
-Existing constructions of timed commitments are either malleable, rely on the random oracle model, or require the sender of the commitment to invest as much effort to commit to a value as for the receiver to forcibly open the commitment. \todo{refs} On top of this, the only known standard model construction due to Katz \etal \cite{TCC:KatLosXu20} relies on of zero-knowledge proofs (NIZK) for general NP relations with very specific properties. 
+Existing constructions of timed commitments are either malleable, rely on the random oracle model, or require the sender of the commitment to invest as much effort to commit to a value as for the receiver to forcibly open the commitment. \todo{reformulate} On top of this, the only known standard model construction due to Katz \etal \cite{TCC:KatLosXu20} relies on of zero-knowledge proofs (NIZK) for general NP relations with very specific properties. 
 We provide a simpler and more efficient design paradigm for non-malleable timed commitments, which extends the classical Naor-Yung paradigm \cite{STOC:NaoYun90} to timed commitments, allows for efficient committing in the standard model, and avoids general-purpose ZK proofs by relying on ZK proofs for simple algebraic languages.
 
 
 \paragraph{Homomorphic commitments.}
 Yet another interesting property for practical timed commitments is to allow for homomorphic computations on commitments. This idea was originally introduced by Malavolta and Thyagarajan~\cite{C:MalThy19}, who introduced homomorphic \emph{time-lock puzzles}. Suppose that
 
-\todo{cite versatile }
+\todo{cite versatile, voting, coin flipping, etc., check malavolta paper for hom. application to auctions}
 
 \paragraph{Public verifiability.}
 Another interesting property, which has previously not been achieved \todo{for general or for NM timed commitments?} is to achieve public verifiability of a timed commitment. Intuitively, this requires that one can efficiently check whether a commitment is well-formed, such that a forced decommitment will yield a correct result.
 
-Without public verifiability, timed commitments might not provide practical solutions for certain applications. For instance, a malicious party could output a malformed commitment that cannot be opened in time $T$, such that a protocol would fail again in case the malicious party refuses to open the commitment. This could pose a problem in time-sensitive applications, in particular if a large time parameter $T$ is used, and also give rise do Denial-of-Service (DoS) attacks.\todo{stronge arguments?}
+Without public verifiability, timed commitments might not provide practical solutions for certain applications. For instance, a malicious party could output a malformed commitment that cannot be opened in time $T$, such that a protocol would fail again in case the malicious party refuses to open the commitment. This could pose a problem in time-sensitive applications, in particular if a large time parameter $T$ is used, and also give rise do Denial-of-Service (DoS) attacks.\todo{stronge arguments? multiple parties}
 
 \todo{explain this is particularly interesting for homomorphisms}
 
 
-Even in the ROM, this rules out approaches like Fujisaki-Okamoto to achieve NM, since not publicly verifiable. Seems that ZK proofs are required. (But still the Katz et al. construction also doesn't have public verifiability?)
+Even in the ROM, this rules out approaches like Fujisaki-Okamoto to achieve NM, since not publicly verifiable. Seems that ZK proofs are required. (But still the Katz et al. construction also doesn't have public verifiability?) Need new approach
 
 
 

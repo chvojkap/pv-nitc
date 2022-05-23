@@ -136,7 +136,7 @@ We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against t
 $\advB_\secpar(\crs_\nizk, \tau_L):$
 \vspace{-2mm}
 \begin{enumerate}
-\item Set $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, h_3, \crs_\nizk)$, run $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$, and answer decommitment queries using $k_1$ (which is included in $\tau_L$.
+\item Set $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, h_3, \crs_\nizk)$, run $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$, and answer decommitment queries using $k_1$ (which is included in $\tau_L = (k_1, k_2, t$.
 \item Sample $b \rand \bits, r \rand \smplset$ and compute $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b, c_3^*:=h_3^{r}m_b$. Then submit $(s:=\mathlist(h_1,h_2,c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ to the oracle to obtain proof $\pi^*$.
 \item Run $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$, answering decommitment queries using $k_1$.
 \item Return the truth value of $b=b'$.

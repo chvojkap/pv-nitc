@@ -85,7 +85,7 @@ Additionally, Libert~\etal construct a simulation sound non-interactive argument
 Let $(\gen_\param, \gen_L, \prove, \vrfy)$ be a trapdoor Sigma protocol for an NP language $L$. Then given a strongly unforgeable one-time signature scheme, $\rel$-lossy public-key encryption scheme, a correlation intractable hash function and an admissible hash function, there is an unbounded simulation sound non-interactive zero-knowledge proof system for the language $L$. 
 \end{theorem}
 
-
+We note that in order to achieve negligible soundness error, it is needed to run the underlying trapdoor Sigma protocol $\mathcal{O}(\log \secpar)$ times in parallel. One run of the trapdoor Sigma protocol of Libert~\etal for $L$, as defined above, corresponds to sending one ciphertext of the homomorphic encryption scheme and one random element $r \in R$.
 \todo{say a few words about efficiency}
 
 \subsection{Standard-Model Instantiation of SS-NIZKs}\label{sec:nizk-crs}

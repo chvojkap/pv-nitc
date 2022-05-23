@@ -10,6 +10,19 @@ A \emph{non-interactive proof system} for an NP language $L$ with relation $\rel
 \end{itemize}
 We say that a non-interactive proof system is \emph{complete}, if for all $(s, w) \in \rel$ holds:
 \[\Pr[\vrfy(s,\pi)=1:\pi \leftarrow \prove(s,w)] =1.\] 
+
+We say that a non-interactive proof system is \emph{sound} if for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in N$
+\[
+\snd_\adv^\nizk = \Pr\left[
+\begin{aligned}
+s \notin L \land
+\vrfy(s, \pi) = 1
+\end{aligned}
+:
+\begin{aligned}
+(\pi, s) \leftarrow \adv_\secpar
+\end{aligned} \right] \leq \negl(\secpar).
+\]
 \end{definition}
 
 Next we define the \emph{zero-knowledge} property for non-interactive proof system in the random oracle model. The simulator $\simul$ of a non-interactive zero-knowledge proof system is modelled as a stateful algorithm which provides two modes, namely $(\pi, \st) \leftarrow \simul(1, \st, s)$  for answering proof queries and $(v, \st) \leftarrow \simul(2, \st, u)$ for answering random oracle queries. The common state $\st$ is updated after each operation.

@@ -227,7 +227,7 @@ We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against t
 $\advB_\secpar(\crs_\nizk, \tau_L):$
 \vspace{-2mm}
 \begin{enumerate}
-\item It sets $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, h_3, \crs_\nizk)$ and runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$, which is included in $\tau_L$.\todo{Again, is this defined?}
+\item It sets $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, h_3, \crs_\nizk)$ and runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$, which is included in $\tau_L = (k_1, k_2, t)$.
 \item It samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{rN}(1+N)^{m_b}, c_2^*:=h_2^{rN}(1+N)^{m_b}, c_3^*:=h_3^{rN}(1+N)^{m_b}$. It submits $(s:=\mathlist(c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ to its oracle and obtains proof $\pi^*$ as answer.
 \item Then it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
 \item Finally, it returns the truth value of $b=b'$.

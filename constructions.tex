@@ -165,7 +165,7 @@ return $\bot$\\
 \hline          
 \end{tabular}
 \caption{Decommitment oracle}
-\label{fig:deco}
+\label{fig:deco-lh}
 \end{center}
 \end{figure}
 
@@ -173,7 +173,7 @@ return $\bot$\\
 Game $\games_\thisgame$ corresponds to the original security experiment where decommitment queries are answered using $\fdecom$.
 
 \nextgame{DecOracle}
-In game $\games_\thisgame$ decommitment queries are answered using the algorithm $\decom$ defined in \Cref{fig:deco} with $i:=1$, meaning that secret key $k_1$ and ciphertext $c_1$ are used, to answer decommitment queries efficiently. 
+In game $\games_\thisgame$ decommitment queries are answered using the algorithm $\decom$ defined in \Cref{fig:deco-lh} with $i:=1$, meaning that secret key $k_1$ and ciphertext $c_1$ are used, to answer decommitment queries efficiently. 
 
 
 \begin{lemma}\label{nitc-lh:flem}
@@ -192,11 +192,11 @@ We construct an adversary $\advB$ that breaks soundness of the NIZK. It is given
 The adversary $\advB_{\secpar}(\crs_\nizk, \tau_L)$ proceeds as follows:
 \vspace{-2mm}
 \begin{enumerate}
-\item It computes $h_1:= g^{k_1} \bmod N, h_2:= g^{k_2} \bmod N, h_3:= g^{t} \bmod N$ using the membership testing trapdoor $\tau_L$ and sets $\crs:=(N, T, g, h_1, h_2, h_3, \crs_\nizk)$.\todo{How is $\tau_L$ defined exactly?}
+\item It computes $h_1:= g^{k_1} \bmod N, h_2:= g^{k_2} \bmod N, h_3:= g^{t} \bmod N$ using the membership testing trapdoor $\tau_L:=(k_1, k_2, t)$ and sets $\crs:=\mathlist(N, T, g, h_1, h_2, h_3, \crs_\nizk)$.
 \item Then it runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
 \item It samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{rN}(1+N)^{m_b}, c_2^*:=h_2^{rN}(1+N)^{m_b}, c_3^*:=h_3^{rN}(1+N)^{m_b}$. It sets $(s:=\mathlist(c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ and runs $\pi^* \leftarrow \nizk.\prove(s,w)$.
 \item Next, it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
-\item Finally, it checks whether there exists a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\dec(\crs, c, 1) \neq \dec(\crs,c,2)$. If $\event$ occurs, then this is the case, and it returns $((c_0, c_1, c_2, c_3), \pi)$. Notice that this can be done efficiently with the knowledge of $t$.
+\item Finally, it checks whether there exists a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\fdecom(\crs, c) \neq \dec(\crs,c,2)$. If $\event$ occurs, then this is the case, and it returns $((c_0, c_1, c_2, c_3), \pi)$. Notice that this can be done efficiently with the knowledge of $t$.
 \end{enumerate}
 
 $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, then it outputs a valid proof for a statement which is not in the specified language $L$. Therefore we get
@@ -325,11 +325,11 @@ We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against D
 \item It runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
 \item Then it returns the truth value of $b=b'$.
 \end{enumerate}
-If $y = v^N \bmod N^2$ then $yw^N = v^N w^N = (vw)^N$ and hence $yw^N$ is N-th residue. Moreover, the Jacobi symbol of $yw$ is 1, since the Jacobi symbol is multiplicatively homomorphic. Therefore $\advB$ simulates $\games_\prevgame$ perfectly. 
+If $y = v^N \bmod N^2$ then $yw^N = v^N w^N = (vw)^N$ and hence $yw^N$ is $N$-th residue. Moreover, the Jacobi symbol of $yw$ is 1, since the Jacobi symbol is multiplicatively homomorphic. Therefore $\advB$ simulates $\games_\prevgame$ perfectly. 
 
 Otherwise, if $y$ is uniform random element in $\Zns$, then $yw^N$ is also uniform among all elements of $\Zns$ that have Jacobi symbol 1 and $\advB$ simulates $\games_\thisgame$ perfectly. This proves the lemma.
 
-We remark that at this point $c_3^*$ does not reveal any information about $b$. Here we use that if $x = y \bmod N$ then $\left( \frac{x}{N} \right)= \left( \frac{y}{N} \right)$ and that there is an isomorphism $f:\Zn^* \times \Zn \rightarrow\Zns$ given by $f(u,v)=u^N(1+N)^v = u^N(1+vN) \bmod N^2$ (see e.g. \cite[Proposition 13.6]{books/crc/KatzLindell2014}).  Since $f(u,v) \bmod N = u^N + u^NvN \bmod N = u^N \bmod N$ \todo{Why is $v$ guaranteed to be zero, or why does the last step hold?}, then if $\left( \frac{f(u,v)}{N} \right) = 1$ then it must hold that $\left( \frac{f(u,r)}{N} \right) = 1$ for all $r \in \Zn$ \todo{why?}. This implies that a random element $f(u,v)$ in $\Zns$ with $\left( \frac{f(u,v)}{N} \right) = 1$ has a uniformly random distribution of $v$ in $\Zn$. Therefore if $yw^N = u^N(1+N)^v \bmod N^2$ then  $yw^N(1+N)^{m_b}  = u^N(1+N)^{m_b+v} \bmod N^2$. Since $v$ is uniform in $\Zn$, $(m_b + v)$ is also uniform in $\Zn$, which means that ciphertext $c_3^*$ does not reveal any information about $b$.\todo{I was not able to follow}    
+We remark that at this point $c_3^*$ does not reveal any information about $b$. Here we use that if $x = y \bmod N$ then $\left( \frac{x}{N} \right)= \left( \frac{y}{N} \right)$ and that there is an isomorphism $f:\Zn^* \times \Zn \rightarrow\Zns$ given by $f(u,v)=u^N(1+N)^v = u^N(1+vN) \bmod N^2$ (see e.g. \cite[Proposition 13.6]{books/crc/KatzLindell2014}).  Since $f(u,v) \bmod N = u^N + u^NvN \bmod N = u^N \bmod N$, that means that Jacobi symbol $\left( \frac{f(u,v)}{N} \right)$ depends only on $u$.  \todo{Why is $v$ guaranteed to be zero, or why does the last step hold?} Hence if $\left( \frac{f(u,v)}{N} \right) = 1$, then it must hold that $\left( \frac{f(u,r)}{N} \right) = 1$ for all $r \in \Zn$ \todo{why?}. This implies that a random element $f(u,v)$ in $\Zns$ with $\left( \frac{f(u,v)}{N} \right) = 1$ has a uniformly random distribution of $v$ in $\Zn$. Therefore if $yw^N = u^N(1+N)^v \bmod N^2$ then  $yw^N(1+N)^{m_b}  = u^N(1+N)^{m_b+v} \bmod N^2$. Since $v$ is uniform in $\Zn$, $(m_b + v)$ is also uniform in $\Zn$, which means that ciphertext $c_3^*$ does not reveal any information about $b$.\todo{I was not able to follow}    
 
 \nextgame{RndExp2}
 In $\games_\thisgame$ we sample $k_2$ uniformly at random from $[\varphi(N)/2]$. 
@@ -388,7 +388,7 @@ This can be proven in similar way as \Cref{lem:dcr}. We remark that at this poin
 
 \nextgame{SimSnd}
 
-In $\games_\thisgame$ we answer decommitment queries using $\dec$ with $i:=2$ which means that secret key $k_2$ and ciphertext $c_2$ are used. 
+In $\games_\thisgame$ we answer decommitment queries using $\dec$ (\Cref{fig:deco-lh}) with $i:=2$ which means that secret key $k_2$ and ciphertext $c_2$ are used. 
 
 \begin{lemma}
 \[

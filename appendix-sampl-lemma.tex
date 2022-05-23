@@ -59,8 +59,8 @@ Completeness is implied by the completeness of the NIZK and can be verified by i
 % We note that if we use value $2^T$ as a secret key, then in order to compute $c_2$ we have to execute $T$ repeated squarings, but since $T$ is polynomial in $\secpar$ this computations is considered to be efficient.
 
 \newsequenceofgames{NITC-MH}
-To prove security we define a sequence of games $\games_0 - \games_{9}$.  For $i \in \{0,1,\dots,9\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
-In individual games we use the algorithm $\decom$ define in \Cref{fig:deco} to answer decommitment queries efficiently. 
+To prove security we define a sequence of games $\games_0 - \games_{10}$.  For $i \in \{0,1,\dots,9\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
+%In individual games we use the algorithm $\decom$ define in \Cref{fig:deco} to answer decommitment queries efficiently. 
 \begin{figure}[h!]
 \begin{center}
 \begin{tabular}{|l|}
@@ -69,17 +69,47 @@ $\underline{\decom(\crs, c, i)}$\\
 Parse $c$ as $(c_0, c_1, c_2,, c_3, \pi)$\\
 if $\nizk.\vrfy(\crs_\nizk,(c_0, c_1, c_2, c_3), \pi)= 1$\\
 \tab Compute $y:= c_0^{k_i} \bmod N$\\
-\tab return $\frac{c_i \cdot y^{-N} (\bmod N^2) -1}{N}$\\
+\tab return $c_i \cdot y^{-1} \bmod N$\\
 return $\bot$\\
 \hline          
 \end{tabular}
 \caption{Decommitment oracle}
-\label{fig:deco}
+\label{fig:deco-mh}
 \end{center}
 \end{figure}
 
 \nextgame{G0}
-Game $\games_\thisgame$ corresponds to the original security experiment where decommitment queries are answered using $\decom$ with $i:=1$ meaning that secret key $k_1$ and ciphertext $c_1$ are used.
+Game $\games_\thisgame$ corresponds to the original security experiment where decommitment queries are answered using $\fdecom$.
+
+\nextgame{DecOracle}
+In game $\games_\thisgame$ decommitment queries are answered using the algorithm $\decom$ defined in \Cref{fig:deco-mh} with $i:=1$, meaning that secret key $k_1$ and ciphertext $c_1$ are used, to answer decommitment queries efficiently. 
+
+
+\begin{lemma}\label{nitc-mh:flem}
+\[
+\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \snd^\nizk_\advB.
+\]
+\end{lemma}
+
+Notice that if $c_1$ and $c_3$ contain the same message, both oracles answer decommitment queries consistently. Let $\event$ denote the event that the adversary $\adv$ asks a decommitment query $c$ such that its decommitment using the key $k_1$ is different from its decommitment using $\fdecom$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ happens, we bound the probability of $\event$. Concretely, we have
+
+\[
+\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
+\]
+
+We construct an adversary $\advB$ that breaks soundness of the NIZK. It is given as input $\crs_\nizk$ together with a membership testing trapdoor $\tau_L:=(k_1, k_2, t)$ where $t:=2^T \bmod \varphi(N)/2$. 
+The adversary $\advB_{\secpar}(\crs_\nizk, \tau_L)$ proceeds as follows:
+\vspace{-2mm}
+\begin{enumerate}
+\item It computes $h_1:= g^{k_1} \bmod N, h_2:= g^{k_2} \bmod N, h_3:= g^{t} \bmod N$ using the membership testing trapdoor $\tau_L:=(k_1, k_2, t)$ and sets $\crs:=\mathlist(N, T, g, h_1, h_2, h_3, \crs_\nizk)$.
+\item Then it runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
+\item It samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b, c_3^*:=h_3^{r}m_b$. It sets $(s:=\mathlist(c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ and runs $\pi^* \leftarrow \nizk.\prove(s,w)$.
+\item Next, it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
+\item Finally, it checks whether there exists a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\fdecom(\crs, c) \neq \dec(\crs,c,2)$. If $\event$ occurs, then this is the case, and it returns $((c_0, c_1, c_2, c_3), \pi)$. Notice that this can be done efficiently with the knowledge of $t$.
+\end{enumerate}
+
+$\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, then it outputs a valid proof for a statement which is not in the specified language $L$. Therefore we get
+\[\Pr[\event] \leq \snd^\nizk_\advB.\]
 
 %Let $\gnr$ denote the event that the sampled $g$ in $\kgen$ is a generator of $\qrn$. Recall that $N = pq$ where $p = 2p'+1$ and $q = 2q'+1$. Because $g$ is sampled uniformly at random and $\qrn$ has $\varphi(|\qrn|) = (p'-1)(q'-1)$ generators, this event happens with overwhelming probability. Concretely, $\Pr[\gnr] = 1-\frac{1}{p'}-\frac{1}{q'}+\frac{1}{p'q'}$.
 %Therefore the following holds.
@@ -96,7 +126,7 @@ Game $\games_\thisgame$ corresponds to the original security experiment where de
 
 \nextgame{SimulProof}
 Game $\games_\thisgame$ proceeds exactly as the previous game but we run the zero-knowledge simulator $(\crs, \tau) \leftarrow \simul_1(\seck, L)$ in $\pgen$ and produce a simulated proof for the challenge commitment as $\pi \leftarrow \simul_2(\crs, \tau, (c_0^*,c_1^*,c_2^*,c_3^*))$. By the zero-knowledge security of the NIZK we directly obtain
-\begin{lemma}\label{nitc-mh:flem}
+\begin{lemma}
 \[
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \zk^\nizk_\advB.
 \]
@@ -225,7 +255,7 @@ This lemma directly follows from \Cref{sampling-lemma}.
 
 \nextgame{SimSnd}
 
-In $\games_\thisgame$ we answer decommitment queries using $\dec$ with $i:=2$ which means that secret key $k_2$ and ciphertext $c_2$ are used. 
+In $\games_\thisgame$ we answer decommitment queries using $\dec$ (\Cref{fig:deco-mh}) with $i:=2$ which means that secret key $k_2$ and ciphertext $c_2$ are used. 
 
 \begin{lemma}
 \[
@@ -304,8 +334,8 @@ Clearly, $c_0^*$ is uniform random element in $\Jn$ and hence it does not contai
 
 By combining Lemmas \ref{nitc-mh:flem} - \ref{nitc-mh:llem} we obtain the following:
 \begin{align*}
-&\advtg^{\nitc}_{\adv} = \left| \Pr[\games_0 = 1] - \half \right| \leq \sum_{i=0}^8 \left|\Pr[\games_i = 1] - \Pr[\games_{i+1} = 1] \right| + \left|\Pr[\games_{9}- \half\right| \\
- &\leq \zk^\nizk_\advB + \advtg^{\sss}_{\advB} + \simsnd^{\nizk}_{\advB} + 2 \advtg^{\ddh}_{\advB} + 4 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right),
+&\advtg^{\nitc}_{\adv} = \left| \Pr[\games_0 = 1] - \half \right| \leq \sum_{i=0}^9 \left|\Pr[\games_i = 1] - \Pr[\games_{i+1} = 1] \right| + \left|\Pr[\games_{10}- \half\right| \\
+ &\leq \snd^\nizk_\advB + \zk^\nizk_\advB + \advtg^{\sss}_{\advB} + \simsnd^{\nizk}_{\advB} + 2 \advtg^{\ddh}_{\advB} + 4 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right),
 \end{align*}
 which concludes the proof.
 %\end{proof}
@@ -350,8 +380,8 @@ Completeness is implied by the completeness of the NIZK and can be verified by i
 % We note that if we use value $2^T$ as a secret key, then in order to compute $c_2$ we have to execute $T$ repeated squarings, but since $T$ is polynomial in $\secpar$ this computations is considered to be efficient.
 
 \newsequenceofgames{NITC-LH-ROM}
-To prove security we define a sequence of games $\games_0 - \games_{12}$.  For $i \in \{0,1,\dots,12\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
-In individual games we use the algorithm $\decom$ define in \Cref{fig:deco} to answer decommitment queries efficiently. 
+To prove security we define a sequence of games $\games_0 - \games_{13}$.  For $i \in \{0,1,\dots,13\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
+%In individual games we use the algorithm $\decom$ define in \Cref{fig:deco-rom-lh} to answer decommitment queries efficiently. 
 \begin{figure}[h!]
 \begin{center}
 \begin{tabular}{|l|}
@@ -365,12 +395,42 @@ return $\bot$\\
 \hline          
 \end{tabular}
 \caption{Decommitment oracle}
-\label{fig:deco}
+\label{fig:deco-rom-lh}
 \end{center}
 \end{figure}
 
 \nextgame{G0}
-Game $\games_\thisgame$ corresponds to the original security experiment where decommitment queries are answered using $\decom$ with $i:=1$ meaning that secret key $k_1$ and ciphertext $c_1$ are used.
+Game $\games_\thisgame$ corresponds to the original security experiment where decommitment queries are answered using $\fdecom$.
+
+\nextgame{DecOracle}
+In game $\games_\thisgame$ decommitment queries are answered using the algorithm $\decom$ defined in \Cref{fig:deco-rom-lh} with $i:=1$, meaning that secret key $k_1$ and ciphertext $c_1$ are used, to answer decommitment queries efficiently. 
+
+
+\begin{lemma}\label{nitc-lh:flem}
+\[
+\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \snd^\nizk_\advB.
+\]
+\end{lemma}
+
+Notice that if $c_1$ and $c_3$ contain the same message, both oracles answer decommitment queries consistently. Let $\event$ denote the event that the adversary $\adv$ asks a decommitment query $c$ such that its decommitment using the key $k_1$ is different from its decommitment using $\fdecom$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ happens, we bound the probability of $\event$. Concretely, we have
+
+\[
+\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
+\]
+
+We construct an adversary $\advB$ that breaks soundness of the NIZK. 
+The adversary $\advB_{\secpar}$ proceeds as follows:
+\vspace{-2mm}
+\begin{enumerate}
+\item It computes $\crs \leftarrow \pgen(\seck, T)$ as defined in the construction where the value $h_3$ is computed using repeated squaring instead.
+\item Then it runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
+\item It samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{rN}(1+N)^{m_b}, c_2^*:=h_2^{rN}(1+N)^{m_b}, c_3^*:=h_3^{rN}(1+N)^{m_b}$. It sets $(s:=\mathlist(h_1, h_2, c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ and runs $\pi^* \leftarrow \nizk.\prove(s,w)$.
+\item Next, it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
+\item Finally, it checks whether there exists a decommitment query $c: = \mathlist(c_0, c_1, c_2, c_3, \pi)$ such that $\fdecom(\crs, c, 1) \neq \dec(\crs,c,1)$. If $\event$ occurs, then this is the case, and it returns $((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$. %Notice that this can be done efficiently with the knowledge of $t$.
+\end{enumerate}
+
+$\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, then it outputs a valid proof for a statement which is not in the specified language $L$. Therefore we get
+\[\Pr[\event] \leq \snd^\nizk_\advB.\]
 
 %Let $\gnr$ denote the event that the sampled $g$ in $\kgen$ is a generator of $\qrn$. Recall that $N = pq$ where $p = 2p'+1$ and $q = 2q'+1$. Because $g$ is sampled uniformly at random and $\qrn$ has $\varphi(|\qrn|) = (p'-1)(q'-1)$ generators, this event happens with overwhelming probability. Concretely, $\Pr[\gnr] = 1-\frac{1}{p'}-\frac{1}{q'}+\frac{1}{p'q'}$.
 %Therefore the following holds.
@@ -494,7 +554,13 @@ $\advB_{\secpar}(N,y):$
 \item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
 \item Returns the truth value of $b=b'$.
 \end{enumerate}
-If $y = v^N \bmod N^2$ then $yw^N = v^N w^N = (vw)^N$ and hence $yw^N$ is N-th residue. Moreover, the Jacobi symbol of $yw$ is 1, since the Jacobi symbol is multiplicatively homomorphic. Therefore $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $y$ is uniform random element in $\Zns$ then $yw^N$ is also uniform in $\Zns$ and $\advB$ simulates $\games_\thisgame$ perfectly. This proofs the lemma. We remark that at this point $c_3^*$ does not reveal any information about $m_b$. 
+%If $y = v^N \bmod N^2$ then $yw^N = v^N w^N = (vw)^N$ and hence $yw^N$ is $N$-th residue. Moreover, the Jacobi symbol of $yw$ is 1, since the Jacobi symbol is multiplicatively homomorphic. Therefore $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $y$ is uniform random element in $\Zns$ then $yw^N$ is also uniform in $\Zns$ and $\advB$ simulates $\games_\thisgame$ perfectly. This proofs the lemma. We remark that at this point $c_3^*$ does not reveal any information about $m_b$.
+
+If $y = v^N \bmod N^2$ then $yw^N = v^N w^N = (vw)^N$ and hence $yw^N$ is $N$-th residue. Moreover, the Jacobi symbol of $yw$ is 1, since the Jacobi symbol is multiplicatively homomorphic. Therefore $\advB$ simulates $\games_\prevgame$ perfectly. 
+
+Otherwise, if $y$ is uniform random element in $\Zns$, then $yw^N$ is also uniform among all elements of $\Zns$ that have Jacobi symbol 1 and $\advB$ simulates $\games_\thisgame$ perfectly. This proves the lemma.
+
+We remark that at this point $c_3^*$ does not reveal any information about $b$. Here we use that if $x = y \bmod N$ then $\left( \frac{x}{N} \right)= \left( \frac{y}{N} \right)$ and that there is an isomorphism $f:\Zn^* \times \Zn \rightarrow\Zns$ given by $f(u,v)=u^N(1+N)^v = u^N(1+vN) \bmod N^2$ (see e.g. \cite[Proposition 13.6]{books/crc/KatzLindell2014}).  Since $f(u,v) \bmod N = u^N + u^NvN \bmod N = u^N \bmod N$, that means that Jacobi symbol $\left( \frac{f(u,v)}{N} \right)$ depends only on $u$. Hence if $\left( \frac{f(u,v)}{N} \right) = 1$ then it must hold that $\left( \frac{f(u,r)}{N} \right) = 1$ for all $r \in \Zn$. This implies that a random element $f(u,v)$ in $\Zns$ with $\left( \frac{f(u,v)}{N} \right) = 1$ has a uniformly random distribution of $v$ in $\Zn$. Therefore if $yw^N = u^N(1+N)^v \bmod N^2$ then  $yw^N(1+N)^{m_b}  = u^N(1+N)^{m_b+v} \bmod N^2$. Since $v$ is uniform in $\Zn$, $(m_b + v)$ is also uniform in $\Zn$, which means that ciphertext $c_3^*$ does not reveal any information about $b$. 
 
 \nextgame{RndExp2}
 In $\games_\thisgame$ we sample $k_2$ uniformly at random from $[\varphi(N)/2]$. 
@@ -553,7 +619,7 @@ This can be proven in similar way as \Cref{lem:dcr-rom-lh}. We remark that at th
 
 \nextgame{SimSnd}
 
-In $\games_\thisgame$ we answer decommitment queries using $\dec$ with $i:=2$ which means that secret key $k_2$ and ciphertext $c_2$ are used. 
+In $\games_\thisgame$ we answer decommitment queries using $\dec$ (\Cref{fig:deco-rom-lh}) with $i:=2$ which means that secret key $k_2$ and ciphertext $c_2$ are used. 
 
 \begin{lemma}
 \[
@@ -575,8 +641,8 @@ The adversary $\advB_{\secpar}^{\simul_1, \simul_2}:$
 \item Computes $\crs \leftarrow \pgen(\seck, T)$ as defined in the construction where the value $h_3$ is computed using repeated squaring instead.
 \item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_2$.
 \item Samples $b \rand \bits, x \rand \Jn, y_2, y_3 \rand \Zns$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(x, x^{k_1 N} (1+N)^{m_b}, y_2 (1+N)^{m_b}, y_3 (1+N)^{m_b})$. Forwards $(h_1, h_2, c_0^*, c_1^*, c_2^*, c_3^*)$ to simulation oracle $\simul_1$ and obtains a proof $\pi^*$.
-\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decryption queries using $k_2$.
-\item Find a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\dec(\crs, c, 1) \neq \dec(\crs,c,2)$ and returns $((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$
+\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_2$.
+\item Find a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\dec(\crs, c, 1) \neq \dec(\crs,c,2)$ and returns $((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$.
 \end{enumerate}
 
 $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, it outputs a valid proof for a statement which is not in the specified language $L$. Therefore
@@ -642,8 +708,8 @@ Clearly, $c_0^*$ is uniform random element in $\Jn$ and hence it does not contai
 
 By combining Lemmas \ref{nitc-rom-lh:flem} - \ref{nitc-rom-lh:llem} we obtain the following:
 \begin{align*}
-&\advtg^{\nitc}_{\adv} = \left| \Pr[\games_0 = 1] - \half \right| \leq \sum_{i=0}^11 \left|\Pr[\games_i = 1] - \Pr[\games_{i+1} = 1] \right| + \left|\Pr[\games_{12}- \half\right| \\
- &\leq \zk^\nizk_\advB + \advtg^{\sss}_{\advB} + \simsnd^{\nizk}_{\advB} + 2 \advtg^{\ddh}_{\advB} + 3 \advtg^{\dcr}_{\advB} + 4 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right),
+\advtg^{\nitc}_{\adv} &= \left| \Pr[\games_0 = 1] - \half \right| \leq \sum_{i=0}^{12} \left|\Pr[\games_i = 1] - \Pr[\games_{i+1} = 1] \right| + \left|\Pr[\games_{13}- \half\right| \\
+ &\leq  \snd^\nizk_\advB + \zk^\nizk_\advB + \advtg^{\sss}_{\advB} + \simsnd^{\nizk}_{\advB} + 2 \advtg^{\ddh}_{\advB} + 3 \advtg^{\dcr}_{\advB} \\ &+ 4 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right).
 \end{align*}
 which concludes the proof.
 % \end{proof}
@@ -689,8 +755,8 @@ Completeness is implied by the completeness of the NIZK and can be verified by i
 % We note that if we use value $2^T$ as a secret key, then in order to compute $c_2$ we have to execute $T$ repeated squarings, but since $T$ is polynomial in $\secpar$ this computations is considered to be efficient.
 
 \newsequenceofgames{NITC-MH-ROM}
-To prove security we define a sequence of games $\games_0 - \games_{9}$.  For $i \in \{0,1,\dots,9\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
-In individual games we use the algorithm $\decom$ define in \Cref{fig:deco} to answer decommitment queries efficiently. 
+To prove security we define a sequence of games $\games_0 - \games_{10}$.  For $i \in \{0,1,\dots,10\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
+%In individual games we use the algorithm $\decom$ define in \Cref{fig:deco-rom-mh} to answer decommitment queries efficiently. 
 \begin{figure}[h!]
 \begin{center}
 \begin{tabular}{|l|}
@@ -699,17 +765,47 @@ $\underline{\decom(\crs, c, i)}$\\
 Parse $c$ as $(c_0, c_1, c_2,, c_3, \pi)$\\
 if $\nizk.\vrfy((h_1, h_2, c_0, c_1, c_2, c_3), \pi)= 1$\\
 \tab Compute $y:= c_0^{k_i} \bmod N$\\
-\tab return $\frac{c_i \cdot y^{-N} (\bmod N^2) -1}{N}$\\
+\tab return $c_i \cdot y^{-1} \bmod N$\\
 return $\bot$\\
 \hline          
 \end{tabular}
 \caption{Decommitment oracle}
-\label{fig:deco}
+\label{fig:deco-rom-mh}
 \end{center}
 \end{figure}
 
 \nextgame{G0}
-Game $\games_\thisgame$ corresponds to the original security experiment where decommitment queries are answered using $\decom$ with $i:=1$ meaning that secret key $k_1$ and ciphertext $c_1$ are used.
+Game $\games_\thisgame$ corresponds to the original security experiment where decommitment queries are answered using $\fdecom$.
+
+\nextgame{DecOracle}
+In game $\games_\thisgame$ decommitment queries are answered using the algorithm $\decom$ defined in \Cref{fig:deco-rom-mh} with $i:=1$, meaning that secret key $k_1$ and ciphertext $c_1$ are used, to answer decommitment queries efficiently. 
+
+
+\begin{lemma}\label{nitc-rom-mh:flem}
+\[
+\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \snd^\nizk_\advB.
+\]
+\end{lemma}
+
+Notice that if $c_1$ and $c_3$ contain the same message, both oracles answer decommitment queries consistently. Let $\event$ denote the event that the adversary $\adv$ asks a decommitment query $c$ such that its decommitment using the key $k_1$ is different from its decommitment using $\fdecom$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ happens, we bound the probability of $\event$. Concretely, we have
+
+\[
+\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
+\]
+
+We construct an adversary $\advB$ that breaks soundness of the NIZK. 
+The adversary $\advB_{\secpar}$ proceeds as follows:
+\vspace{-2mm}
+\begin{enumerate}
+\item It computes $\crs \leftarrow \pgen(\seck, T)$ as defined in the construction where the value $h_3$ is computed using repeated squaring instead.
+\item Then it runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
+ It samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b, c_3^*:=h_3^{r}m_b$. It sets $(s:=\mathlist(c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ and runs $\pi^* \leftarrow \nizk.\prove(s,w)$.
+\item Next, it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
+\item Finally, it checks whether there exists a decommitment query $c: = \mathlist(c_0, c_1, c_2, c_3, \pi)$ such that $\fdecom(\crs, c) \neq \dec(\crs,c,1)$. If $\event$ occurs, then this is the case, and it returns $((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$. %Notice that this can be done efficiently with the knowledge of $t$.
+\end{enumerate}
+
+$\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, then it outputs a valid proof for a statement which is not in the specified language $L$. Therefore we get
+\[\Pr[\event] \leq \snd^\nizk_\advB.\]
 
 %Let $\gnr$ denote the event that the sampled $g$ in $\kgen$ is a generator of $\qrn$. Recall that $N = pq$ where $p = 2p'+1$ and $q = 2q'+1$. Because $g$ is sampled uniformly at random and $\qrn$ has $\varphi(|\qrn|) = (p'-1)(q'-1)$ generators, this event happens with overwhelming probability. Concretely, $\Pr[\gnr] = 1-\frac{1}{p'}-\frac{1}{q'}+\frac{1}{p'q'}$.
 %Therefore the following holds.
@@ -726,7 +822,7 @@ Game $\games_\thisgame$ corresponds to the original security experiment where de
 
 \nextgame{SimulProof}
 Game $\games_\thisgame$ proceeds exactly as the previous game but we use the zero-knowledge simulator $(\pi, \st) \leftarrow \simul(1, \st, (h_1, h_2, c_0^*,c_1^*,c_2^*,c_3^*))$ to produce a simulated proof for the challenge commitment and $\simul(2, \st, \cdot)$ to answer random oracle queries. By zero-knowledge security of underlying NIZK we directly obtain
-\begin{lemma}\label{nitc-rom-mh:flem}
+\begin{lemma}
 \[
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \zk^\nizk_\advB.
 \]
@@ -856,7 +952,7 @@ This lemma directly follows from \Cref{sampling-lemma}.
 
 \nextgame{SimSnd}
 
-In $\games_\thisgame$ we answer decommitment queries using $\dec$ with $i:=2$ which means that secret key $k_2$ and ciphertext $c_2$ are used. 
+In $\games_\thisgame$ we answer decommitment queries using $\dec$ (\Cref{fig:deco-rom-mh}) with $i:=2$ which means that secret key $k_2$ and ciphertext $c_2$ are used. 
 
 \begin{lemma}
 \[
@@ -879,7 +975,7 @@ The adversary $\advB_{\secpar}^{\simul_1, \simul_2}:$
 \item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_2$.
 \item Samples $b \rand \bits, x, y_2, y_3 \rand \Jn$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(x, x^{k_1} m_b,\allowbreak y_2 m_b, y_3 m_b)$. Forwards $(h_1, h_2, c_0^*, c_1^*, c_2^*, c_3^*)$ to simulation oracle $\simul_1$ and obtains a proof $\pi^*$.
 \item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decryption queries using $k_2$.
-\item Find a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\dec(\crs, c, 1) \neq \dec(\crs,c,2)$ and returns $((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$
+\item Find a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\dec(\crs, c, 1) \neq \dec(\crs,c,2)$ and returns $((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$.
 \end{enumerate}
 
 $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, it outputs a valid proof for a statement which is not in the specified language $L$. Therefore
@@ -935,8 +1031,8 @@ Clearly, $c_0^*$ is uniform random element in $\Jn$ and hence it does not contai
 
 By combining Lemmas \ref{nitc-rom-mh:flem} - \ref{nitc-rom-mh:llem} we obtain the following:
 \begin{align*}
-&\advtg^{\nitc}_{\adv} = \left| \Pr[\games_0 = 1] - \half \right| \leq \sum_{i=0}^8 \left|\Pr[\games_i = 1] - \Pr[\games_{i+1} = 1] \right| + \left|\Pr[\games_{9}- \half\right| \\
- &\leq \zk^\nizk_\advB + \advtg^{\sss}_{\advB} + \simsnd^{\nizk}_{\advB} + 2 \advtg^{\ddh}_{\advB} + 4 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right),
+&\advtg^{\nitc}_{\adv} = \left| \Pr[\games_0 = 1] - \half \right| \leq \sum_{i=0}^9 \left|\Pr[\games_i = 1] - \Pr[\games_{i+1} = 1] \right| + \left|\Pr[\games_{10}- \half\right| \\
+ &\leq \snd^\nizk_\advB + \zk^\nizk_\advB + \advtg^{\sss}_{\advB} + \simsnd^{\nizk}_{\advB} + 2 \advtg^{\ddh}_{\advB} + 4 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right),
 \end{align*}
 which concludes the proof.
 % \end{proof}

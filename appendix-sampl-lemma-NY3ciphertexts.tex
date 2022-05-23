@@ -65,10 +65,10 @@ To prove security we define a sequence of games $\games_0 - \games_{10}$.  For $
 \begin{center}
 \begin{tabular}{|l|}
 \hline
-$\underline{\decom(\crs, c, \sk)}$\\
-Parse $c$ as $(c_0, c_1, c_2, \pi)$\\
-if $\nizk.\vrfy(\crs_\nizk,(c_0, c_1, c_2), \pi)= 1$\\
-\tab Compute $y:= c_0^{\sk} \bmod N$\\
+$\underline{\decom(\crs, c, i)}$\\
+Parse $c$ as $(c_0, c_1, c_2,, c_3, \pi)$\\
+if $\nizk.\vrfy(\crs_\nizk,(c_0, c_1, c_2, c_3), \pi)= 1$\\
+\tab Compute $y:= c_0^{k_i} \bmod N$\\
 \tab return $c_i \cdot y^{-1} \bmod N$\\
 return $\bot$\\
 \hline          

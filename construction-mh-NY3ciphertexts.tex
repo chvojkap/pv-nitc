@@ -4,14 +4,14 @@
 The construction described in this section is very similar to that from \Cref{sec:linearNITCstdmodel}, except that we replace Paillier encryption with ElGamal to obtain a multiplicative homomorphism. Also the proof follows the same high-level outline, but is different in some details, and therefore we give a full proof, too. We use a SS-NIZK for the following language: 
 
 \[
-L = \left\{(c_0, c_1, c_2)| \exists (m,r):
+L = \left\{(c_0, c_1, c_2, c_3)| \exists (m,r):
 \begin{aligned}
-       (\land_{i=1}^2 c_i = h_i^{r}m \bmod N) \land
+       (\land_{i=1}^3 c_i = h_i^{r}m \bmod N) \land
        c_0 = g^r \bmod N\\
     \end{aligned}
     \right\}, 
 \]
-where $g, h_1, h_2, N$ are parameters specifying the language.
+where $g, h_1, h_2, h_3, N$ are parameters specifying the language.
 
 
 %In the following we use $\crs_\nizk \leftarrow \nizk.\setup(\seck, L)$ to denote the following sequence of instructions: $\param \leftarrow \nizk.\gen_\param(\seck)$, $\crs_L \leftarrow \nizk.\gen_L(\seck, L)$, $\crs_\nizk:=(\param, \crs_L)$ .
@@ -21,31 +21,31 @@ where $g, h_1, h_2, N$ are parameters specifying the language.
 \begin{tabular}{|ll|}
 \hline
 $\underline{\pgen(\seck, T)}$ 							   & $\underline{\com(\crs, m)}$ \\
-$(p, q_, N, g) \leftarrow \genmod(\seck)$ & $r \rand \smplsetqrn$  \\
+$(p, q_, N, g) \leftarrow \genmod(\seck)$ & $r \rand \smplset$  \\
 $\varphi(N):= (p-1)(q-1)$   & $c_0:= g^r \bmod N$ \\
-$k_1\rand \smplsetqrn$ & For $i \in [2]: c_i:= h_i^{r}m \bmod N$\\
-$t:= 2^T \bmod \varphi(N)/4$ & $\Phi := (c_0, c_1, c_2), w := (m, r)$ \\
-$ h_1:= g^{k_1} \bmod N$ &  $\pi \leftarrow \nizk.\prove(\crs_\nizk, \Phi, w)$\\
-$h_2:=g^{t} \bmod N$ &  $c := (c_0, c_1, c_2, \pi)$\\
+$k_1, k_2 \rand \smplset$ & For $i \in [3]: c_i:= h_i^{r}m \bmod N$\\
+$t:= 2^T \bmod \varphi(N)/2$ & $\Phi := (c_0, c_1, c_2, c_3), w := (m, r)$ \\
+For $i \in [2]: h_i:= g^{k_i} \bmod N$ &  $\pi \leftarrow \nizk.\prove(\crs_\nizk, \Phi, w)$\\
+$h_3:=g^{t} \bmod N$ &  $c := (c_0, c_1, c_2, c_3, \pi)$\\
 $\crs_\nizk \leftarrow \nizk.\setup(\seck, L)$ &  $\pi_\com:= \bot, \pi_\dec: = r$ \\
-return $\crs:= (N,T,g,h_1,h_2,\crs_\nizk)$ & return $(c, \pi_\com, \pi_\dec)$\\
+return $\crs:= (N,T,g,h_1,h_2, h_3, \crs_\nizk)$ & return $(c, \pi_\com, \pi_\dec)$\\
 %$\crs_\nizk \leftarrow \nizk.\setup(\seck, L, (k_1, k_2, p,q))$ & return $(c, \pi_\com, \pi_\dec)$\\
 %$\crs_L \leftarrow \nizk.\gen_L(\seck, L, k_1)$ & \\ 
 %$\crs_\nizk:=(\param, \crs_L)$ & \\
 
                                              &\\
 $\underline{\cvrfy(\crs, c, \pi_\com)}$     & $\underline{\dvrfy(\crs,c, m, \pi_\dec)}$ \\
-Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
-return $\nizk.\vrfy(\crs_\nizk,(c_0, c_1, c_2), \pi)$  & if $ \land_{i=1}^2 c_i = h_i^{\pi_\dec}m  \bmod N \land c_0 = g^{\pi_\dec} \bmod N$\\
+Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ \\
+return $\nizk.\vrfy(\crs_\nizk,(c_0, c_1, c_2, c_3), \pi)$  & if $ \land_{i=1}^3 c_i = h_i^{\pi_\dec}m  \bmod N \land c_0 = g^{\pi_\dec} \bmod N$\\
  & \tab return 1 \\
 & return 0 \\
                                              &\\
 $\underline{\fdecom(\crs,c)}$ & $\underline{\eval(\crs,\otimes_N, c_1, \dots, c_n)}$ \\
-Parse $c$ as $(c_0, c_1, c_2,\pi)$ & Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2}, \pi_i)$\\
-if $\nizk.\vrfy(\crs_\nizk,(c_0, c_1, c_2), \pi)$ & Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N$ \\
-\tab Compute $ y:=c_0^{2^T} \bmod N$ &  Compute $c_2 := \prod_{i=1}^n c_{i,2} \bmod N $\\
-\tab $m:=c_2 \cdot y^{-1} \bmod N$ & $c_1:= \bot,\pi:= \bot$\\
-\tab return $m$ & return $c := (c_0, c_1, c_2, \pi)$\\
+Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2}, c_{i,3}, \pi_i)$\\
+if $\nizk.\vrfy(\crs_\nizk,(c_0, c_1, c_2, c_3), \pi)$ & Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N$ \\
+\tab Compute $ y:=c_0^{2^T} \bmod N$ &  Compute $c_3 := \prod_{i=1}^n c_{i,3} \bmod N $\\
+\tab $m:=c_3 \cdot y^{-1} \bmod N$ & $c_1:= \bot, c_2:=\bot, \pi:= \bot$\\
+\tab return $m$ & return $c := (c_0, c_1, c_2, c_3, \pi)$\\
 return $\bot$ & \\
 
 %$\underline{\decom(\crs, \sk, c)}$     & $\underline{\fdecom(\crs,c)}$ \\
@@ -142,9 +142,9 @@ It is natural to ask if it is possible to make the construction in \Cref{table:n
 \begin{tabular}{|ll|}
 \hline
 $\underline{\fdecom(\crs,c)}$ & $\underline{\fdvrfy(\crs,c, m, \pi_\fdecom)}$ \\
-Parse $c$ as $(c_0, c_1, c_2, \pi)$ & Parse $c$ as $(c_0, c_1, c_2, \pi)$\\
-$y:=c_0^{2^T} \bmod N$, $\pi_\poe=\poe.\prove(c_0,y)$ &  if $c_2= m \cdot y \bmod N \land \poe.\vrfy((c_0,y), \pi_\poe)$\\
-$\pi_\fdecom:=(y, \pi_\poe), m:=c_2 \cdot y{-1} \bmod N$ &\tab return 1\\
+Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$\\
+$y:=c_0^{2^T} \bmod N$, $\pi_\poe=\poe.\prove(c_0,y)$ &  if $c_3 = m \cdot y \bmod N \land \poe.\vrfy((c_0,y), \pi_\poe)$\\
+$\pi_\fdecom:=(y, \pi_\poe), m:=c_3 \cdot y{-1} \bmod N$ &\tab return 1\\
 return $(m,\pi_\fdecom)$ & return 0\\
 
 \hline          

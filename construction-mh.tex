@@ -4,7 +4,7 @@
 The construction described in this section is very similar to that from \Cref{sec:linearNITCstdmodel}, except that we replace Paillier encryption with ElGamal to obtain a multiplicative homomorphism. Also the proof follows the same high-level outline, but is different in some details, and therefore we give a full proof, too. We use a SS-NIZK for the following language: 
 
 \[
-L = \left\{(c_0, c_1, c_2)| \exists (m,r):
+L = \left\{(c_0, c_1, c_2, c_3)| \exists (m,r):
 \begin{aligned}
        (\land_{i=1}^3 c_i = h_i^{r}m \bmod N) \land
        c_0 = g^r \bmod N\\

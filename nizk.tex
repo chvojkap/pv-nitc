@@ -23,6 +23,19 @@ s \notin L \land
 (\pi, s) \leftarrow \adv_\secpar
 \end{aligned} \right] \leq \negl(\secpar).
 \]
+
+%We say that a non-interactive proof system is \emph{sound with respect to auxiliary input $\aux$} if for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in N$
+%\[
+%\snd_\adv^\nizk = \Pr\left[
+%\begin{aligned}
+%s \notin L \land
+%\vrfy(s, \pi) = 1
+%\end{aligned}
+%:
+%\begin{aligned}
+%(\pi, s) \leftarrow \adv_\secpar(\aux)
+%\end{aligned} \right] \leq \negl(\secpar).
+%\]
 \end{definition}
 
 Next we define the \emph{zero-knowledge} property for non-interactive proof system in the random oracle model. The simulator $\simul$ of a non-interactive zero-knowledge proof system is modelled as a stateful algorithm which provides two modes, namely $(\pi, \st) \leftarrow \simul(1, \st, s)$  for answering proof queries and $(v, \st) \leftarrow \simul(2, \st, u)$ for answering random oracle queries. The common state $\st$ is updated after each operation.
@@ -111,7 +124,7 @@ transcripts resulting from interactions between $\prv$ and $\vrf$ on common inpu
 \end{definition}
 
 \begin{definition}[Soundness]
-We say that a Sigma protocol for an NP language $L$ is \emph{sound}, if a proof for a statement $x \notin L$ output by any (even unbounded) is accepted only with negligible probability.
+We say that a Sigma protocol for an NP language $L$ is \emph{sound}, if a proof for a statement $x \notin L$ output by any (even unbounded) adversary is accepted only with negligible probability.
 \end{definition}
 
 \begin{definition}[Quasi Unique Responses]

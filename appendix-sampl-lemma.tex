@@ -6,14 +6,14 @@
 \begin{proof}
 The following computation proves the lemma:
 \begin{align*}
-\sd(X, Y) = \half \sum_{r \in [\floor{N/2}]} \abs{\Pr[X = r] - \Pr[Y = r]} = \\ 
-\half \left( \sum_{r = 1}^{\varphi(N)/2} \abs{\Pr[X = r] - \Pr[Y = r]} + \sum_{r = \varphi(N)/2+1}^{\floor{N/2}} \abs{\Pr[X = r] - \Pr[Y = r]} \right) = 
+\sd(X, Y) = \half \sum_{r \in [\floor{N/\ell}]} \abs{\Pr[X = r] - \Pr[Y = r]} = \\ 
+\half \left( \sum_{r = 1}^{\varphi(N)/\ell} \abs{\Pr[X = r] - \Pr[Y = r]} + \sum_{r = \varphi(N)/\ell+1}^{\floor{N/\ell}} \abs{\Pr[X = r] - \Pr[Y = r]} \right) = 
 \\
-\half \left( \sum_{r = 1}^{\varphi(N)/2} \abs{\frac{1}{\floor{N/2}} - \frac{2}{\varphi(N)}} + \sum_{r = \varphi(N)/2+1}^{\floor{N/2}} \abs{\frac{1}{\floor{N/2}} - 0} \right) \leq \\
-\half \left( \sum_{r = 1}^{\varphi(N)/2} \abs{\frac{2}{N} - \frac{2}{\varphi(N)}} + \sum_{r = \varphi(N)/2+1}^{\floor{N/2}} \abs{\frac{1}{\floor{N/2}} - 0} \right) = \\
-\half \left( \varphi(N)/2 \abs{\frac{2(\varphi(N) - N)}{\varphi(N)N}} + (\floor{N/2}-\varphi(N)/2) \frac{1}{\floor{N/2}} \right) = \\
- \half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/2}{{\floor{N/2}}} \right) \leq 
-\half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/2}{{N/2}} \right) = \\
+\half \left( \sum_{r = 1}^{\varphi(N)/\ell} \abs{\frac{1}{\floor{N/\ell}} - \frac{\ell}{\varphi(N)}} + \sum_{r = \varphi(N)/\ell+1}^{\floor{N/\ell}} \abs{\frac{1}{\floor{N/\ell}} - 0} \right) \leq \\
+\half \left( \sum_{r = 1}^{\varphi(N)/\ell} \abs{\frac{\ell}{N} - \frac{\ell}{\varphi(N)}} + \sum_{r = \varphi(N)/\ell+1}^{\floor{N/\ell}} \abs{\frac{1}{\floor{N/\ell}} - 0} \right) = \\
+\half \left( \varphi(N)/\ell \abs{\frac{\ell(\varphi(N) - N)}{\varphi(N)N}} + (\floor{N/\ell}-\varphi(N)/\ell) \frac{1}{\floor{N/\ell}} \right) = \\
+ \half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/\ell}{{\floor{N/\ell}}} \right) \leq 
+\half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/\ell}{{N/\ell}} \right) = \\
  \half\frac{2(N-\varphi(N))}{N} = 
 \frac{(N-(N-p-q+1))}{N} = \frac{p+q-1}{N} = \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
 \end{align*}
@@ -59,7 +59,7 @@ Completeness is implied by the completeness of the NIZK and can be verified by i
 % We note that if we use value $2^T$ as a secret key, then in order to compute $c_2$ we have to execute $T$ repeated squarings, but since $T$ is polynomial in $\secpar$ this computations is considered to be efficient.
 
 \newsequenceofgames{NITC-MH}
-To prove security we define a sequence of games $\games_0 - \games_{10}$.  For $i \in \{0,1,\dots,9\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
+To prove security we define a sequence of games $\games_0 - \games_{8}$.  For $i \in \{0,1,\dots,8\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
 %In individual games we use the algorithm $\decom$ define in \Cref{fig:deco} to answer decommitment queries efficiently. 
 \begin{figure}[h!]
 \begin{center}
@@ -91,21 +91,21 @@ In game $\games_\thisgame$ decommitment queries are answered using the algorithm
 \]
 \end{lemma}
 
-Notice that if $c_1$ and $c_3$ contain the same message, both oracles answer decommitment queries consistently. Let $\event$ denote the event that the adversary $\adv$ asks a decommitment query $c$ such that its decommitment using the key $k_1$ is different from its decommitment using $\fdecom$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ happens, we bound the probability of $\event$. Concretely, we have
+Notice that if $c_1$ and $c_2$ contain the same message, both oracles answer decommitment queries consistently. Let $\event$ denote the event that the adversary $\adv$ asks a decommitment query $c$ such that its decommitment using the key $k_1$ is different from its decommitment using $\fdecom$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ happens, we bound the probability of $\event$. Concretely, we have
 
 \[
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
 \]
 
-We construct an adversary $\advB$ that breaks soundness of the NIZK. It is given as input $\crs_\nizk$ together with a membership testing trapdoor $\tau_L:=(k_1, k_2, t)$ where $t:=2^T \bmod \varphi(N)/2$. 
+We construct an adversary $\advB$ that breaks soundness of the NIZK. It is given as input $\crs_\nizk$ together with a membership testing trapdoor $\tau_L:=(k_1, t)$ where $t:=2^T \bmod \varphi(N)/4$. 
 The adversary $\advB_{\secpar}(\crs_\nizk, \tau_L)$ proceeds as follows:
 \vspace{-2mm}
 \begin{enumerate}
-\item It computes $h_1:= g^{k_1} \bmod N, h_2:= g^{k_2} \bmod N, h_3:= g^{t} \bmod N$ using the membership testing trapdoor $\tau_L:=(k_1, k_2, t)$ and sets $\crs:=\mathlist(N, T, g, h_1, h_2, h_3, \crs_\nizk)$.
+\item It computes $h_1:= g^{k_1} \bmod N, h_2:= g^{t} \bmod N$ using the membership testing trapdoor $\tau_L:=(k_1, t)$ and sets $\crs:=\mathlist(N, T, g, h_1, h_2, \crs_\nizk)$.
 \item Then it runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
-\item It samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b, c_3^*:=h_3^{r}m_b$. It sets $(s:=\mathlist(c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ and runs $\pi^* \leftarrow \nizk.\prove(s,w)$.
-\item Next, it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
-\item Finally, it checks whether there exists a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\fdecom(\crs, c) \neq \dec(\crs,c,2)$. If $\event$ occurs, then this is the case, and it returns $((c_0, c_1, c_2, c_3), \pi)$. Notice that this can be done efficiently with the knowledge of $t$.
+\item It samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b$. It sets $(s:=\mathlist(c_0^*, c_1^*, c_2^*), w:=(m,r))$ and runs $\pi^* \leftarrow \nizk.\prove(s,w)$.
+\item Next, it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
+\item Finally, it checks whether there exists a decommitment query $c: = (c_0, c_1, c_2, \pi)$ such that $\fdecom(\crs, c) \neq \dec(\crs,c,2)$. If $\event$ occurs, then this is the case, and it returns $((c_0, c_1, c_2), \pi)$. Notice that this can be done efficiently with the knowledge of $t$.
 \end{enumerate}
 
 $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, then it outputs a valid proof for a statement which is not in the specified language $L$. Therefore we get
@@ -125,7 +125,7 @@ $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens
 
 
 \nextgame{SimulProof}
-Game $\games_\thisgame$ proceeds exactly as the previous game but we run the zero-knowledge simulator $(\crs, \tau) \leftarrow \simul_1(\seck, L)$ in $\pgen$ and produce a simulated proof for the challenge commitment as $\pi \leftarrow \simul_2(\crs, \tau, (c_0^*,c_1^*,c_2^*,c_3^*))$. By the zero-knowledge security of the NIZK we directly obtain
+Game $\games_\thisgame$ proceeds exactly as the previous game but we run the zero-knowledge simulator $(\crs, \tau) \leftarrow \simul_1(\seck, L)$ in $\pgen$ and produce a simulated proof for the challenge commitment as $\pi \leftarrow \simul_2(\crs, \tau, (c_0^*,c_1^*,c_2^*))$. By the zero-knowledge security of the NIZK we directly obtain
 \begin{lemma}
 \[
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \zk^\nizk_\advB.
@@ -136,21 +136,21 @@ We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against t
 $\advB_\secpar(\crs_\nizk, \tau_L):$
 \vspace{-2mm}
 \begin{enumerate}
-\item Set $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, h_3, \crs_\nizk)$, run $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$, and answer decommitment queries using $k_1$ (which is included in $\tau_L = (k_1, k_2, t$.
-\item Sample $b \rand \bits, r \rand \smplset$ and compute $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b, c_3^*:=h_3^{r}m_b$. Then submit $(s:=\mathlist(h_1,h_2,c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ to the oracle to obtain proof $\pi^*$.
-\item Run $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$, answering decommitment queries using $k_1$.
+\item Set $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, \crs_\nizk)$, run $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$, and answer decommitment queries using $k_1$ (which is included in $\tau_L = (k_1, t)$.
+\item Sample $b \rand \bits, r \rand \smplsetqrn$ and compute $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b$. Then submit $(s:=\mathlist(h_1,h_2,c_0^*, c_1^*, c_2^*), w:=(m,r))$ to the oracle to obtain proof $\pi^*$.
+\item Run $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*), \pi^*, \st)$, answering decommitment queries using $k_1$.
 \item Return the truth value of $b=b'$.
 \end{enumerate}
 If the proof $\pi^*$ is generated using $\nizk.\prove$, then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise, $\pi^*$ is generated using $\simul_1$ and $\advB$ simulates $\games_\thisgame$ perfectly. This proves the lemma.
 
 \nextgame{RndExp}
-In $\games_\thisgame$ we sample $r$ uniformly at random from $[\varphi(N)/2]$. 
+In $\games_\thisgame$ we sample $r$ uniformly at random from $[\varphi(N)/4]$. 
 
 \begin{lemma}
 \[
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
 \]
-\end{lemma}
+\end{lemma}\todo{general proof for any n}
 %At first we remark that for upper bounding the difference between the games we use a statistical argument. Because $r$ appears only in the exponent of the group generator, we later sample a random element from the group $\qrn$ which can be done efficiently. 
 Since the only difference between the two games is in the set from which we sample $r$, to upper bound the advantage of adversary we can use \Cref{sampling-lemma}, which directly yields required upper bound.
 
@@ -165,7 +165,7 @@ Since the only difference between the two games is in the set from which we samp
 
 
 \nextgame{SSSA}
-In $\games_\thisgame$ we sample $y_3 \rand \Jn$ and compute $c_3^*$ as $y_3 m_b$.
+In $\games_\thisgame$ we sample $y_2 \rand \qrn$ and compute $c_2^*$ as $y_2 m_b$.
 
 Let $\tilT_\sss(\secpar)$ be the polynomial whose existence is guaranteed by the SSS assumption.
 Let $\poly_\advB(\secpar)$ be the fixed polynomial which bounds the time required to execute Steps 1--2 and answer decommitment queries in Step 3 of the adversary $\advB_{2, \secpar}$ defined below. Set $\undT := (\poly_\advB(\secpar))^{1 / \ugap}$.  Set $\tilT_\nitc := \max(\tilT_\sss, \undT)$.
@@ -179,22 +179,22 @@ From any polynomial-size adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar
 The adversary $\advB_{1,\secpar}(N, T(\secpar), g):$
 \vspace{-2mm}
 \begin{enumerate}
-\item Samples $k_1, k_2 \rand \smplset$, computes $h_1 := g^{k_1} \bmod N, h_2 := g^{k_2} \bmod N,  h_3 := g^{2^{T(\secpar)}} \bmod N$, runs $(\crs_\nizk, \tau) \leftarrow \nizk.\simul_1(\seck, L)$ and sets $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, h_3, \crs_\nizk)$. Notice that value $h_3$ is computed by repeated squaring.
+\item Samples $k_1\rand \smplsetqrn$, computes $h_1 := g^{k_1} \bmod N, h_2 := g^{2^{T(\secpar)}} \bmod N$, runs $(\crs_\nizk, \tau) \leftarrow \nizk.\simul_1(\seck, L)$ and sets $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, \crs_\nizk)$. Notice that value $h_2$ is computed by repeated squaring.
 \item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
-\item Outputs $(N,g,k_1, k_2, h_1,h_2,h_3,\crs_\nizk, \tau, m_0, m_1, \st)$
+\item Outputs $(N,g,k_1, h_1,h_2,\crs_\nizk, \tau, m_0, m_1, \st)$
 \end{enumerate}
 
-The adversary $\advB_{2,\secpar}(x,y,(N,g,k_1, k_2, h_1,h_2,h_3, \crs_\nizk, \tau, m_0, m_1, \st)):$
+The adversary $\advB_{2,\secpar}(x,y,(N,g,k_1, h_1,h_2, \crs_\nizk, \tau, m_0, m_1, \st)):$
 \vspace{-2mm}
 \begin{enumerate}
-\item Samples $b \rand \bits$, computes $c_0^*:=x, c_1^*:=x^{k_1} m_b, c_2^*:=x^{k_2}m_b, c_3^*:=y m_b$.
-\item Runs $\pi^* \leftarrow \simul(\crs_\nizk, \tau, (c_0^*, c_1^*, c_2^*, c_3^*))$.
-\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*), \st)$ and answers decommitment queries using $k_1$.
+\item Samples $b \rand \bits$, computes $c_0^*:=x, c_1^*:=x^{k_1} m_b,  c_2^*:=y m_b$.
+\item Runs $\pi^* \leftarrow \simul(\crs_\nizk, \tau, (c_0^*, c_1^*, c_2^*))$.
+\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*), \pi^*), \st)$ and answers decommitment queries using $k_1$.
 \item Returns the truth value of $b=b'$.
 \end{enumerate}
-Since $g$ is a generator of $\Jn$ and $x$ is sampled uniformly at random from $\Jn$ there exists some $r \in [\varphi(N)/2]$ such that $x = g^{r}$. Therefore when $y = x^{2^T} = (g^{2^T})^{r} \bmod N$, then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $y$ is random value and $\advB$ simulates $\games_\thisgame$ perfectly. We remark that at this point $c_3^*$ does not reveal any information about $m_b$.
+Since $g$ is a generator of $\qrn$ and $x$ is sampled uniformly at random from $\qrn$ there exists some $r \in [\varphi(N)/4]$ such that $x = g^{r}$. Therefore when $y = x^{2^T} = (g^{2^T})^{r} \bmod N$, then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $y$ is random value and $\advB$ simulates $\games_\thisgame$ perfectly. We remark that at this point $c_2^*$ does not reveal any information about $m_b$.
 
-Now we analyse the running time of the constructed adversary. Adversary $\advB_1$ computes $h_3$ by $T(\secpar)$ consecutive squarings and because $T(\secpar)$ is polynomial in $\secpar$, $\advB_1$ is efficient. Moreover, $\advB_2$ fulfils the depth constraint:
+Now we analyse the running time of the constructed adversary. Adversary $\advB_1$ computes $h_2$ by $T(\secpar)$ consecutive squarings and because $T(\secpar)$ is polynomial in $\secpar$, $\advB_1$ is efficient. Moreover, $\advB_2$ fulfils the depth constraint:
 \[ \dep(\advB_{2,\secpar}) = \poly_\advB(\secpar) + \dep(\adv_{2,\secpar}) \leq \undT^{\ugap}(\secpar) + T^{\ugap}(\secpar) \leq 2 T^{\ugap}(\secpar) = o(T^{\gap}(\secpar)). \] 
 
 Also $T(\cdot) \geq \tilT_\nitc(\cdot) \geq \tilT_\sss(\cdot)$ as required.  
@@ -210,40 +210,9 @@ Also $T(\cdot) \geq \tilT_\nitc(\cdot) \geq \tilT_\sss(\cdot)$ as required.
 %\nextgame{RndExp3}
 
 
+
 \nextgame{RndExp2}
-In $\games_\thisgame$ we sample $k_2$ uniformly at random from $[\varphi(N)/2]$. 
-
-\begin{lemma}
-\[
-\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
-\]
-\end{lemma}
-
-Again using a statistical argument this lemma directly follows from \Cref{sampling-lemma}.
-
-\nextgame{DDH}
-In $\games_\thisgame$ we sample $y_2 \rand \Jn$ and compute $c_2^*$ as  $y_2 m_b$. 
-
-\begin{lemma}\label{lem-mh:ddh}
-\[
-\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \advtg_\advB^\ddh.
-\]
-\end{lemma}
-We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against DDH in the group $\Jn$. %Given \Cref{thm:ddh} this implies an adversary against DDH in large prime-order subgroups of $\Zn^*$.
-
-$\advB_{\secpar}(N,g,g^\alpha, g^\beta, g^\gamma):$
-\vspace{-2mm}
-\begin{enumerate}
-\item Samples $k_1 \rand \smplset$, computes $h_1 := g^{k_1} \bmod N,  h_3 := g^{2^{T}} \bmod N$, runs $(\crs_\nizk, \tau) \leftarrow \nizk.\simul_1(\seck, L)$ and sets $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2: = g^\alpha, h_3, \crs_\nizk)$.
-\item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
-\item Samples $b \rand \bits, y_3 \rand \Jn$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(g^\beta, (g^\beta)^{k_1} m_b, (g^{\gamma}) m_b, y_3 m_b).$ Runs $\pi^* \leftarrow \simul(1, \st', (h_1, h_2, c_0^*, c_1^*, c_2^*, c_3^*))$.
-\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*,c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
-\item Returns the truth value of $b=b'$.
-\end{enumerate}
-If $\gamma = \alpha\beta$, then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $g^\gamma$ is uniform random element in $\Jn$ and $\advB$ simulates $\games_\thisgame$ perfectly. This proofs the lemma. We remark that at this point $c_2^*$ does not reveal any information about $m_b$.
-
-\nextgame{RndExp3}
-In $\games_\thisgame$ we sample $k_2$ uniformly at random from $\smplset$. 
+In $\games_\thisgame$ we sample $k_1$ uniformly at random from $\smplsetqrn$. 
 
 \begin{lemma}
 \[
@@ -255,7 +224,7 @@ This lemma directly follows from \Cref{sampling-lemma}.
 
 \nextgame{SimSnd}
 
-In $\games_\thisgame$ we answer decommitment queries using $\dec$ (\Cref{fig:deco-mh}) with $i:=2$ which means that secret key $k_2$ and ciphertext $c_2$ are used. 
+In $\games_\thisgame$ we answer decommitment queries using $\dec$ (\Cref{fig:deco-mh}) with $i:=2, \sk:=t$ which means that secret key $t$ and ciphertext $c_2$ are used. 
 
 \begin{lemma}
 \[
@@ -263,22 +232,22 @@ In $\games_\thisgame$ we answer decommitment queries using $\dec$ (\Cref{fig:dec
 \]
 \end{lemma}
 
-Let $\event$ denote the event that adversary $\adv$ asks a decommitment query $c$ such that its decommitment using the key $k_1$ is different from its decommitment using the key $k_2$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ does not happen, by the standard argument it is sufficient to upper bound the probability of happening $\event$. Concretely,  
+Let $\event$ denote the event that adversary $\adv$ asks a decommitment query $c$ such that its decommitment using the key $k_1$ is different from its decommitment using the key $t$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ does not happen, by the standard argument it is sufficient to upper bound the probability of happening $\event$. Concretely,  
 
 \[
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
 \]
 
-We construct an adversary $\advB$ that breaks one-time simulation soundness of the NIZK and it is given as input $\crs_\nizk$ together with a membership testing trapdoor $\tau_L:=(k_1, k_2, t)$ where $t:=2^T \bmod \varphi(N)/2$. 
+We construct an adversary $\advB$ that breaks one-time simulation soundness of the NIZK and it is given as input $\crs_\nizk$ together with a membership testing trapdoor $\tau_L:=(k_1, t)$ where $t:=2^T \bmod \varphi(N)/4$. 
 
 The adversary $\advB_{\secpar}^{\simul_2}(\crs_\nizk, \tau_L):$
 \vspace{-2mm}
 \begin{enumerate}
-\item Computes $h_1:= g^{k_1} \bmod N, h_2:= g^{k_2} \bmod N, h_3:= g^{t} \bmod N$ using the membership testing trapdoor $\tau_L$ and sets $\crs:=(N, T, g, h_1, h_2, h_3, \crs_\nizk)$.
-\item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_2$.
-\item Samples $b \rand \bits, x, y_2, y_3 \rand \Jn$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(x, x^{k_1} m_b,\allowbreak y_2 m_b, y_3 m_b)$. Forwards $(c_0^*, c_1^*, c_2^*, c_3^*)$ to simulation oracle $\simul_2$ and obtains a proof $\pi^*$.
-\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_2$.
-\item Find a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\dec(\crs, c, 1) \neq \dec(\crs,c,2)$ and returns $((c_0, c_1, c_2, c_3), \pi)$
+\item Computes $h_1:= g^{k_1} \bmod N, h_2:= g^{t} \bmod N$ using the membership testing trapdoor $\tau_L$ and sets $\crs:=(N, T, g, h_1, h_2, \crs_\nizk)$.
+\item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $t$.
+\item Samples $b \rand \bits, x, y_2\rand \qrn$ and computes $(c_0^*, c_1^*, c_2^*):=(x, x^{k_1} m_b,\allowbreak y_2 m_b)$. Forwards $(c_0^*, c_1^*, c_2^*)$ to simulation oracle $\simul_2$ and obtains a proof $\pi^*$.
+\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*), \pi^*, \st)$ and answers decommitment queries using $t$.
+\item Find a decommitment query $c: = (c_0, c_1, c_2, \pi)$ such that $\dec(\crs, c, k_1, 1) \neq \dec(\crs,c,t,2)$ and returns $((c_0, c_1, c_2), \pi)$
 \end{enumerate}
 
 $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, it outputs a valid proof for a statement which is not in the specified language $L$. Therefore
@@ -304,7 +273,7 @@ which concludes the proof of the lemma.
 %\end{lemma}
 
 \nextgame{RndExp4}
-In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/2]$. 
+In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/4]$. 
 
 \begin{lemma}
 \[
@@ -314,15 +283,26 @@ In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/2]$.
 
 This lemma directly follows from \Cref{sampling-lemma}.
 
-\nextgame{DDH2}
-In $\games_\thisgame$ we sample $y_1 \rand \Jn$ and compute $c_1^*$ as  $y_1 m_b$. 
+\nextgame{DDH1}
+In $\games_\thisgame$ we sample $y_1 \rand \qrn$ and compute $c_1^*$ as  $y_1 m_b$. 
 
 \begin{lemma}
 \[
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \advtg_\advB^\ddh.
 \]
 \end{lemma}
-This can be proven in similar way as \Cref{lem-mh:ddh}. We remark that at this point $c_1^*$ does not reveal any information about $m_b$.
+We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against DDH in the group $\qrn$. Given \Cref{thm:ddh} this implies an adversary against DDH in large prime-order subgroups of $\Zn^*$.
+
+$\advB_{\secpar}(N,p,q,g,g^\alpha, g^\beta, g^\gamma):$
+\vspace{-2mm}
+\begin{enumerate}
+\item Computes $\varphi(N):=(p-1)(q-1), t:=2^{T} \bmod \varphi(N)/4, h_2:=g^t \bmod N$ and sets $\crs:=(N, T, g, h_1: = g^\alpha, h_2)$.
+\item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $t$.
+\item Samples $b \rand \bits, y_2 \rand \qrn$ and computes $(c_0^*, c_1^*, c_2^*):=(g^\beta, g^\gamma \cdot m_b, y_2 \cdot m_b).$ Runs $\pi^* \leftarrow \simul(1, \st', (c_0^*, c_1^*, c_2^*))$.
+\item Runs $b' \leftarrow \adv_{2, \secpar}(c_0^*, c_1^*, c_2^*, \pi^*), \st)$ and answers decommitment queries using $t$.
+\item Returns the truth value of $b=b'$. We remark that at this point $c_1^*$ does not reveal any information about $m_b$.
+\end{enumerate}
+If $\gamma = \alpha\beta$ then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $g^\gamma$ is uniform random element in $\qrn$ and $\advB$ simulates $\games_\thisgame$ perfectly. This proofs the lemma.
 
 \begin{lemma}\label{nitc-mh:llem}
 \[
@@ -330,12 +310,12 @@ This can be proven in similar way as \Cref{lem-mh:ddh}. We remark that at this p
 \]
 \end{lemma}
 
-Clearly, $c_0^*$ is uniform random element in $\Jn$ and hence it does not contain any information about the challenge message. Since $y_1, y_2, y_3$ are sampled uniformly at random from $\Jn$ the ciphertexts $c_1^*, c_2^*, c_3^*$ are also uniform random elements in $\Jn$ and hence do not contain any information about the challenge message $m_b$. Therefore, an adversary can not do better than guessing.
+Clearly, $c_0^*$ is uniform random element in $\qrn$ and hence it does not contain any information about the challenge message. Since $y_1, y_2$ are sampled uniformly at random from $\qrn$ the ciphertexts $c_1^*, c_2^*$ are also uniform random elements in $\qrn$ and hence do not contain any information about the challenge message $m_b$. Therefore, an adversary can not do better than guessing.
 
 By combining Lemmas \ref{nitc-mh:flem} - \ref{nitc-mh:llem} we obtain the following:
 \begin{align*}
-&\advtg^{\nitc}_{\adv} = \left| \Pr[\games_0 = 1] - \half \right| \leq \sum_{i=0}^9 \left|\Pr[\games_i = 1] - \Pr[\games_{i+1} = 1] \right| + \left|\Pr[\games_{10}- \half\right| \\
- &\leq \snd^\nizk_\advB + \zk^\nizk_\advB + \advtg^{\sss}_{\advB} + \simsnd^{\nizk}_{\advB} + 2 \advtg^{\ddh}_{\advB} + 4 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right),
+&\advtg^{\nitc}_{\adv} = \left| \Pr[\games_0 = 1] - \half \right| \leq \sum_{i=0}^7 \left|\Pr[\games_i = 1] - \Pr[\games_{i+1} = 1] \right| + \left|\Pr[\games_{8}- \half\right| \\
+ &\leq \snd^\nizk_\advB + \zk^\nizk_\advB + \advtg^{\sss}_{\advB} + \simsnd^{\nizk}_{\advB} + \advtg^{\ddh}_{\advB} + 3 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right),
 \end{align*}
 which concludes the proof.
 %\end{proof}

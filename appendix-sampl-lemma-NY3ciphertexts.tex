@@ -59,7 +59,7 @@ Completeness is implied by the completeness of the NIZK and can be verified by i
 % We note that if we use value $2^T$ as a secret key, then in order to compute $c_2$ we have to execute $T$ repeated squarings, but since $T$ is polynomial in $\secpar$ this computations is considered to be efficient.
 
 \newsequenceofgames{NITC-MH}
-To prove security we define a sequence of games $\games_0 - \games_{10}$.  For $i \in \{0,1,\dots,9\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
+To prove security we define a sequence of games $\games_0 - \games_{10}$.  For $i \in \{0,1,\dots,10\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
 %In individual games we use the algorithm $\decom$ define in \Cref{fig:deco} to answer decommitment queries efficiently. 
 \begin{figure}[h!]
 \begin{center}

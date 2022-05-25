@@ -313,15 +313,15 @@ In $\games_\thisgame$ we sample $y_3 \rand \Zns$ such that it has Jacobi symbol 
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \advtg_\advB^\dcr.
 \]
 \end{lemma}
-We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against DCR:
+We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against DCR. $\advB_\secpar(N,y)$ works as follows:
 
 %$\advB_{\secpar}(N,y):$
 \vspace{-2mm}
 \begin{enumerate}
 \item It samples $g, y_3, x \rand \Jn, k_1, k_2 \rand \smplset$, computes $h_1 := g^{k_1} \bmod N, h_2 := g^{k_2} \bmod N,  h_3 := g^{2^{T}} \bmod N$, runs $(\crs_\nizk, \tau) \leftarrow \nizk.\simul_1(\seck, L)$ and sets $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, h_3, \crs_\nizk)$. Notice that value $h_3$ is computed by repeated squaring.
 \item It runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
-\item The  it samples $b \rand \bits, w \rand \Zns$ such that $\left( \frac{y}{N} \right)= \left( \frac{w}{N} \right)$. We remark that computing Jacobi symbol can be done efficiently without knowing factorization of N.
-\item It computes $c_0^*:=x, , c_1^*:=x^{k_1N}(1+N)^{m_b}, c_2^*:=x^{k_2N}(1+N)^{m_b}, c_3^*:=yw^{N}(1+N)^{m_b}$. Runs $\pi^* \leftarrow \simul_2(\crs_\nizk, \tau, (c_0^*, c_1^*, c_2^*, c_3^*))$.
+\item Then it samples $b \rand \bits, w \rand \Zns$ such that $\left( \frac{y}{N} \right)= \left( \frac{w}{N} \right)$. We remark that computing Jacobi symbol can be done efficiently without knowing factorization of N.
+\item It computes $c_0^*:=x, c_1^*:=x^{k_1N}(1+N)^{m_b}, c_2^*:=x^{k_2N}(1+N)^{m_b}, c_3^*:=yw^{N}(1+N)^{m_b}$. Runs $\pi^* \leftarrow \simul_2(\crs_\nizk, \tau, (c_0^*, c_1^*, c_2^*, c_3^*))$.
 \item It runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
 \item Then it returns the truth value of $b=b'$.
 \end{enumerate}

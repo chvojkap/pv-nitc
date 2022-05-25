@@ -784,7 +784,7 @@ Notice that if $c_1$ and $c_2$ contain the same message, both oracles answer dec
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
 \]
 
-We construct an adversary $\advB$ that breaks soundness of the NIZK. 
+We construct an adversary $\advB$ that breaks soundness with respect to auxiliary input $\aux:=(p,q)$ of the NIZK. 
 The adversary $\advB_{\secpar}(p,q)$ proceeds as follows:
 \vspace{-2mm}
 \begin{enumerate}
@@ -909,16 +909,38 @@ Also $T(\cdot) \geq \tilT_\nitc(\cdot) \geq \tilT_\sss(\cdot)$ as required.
 
 
 \nextgame{QUR}
-Let $(c_0^*, c_1^*, c_2^*), \pi^*=(a_0^*,a_1^*,z^*))$ is the challenge commitment. In $\games_\thisgame$ we abort experiment if adversary asks any decommitment query $(c_0, c_1,c_2,\pi=(a_0,a_1,z))$ such that $c_0 = c_0^*, c_1 = c_1^*, c_2 = c_2^*, a_0 = a_0^*, a_1 = a_1^*$ and $z \neq z^*$. 
+Let $((c_0^*, c_1^*, c_2^*), \pi^*=(a_0^*,a_1^*,z^*))$ is the challenge commitment. In $\games_\thisgame$ we abort experiment if adversary asks any decommitment query $(c_0, c_1,c_2,\pi=(a,z))$ such that $c_0 = c_0^*, c_1 = c_1^*, c_2 = c_2^*, a = a^*$ and $z \neq z^*$. 
 
 \nextgame{Snd2}
 In game $\games_\thisgame$ decommitment queries are answered using the algorithm $\decom$ defined in \Cref{fig:deco-rom-mh} with $i:=2, \sk:=t$ which means that secret key $t$ and ciphertext $c_2$ are used, to answer decommitment queries efficiently. 
 
-Let $\event$ denote the event that adversary $\adv$ asks a decommitment query $c$ such that its decommitment using the key $k_1$ is different from its decommitment using the key $t$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ does not happen, by the standard argument it is sufficient to upper bound the probability of happening $\event$. Concretely,  
+Let $\event$ denote the event that adversary $\adv$ asks a decommitment query $c:=(c_0,c_1,c_2, \pi=(a_0,a_1,z))$ such that its decommitment using the key $k_1$ is different from its decommitment using the key $t$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ does not happen, by the standard argument it is sufficient to upper bound the probability of happening $\event$. Concretely,  
 
 \[
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
 \]
+
+
+We construct an adversary $\advB$ that breaks soundness with respect to auxiliary input $\aux:=(p,q)$ of the NIZK. W.l.o.g we assume that whenever event $\event$ happens, $\adv$ previously asked the random oracle $H$ on input $(h_1,h2,c_0,c_1,c_2,a_0,a_1)$. Let $\adv$ makes at most $Q$ random oracle queries. 
+The adversary $\advB_{\secpar}(p,q)$ proceeds as follows:
+\vspace{-2mm}
+\begin{enumerate}
+\item Samples $k_1\rand \smplsetqrn$, computes $h_1 := g^{k_1} \bmod N,\varphi(N):=(p-1)(q-1), t:=2^{T} \bmod \ordqrn, h_2:=g^t \bmod N$ and sets $\crs:=(N, T(\secpar), g, h_1, h_2)$. 
+\item Then it runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
+\item Samples $i \rand [Q]$ and answers random oracle queries $(h_1^j, h_2^j, c_0^j,c_1^j,c_2^j,a_0^j,a_1^j)$ in the following way:
+\begin{itemize}
+\item If $i=j$ it runs the protocol with the honest verifier $\vrf$ with for statement $(h_1^j, h_2^j, c_0^j,c_1^j,c_2^j)$ using as a commitment value $a_0^j,a_1^j$. It obtains challenge $v$ from $\vrf$ and if $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a_0^j,a_1^j)$ is set and not equal $v$, it aborts the experiment. Otherwise, it programs the oracle $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a_0^j,a_1^j):=v$ if . Answer the query of $\adv$ with $v$.
+\item Otherwise, it returns $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a_0^j,a_1^j)$ if it is set. If this is not the case samples $v_j$, sets $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a_0^j,a_1^j):=v_j$ and returns $v_j$.
+\end{itemize}
+\item Samples $b \rand \bits, x, y_2 \rand \qrn$ and computes $(c_0^*, c_1^*, c_2^*):=(x, x^{k_1} m_b,\allowbreak y_2 m_b)$. Run the HVZK simulator on $(h_1, h_2, c_0^*, c_1^*, c_2^*)$ to to obtain an accepting transcript $(a,v,z)$ and in case that $H(h_1, h_2, c_0^*, c_1^*, c_2^*,a)$ is already defined with value different to $v$ it aborts the experiment, otherwise it programs the oracle $H(h_1, h_2, c_0^*, c_1^*, c_2^*,a):=v$ and outputs $(a,z)$.
+\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$ and random oracle queries in the same way as before.
+\item Finally, it checks whether there exists a decommitment query $c: = \mathlist(c_0, c_1, c_2, \pi=(a,z))$ such that $\dec(\crs, c, k_1,1) \neq \dec(\crs,c,t,2)$. If $\event$ occurs, then this is the case and it returns $z$ as a response to the challenge $v$. 
+\end{enumerate}
+
+Suppose that the query $(h_1, h_2,c_0,c_1,c_2,a)$ has been asked to the random oracle as $i^*$-th query and that $i=i^*$. If the experiment is not aborted, then $\advB$ guesses a correct index for which $\adv$ asks decommitment query for a statement which is not in the specified language $L$. Therefore we get
+\[\Pr[\event] \leq \snd^\nizk_\advB.\]
+
+
 
 
 

@@ -1,4 +1,57 @@
 %!TEX root=main.tex
+
+\subsection{Technical Overview}\label{sec:techoverview}
+The \emph{binding} property of our commitment scheme will be relatively easy to argue, therefore let us focus on the \emph{hiding} property and non-malleability. Like in \cite{TCC:KatLosXu20}, we prove this by considering an IND-CCA security experiment, where the adversary has access to a forced decommitment oracle. 
+Even though the forced decommitment can be performed in polynomial time, this polynomial may be very large, if the time parameter $T$ is large. Since the experiment needs to be perform a forced decommitment for \emph{every} decommitment query of the adversary, this would incur a very significant overhead and a highly lossy reduction.
+Hence, following Katz \etal \cite{TCC:KatLosXu20}, we aim to build commitment schemes where a reduction can perform a fast decommitment. 
+
+Recall that a classical approach to achieve IND-CCA security is to apply the Naor-Yung paradigm \cite{STOC:NaoYun90}. A natural approach to construct non-malleable timed commitments is therefore to apply this paradigm as follows. A commitment $c = (c_1, c_2, \pi)$ to a message $m$ consists of a time-lock puzzle $c_1$ opening to $m$, a public key encryption of $m$, and a simulation-sound zero knowledge proof $\pi$ that both contain the same message $m$, everything with respect to public parameters contained in a public common reference string.
+This scheme may potentially achieve all desired properties:
+\begin{itemize}
+	\item Consistency of regular and forced opening can be achieved by using a suitable time lock puzzle and public key encryption scheme. 
+	\item The commitment is non-interactive.
+	\item IND-CCA security follows from the standard Naor-Yung argument.
+	\item The time lock puzzle in the above construction can be instantiated based on repeated squaring \cite{RSW96}, possibly using the variant of \cite{C:MalThy19} that combines repeated squaring with Paillier encryption \cite{EC:Paillier99} to achieve a linear homomorphism. 
+	\item Public verifiability can be achieved by using a suitable proof system for $\pi$.
+\end{itemize}
+
+Furthermore, in the IND-CCA security proof, we can perform fast opening by decrypting $c_2$ with the secret key of the public key encryption scheme, which is indistinguishable from a forced opening using $c_1$ by the soundness of the proof. 
+%
+However, it turns out that concretely instantiating this scheme in a way that yields a practical construction is non-trivial and requires a very careful combination of different techniques.
+
+\paragraph{Triple Naor-Yung.}
+First of all, note that repeated squaring modulo a composite number $N = PQ$, where $P$ and $Q$ are different primes, is currently the only available choice to achieve a practical time lock puzzle \todo{true in this generality?}, hence we are bound to using this puzzle to instantiate $c_1$. Conveniently, this puzzle allows for a linear (\ie, additive) homomorphism by following \cite{C:MalThy19}.
+%
+Then, in order to be able to instanatiate $\pi$ efficiently, it would be convenient to use a standard Sigma protocol, which can then be made non-interactive via the Fiat-Shamir transform \cite{C:FiaSha86} in the random oracle model, or by leveraging techniques from Libert \etal \cite{Libert2021OneShotFN} in the standard model. Since practically efficient Sigma protocols are only known for algebraic languages, such as that defined by the DDH relation, for example, we have to choose $c_2$ in a way which is ``algebraically compatible'' with $c_1$ and the available proofs $\pi$. If we instantiate $c_1$ with the homomorphic TLP from \cite{C:MalThy19}, then a natural candidate would be to instantiate $c_2$ also with Paillier encryption.  Here we face the first technical difficulty: 
+\begin{itemize}
+	\item Efficient proof systems for $\pi$ are only available, if both $c_1$ and $c_2$ use the same modulus $N$. Hence, we have to instantiate both with the same modulus.
+	\item When arguing that $c_1$ hides the committed message $m$ in the Naor-Yung argument of the security proof, we will have to replace $c_1$ with a random puzzle, using the \emph{strong sequential squaring} (SSS) assumption. At the same time, we have to be able to respond to decommitment queries using the decryption key of $c_2$. But this decryption key is the factorization $P, Q$ of the common modulus $N$, and we cannot reduce to the hardness of SSS while knowing the factorization of $N$.
+\end{itemize}
+The first candidate approach to overcome this difficulty is to replace the Paillier encryption used in $c_2$ with an encryption scheme that does not require knowledge of the factorization of $N$, such as the ``Paillier ElGamal'' scheme from \todo{which is the right paper to cite here?}, which is defined over the subgroup $\Jn$ of elements of $\Zn$ having Jacobi symbol 1, and which uses a discrete logarithm to decrypt but still requires the factorization of $N$ to be hidden in order to be secure.
+
+However, now we run into another difficulty. In the Naor-Yung argument, we will also have to replace $c_2$ with an encryption of a random message, in order to argue that our commitment scheme is hiding. In this part of the proof, we cannot know the secret key of $c_2$, that is, neither the aforementioned discrete logarithm, nor the factorization of $N$. However, we also cannot use $c_1$ to respond to decommitment queries, because then we would have to solve the time lock puzzle, which cannot be done fast without knowledge of the factorization of $N$.
+
+We resolve this problem by using ``triple Naor-Yung''. In our additively homomorphic constructions, a commitment to $m$ will have the form $c = (c_1, c_2, c_3, \pi)$, where $c_1$ and $c_2$ are Paillier-ElGamal encryptions of $m$, and $c_3$ is the Paillier-style time lock puzzle based on repeated squaring from \cite{C:MalThy19}. All are with respect to the same modulus $N$, and thus allow for an efficient Sigma-protocol-based proof $\pi$ that $c_1$, $c_2$, and $c_3$ all contain the same message. In the Naor-Yung-style IND-CCA security proof, we will first replace $c_3$ with a random puzzle, while using the discrete logarithm corresponding to $c_2$ to perform fast decommits. When we then replace $c_2$ with an encryption of a random message, we use $c_3$ to decrypt, and vice versa. Hence, throughout the argument we never require the factorization of $N$ for fast decommits.
+
+
+\paragraph{Standard Naor-Yung works for multiplicative homomorphism.}
+Next, we observe that the standard (\ie, ``two-ciphertext'') Naor-Yung approach works, if a \emph{multiplicative} homomorphism is required. Concretely, a commitment will have the form $c = (c_1, c_2, \pi)$, where $c_1$ is an ElGamal encryption and $c_2$ adopts the ``sequential-squaring-with-Paillier-encryption'' idea of \cite{C:MalThy19} to ``sequential-squating-with-ElGamal-encryption''. By replacing the underlying group to the subgroup $\qrn$ of quadratic residues modulo $N$, we can rely on the DDH assumption in $\qrn$ and thus do not require the factorization of $N$ to be hidden when replacing the ElGamal encryption $c_1$ with an encryption of a random message.
+While the construction idea and high-level arguments are very similar, the underlying groups and detailed arguments are somewhat different, and thus we have to give a separate proof.
+
+
+
+
+\paragraph{On separate proofs in the standard model and the ROM}
+The constructions sketched above can be instantiated relatively efficiently in the standard model, using the one-shot Fiat-Shamir arguments in the standard model by Libert \etal \cite{Libert2021OneShotFN}. However, these proofs repeat the underlying Sigma protocol a logarithmic number of times, and thus it would be interesting to also consider constructions in the random oracle model.
+Since the syntactical definitions and properties of proof systems in the random oracle model are slightly different from that in \cite{Libert2021OneShotFN}, we give separate proofs for both random oracle constructions as well. 
+
+\subsection{Further related work}
+Time lock puzzles based on randomized encodings where \cite{TCC:BDGM19}, but all known constructions of timed commitments rely on the repeated squaring puzzles of \cite{RSW96}.
+Timed commitments are also related to time-lock encryption schemes \cite{liu2018build,ECORICS:CJSS21}, albeit with different properties. The constructions in \cite{liu2018build,ECORICS:CJSS21} are based on an external ``computational reference clock'' (instantiated with a public block chain in \cite{liu2018build} or repeated squaring in \cite{ECORICS:CJSS21}), whose output can be used to decrypt, such that decrypting parties do not have to perform expensive computations by solving a puzzle.
+
+\todo{more?}
+
+
 % \subsection{Technical Overview}\label{sec:techoverview}
 
 % % Katz et al:
@@ -68,12 +121,6 @@
 % We stress that our construction does not require \emph{special soundness}, which is usually more expensive to achieve in hidden-order groups since to obtain reasonable security guarantees one has to either run the underlying protocols several times in parallel or use large modulus $N$ \cite{SPEED:BKSST}. Instead, for our construction a negligible soundness error is sufficient and therefore our constructions do not suffer with the mentioned drawbacks.
 % %so that we can use smaller integers, which reduces computational complexity and proof size further.
 
-
-\paragraph{On the need for separate proofs in std model and ROM}
-\ref{thm:SigmaROMFactoring}
-
-Libert et al repeat underlying sigma protocol logarithmic number of times
-\todo{move to ROM section? still doesn't explain why two separate proofs.}
 
 %%% Local Variables:
 %%% mode: latex

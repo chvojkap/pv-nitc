@@ -1,7 +1,8 @@
 %!TEX root=./main.tex
 \subsection{Construction of Multiplicatively Homomorphic Non-Malleable NITC}
 
-The construction described in this section is very similar to that from \Cref{sec:linearNITCstdmodel}, except that we replace Paillier encryption with ElGamal to obtain a multiplicative homomorphism. Also the proof follows the same high-level outline, but is different in some details, and therefore we give a full proof, too. We use a SS-NIZK for the following language: 
+The construction described in this section is similar to that from \Cref{sec:linearNITCstdmodel}, except that we replace Paillier encryption with ElGamal to obtain a multiplicative homomorphism and the construction is based on standard Naor-Yung paradigm. %The proof follows the same high-level outline, but is different in some details, and therefore we give a full proof, too. 
+Our construction is given in \Cref{table:nitc-mh} and we rely on a one-time simulation sound NIZK for the following language: 
 
 \[
 L = \left\{(c_0, c_1, c_2)| \exists (m,r):

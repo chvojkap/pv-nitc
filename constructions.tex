@@ -1,7 +1,7 @@
 %!TEX root=./main.tex
 \subsection{Construction of Linearly Homomorphic Non-Malleable NITC}
 \label{sec:linearNITCstdmodel}
-We start with a construction of linearly homomorphic non-malleable NITC. In our construction we rely on a SS-NIZK for the following language: 
+We start with a construction of linearly homomorphic non-malleable NITC. In our construction depicted in \Cref{table:nitc-lh} we rely on a one-time simulation-sound NIZK for the following language: 
 
 \[
 L = \left\{(c_0, c_1, c_2, c_3)| \exists (m,r):
@@ -196,7 +196,7 @@ The adversary $\advB_{\secpar}(\crs_\nizk, \tau_L)$ proceeds as follows:
 \item Then it runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
 \item It samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{rN}(1+N)^{m_b}, c_2^*:=h_2^{rN}(1+N)^{m_b}, c_3^*:=h_3^{rN}(1+N)^{m_b}$. It sets $(s:=\mathlist(c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ and runs $\pi^* \leftarrow \nizk.\prove(s,w)$.
 \item Next, it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
-\item Finally, it checks whether there exists a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\fdecom(\crs, c) \neq \dec(\crs,c,2)$. If $\event$ occurs, then this is the case, and it returns $((c_0, c_1, c_2, c_3), \pi)$. Notice that this can be done efficiently with the knowledge of $t$.
+\item Finally, it checks whether there exists a decommitment query $c: = (c_0, c_1, c_2, c_3, \pi)$ such that $\fdecom(\crs, c) \neq \dec(\crs,c,2)$. If $\event$ occurs, then this is the case, and it returns $((c_0, c_1, c_2, c_3), \pi)$. Notice that this check can be done efficiently with the knowledge of $t$, since instead of running $\fdecom$, $\advB$ can verify the proof and compute $c_3 c_0^{-t} \bmod N$ which produces the same output as $\fdecom$.
 \end{enumerate}
 
 $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, then it outputs a valid proof for a statement which is not in the specified language $L$. Therefore we get
@@ -245,7 +245,7 @@ In $\games_\thisgame$ we sample $r$ uniformly at random from $[\varphi(N)/2]$.
 \]
 \end{lemma}
 %At first we remark that for upper bounding the difference between the games we use a statistical argument. Because $r$ appears only in the exponent of the group generator, we later sample a random element from the group $\qrn$ which can be done efficiently. 
-Since the only difference between the two games is in the set from which we sample $r$, to upper bound the advantage of adversary we can use \Cref{sampling-lemma}, which directly yields the required bound.
+Since the only difference between the two games is in the set from which we sample $r$, to upper bound the advantage of adversary we can use \Cref{sampling-lemma} with $\ell:=2$, which directly yields the required bound.
 
 %\nextgame{ReRand}
 %In Game $\games_\thisgame$ we produce the challenge commitment by encrypting the challenge message using two independent random exponents $r \rand \smplset, r' \rand [\varphi(N)/4]$ to obtain $c:= (g^{r}, h_1^{r}\cdot m_b), c':= (g^{r'}, h_2^{r'}\cdot m_b)$ and then run $\rerand(c,c',N, \allowbreak h_1, h_2,k,r)$ to obtain resulting ciphertext $(c_0^*, c_1^*, c_2^*)$. Since $r'$ is sampled uniformly at random from $[\varphi(N)/4]$ the ciphertext distributions in both games  are the same. Therefore 
@@ -329,7 +329,7 @@ If $y = v^N \bmod N^2$ then $yw^N = v^N w^N = (vw)^N$ and hence $yw^N$ is $N$-th
 
 Otherwise, if $y$ is uniform random element in $\Zns$, then $yw^N$ is also uniform among all elements of $\Zns$ that have Jacobi symbol 1 and $\advB$ simulates $\games_\thisgame$ perfectly. This proves the lemma.
 
-We remark that at this point $c_3^*$ does not reveal any information about $b$. Here we use that if $x = y \bmod N$ then $\left( \frac{x}{N} \right)= \left( \frac{y}{N} \right)$ and that there is an isomorphism $f:\Zn^* \times \Zn \rightarrow\Zns$ given by $f(u,v)=u^N(1+N)^v = u^N(1+vN) \bmod N^2$ (see e.g. \cite[Proposition 13.6]{books/crc/KatzLindell2014}).  Since $f(u,v) \bmod N = u^N + u^NvN \bmod N = u^N \bmod N$, that means that Jacobi symbol $\left( \frac{f(u,v)}{N} \right)$ depends only on $u$.  \todo{Why is $v$ guaranteed to be zero, or why does the last step hold?} Hence if $\left( \frac{f(u,v)}{N} \right) = 1$, then it must hold that $\left( \frac{f(u,r)}{N} \right) = 1$ for all $r \in \Zn$ \todo{why?}. This implies that a random element $f(u,v)$ in $\Zns$ with $\left( \frac{f(u,v)}{N} \right) = 1$ has a uniformly random distribution of $v$ in $\Zn$. Therefore if $yw^N = u^N(1+N)^v \bmod N^2$ then  $yw^N(1+N)^{m_b}  = u^N(1+N)^{m_b+v} \bmod N^2$. Since $v$ is uniform in $\Zn$, $(m_b + v)$ is also uniform in $\Zn$, which means that ciphertext $c_3^*$ does not reveal any information about $b$.\todo{I was not able to follow}    
+We remark that at this point $c_3^*$ does not reveal any information about $b$. Here we use that if $x = y \bmod N$ then $\left( \frac{x}{N} \right)= \left( \frac{y}{N} \right)$ and that there is an isomorphism $f:\Zn^* \times \Zn \rightarrow\Zns$ given by $f(u,v)=u^N(1+N)^v = u^N(1+vN) \bmod N^2$ (see e.g. \cite[Proposition 13.6]{books/crc/KatzLindell2014}).  Since $f(u,v) \bmod N = u^N + u^NvN \bmod N = u^N \bmod N$, that means that Jacobi symbol $\left( \frac{f(u,v)}{N} \right)$ depends only on $u$. Hence if $\left( \frac{f(u,v)}{N} \right) = 1$, then it must hold that $\left( \frac{f(u,r)}{N} \right) = 1$ for all $r \in \Zn$. This implies that a random element $f(u,v)$ in $\Zns$ with $\left( \frac{f(u,v)}{N} \right) = 1$ has a uniformly random distribution of $v$ in $\Zn$. Therefore if $yw^N = u^N(1+N)^v \bmod N^2$ then  $yw^N(1+N)^{m_b}  = u^N(1+N)^{m_b+v} \bmod N^2$. Since $v$ is uniform in $\Zn$, $(m_b + v)$ is also uniform in $\Zn$, which means that ciphertext $c_3^*$ does not reveal any information about $b$.   
 
 \nextgame{RndExp2}
 In $\games_\thisgame$ we sample $k_2$ uniformly at random from $[\varphi(N)/2]$. 
@@ -340,7 +340,7 @@ In $\games_\thisgame$ we sample $k_2$ uniformly at random from $[\varphi(N)/2]$.
 \]
 \end{lemma}
 
-Again using a statistical argument this lemma directly follows from \Cref{sampling-lemma}.
+Again using a statistical argument this lemma directly follows from \Cref{sampling-lemma} with $\ell:=2$.
 
 \nextgame{DDH}
 In $\games_\thisgame$ we sample $y_2 \rand \Jn$ and compute $c_2^*$ as  $y_2^N(1+N)^{m_b}$. 
@@ -364,7 +364,7 @@ $\advB_{\secpar}(N,g,g^\alpha, g^\beta, g^\gamma)$ proceeds as follows:
 If $\gamma = \alpha\beta$, then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $g^\gamma$ is uniform random element in $\Jn$ and $\advB$ simulates $\games_\thisgame$ perfectly. This proves the lemma.
 
 \nextgame{RndExp3}
-In $\games_\thisgame$ we sample $k_2$ uniformly at random from $\smplset$. Again by \Cref{sampling-lemma} we get
+In $\games_\thisgame$ we sample $k_2$ uniformly at random from $\smplset$. Again by \Cref{sampling-lemma} with $\ell:=2$  we get
 
 
 \begin{lemma}
@@ -436,7 +436,7 @@ $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens
 %\end{lemma}
 
 \nextgame{RndExp4}
-In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/2]$. The following again follows directly from \Cref{sampling-lemma}.
+In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/2]$. The following again follows directly from \Cref{sampling-lemma} with $\ell:=2$ .
 
 
 \begin{lemma}

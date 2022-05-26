@@ -45,7 +45,7 @@ Here $\tau_L$ is a membership testing trapdoor for language $L$; $\prove(\crs, \
 \end{definition}
 
 \begin{remark} 
-We have slightly modified the soundness and zero-knowledge definitions compared to \cite{Libert2021OneShotFN}. Our soundness definition is adaptive and an adversary is given as input also a membership testing trapdoor $\tau_L$. This notion is implied by the simulation-soundness as defined in \Cref{def:simsnd}. Our zero-knowledge definition provides a membership testing trapdoor $\tau_L$ as an input for an adversary, whereas the definition of \cite{Libert2021OneShotFN} lets an adversary generate the language $L$ itself. The definition of \cite{Libert2021OneShotFN} works in our constructions, too, but we prefer to base our constructions on a slightly weaker definition. 
+We have slightly modified the soundness and zero-knowledge definitions compared to \cite{Libert2021OneShotFN}. Our soundness definition is adaptive and an adversary is given as input also a membership testing trapdoor $\tau_L$. This notion is implied by the simulation-soundness as defined in \Cref{def:simsnd}. Our zero-knowledge definition provides a membership testing trapdoor $\tau_L$ as an input for an adversary, whereas the definition of \cite{Libert2021OneShotFN} lets an adversary generate the language $L$ itself. The definition of \cite{Libert2021OneShotFN} works in our constructions too, but we prefer to base our constructions on a slightly weaker definition. 
 \end{remark}
 
 \begin{definition}[One-Time Simulation Soundness]\label{def:simsnd}
@@ -86,7 +86,6 @@ Let $(\gen_\param, \gen_L, \prove, \vrfy)$ be a trapdoor Sigma protocol for an N
 \end{theorem}
 
 We note that in order to achieve negligible soundness error, it is needed to run the underlying trapdoor Sigma protocol $\mathcal{O}(\log \secpar)$ times in parallel. One run of the trapdoor Sigma protocol of Libert~\etal for $L$, as defined above, corresponds to sending one ciphertext of the homomorphic encryption scheme and one random element $r \in R$.
-\todo{say a few words about efficiency}
 
 \subsection{Standard-Model Instantiation of SS-NIZKs}\label{sec:nizk-crs}
 In this section we provide simulation sound NIZK proof systems for languages $L_1$ and $L_2$ that are used in our constructions. The languages are defined in the following way:  

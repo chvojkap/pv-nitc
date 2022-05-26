@@ -140,7 +140,7 @@ $\advB_\secpar(\crs_\nizk, \tau_L):$
 \vspace{-2mm}
 \begin{enumerate}
 \item Set $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, \crs_\nizk)$, run $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$, and answer decommitment queries using $t$ which is included in $\tau_L = (k_1, t)$.
-\item Sample $b \rand \bits, r \rand \smplsetqrn$ and compute $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b$. Then submit $(s:=\mathlist(h_1,h_2,c_0^*, c_1^*, c_2^*), w:=(m,r))$ to the oracle to obtain proof $\pi^*$.
+\item Sample $b \rand \bits, r \rand \smplsetqrn$ and compute $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b \bmod N$. Then submit $(s:=\mathlist(h_1,h_2,c_0^*, c_1^*, c_2^*), w:=(m,r))$ to the oracle to obtain proof $\pi^*$.
 \item Run $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*), \pi^*, \st)$, answering decommitment queries using $t$.
 \item Return the truth value of $b=b'$.
 \end{enumerate}
@@ -155,7 +155,7 @@ In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/4]$.
 \]
 \end{lemma}
 
-This lemma directly follows from \Cref{sampling-lemma}.
+This lemma directly follows from \Cref{sampling-lemma} with $\ell:=4$.
 
 \nextgame{DDH1}
 In $\games_\thisgame$ we sample $y_1 \rand \qrn$ and compute $c_1^*$ as  $y_1 m_b$. 
@@ -188,7 +188,7 @@ In $\games_\thisgame$ we sample $k_1$ uniformly at random from $\smplsetqrn$.
 \]
 \end{lemma}
 
-This lemma directly follows from \Cref{sampling-lemma}.
+This lemma directly follows from \Cref{sampling-lemma} with $\ell:=4$.
 
 
 \nextgame{SimSnd}
@@ -233,7 +233,7 @@ In $\games_\thisgame$ we sample $r$ uniformly at random from $[\varphi(N)/4]$.
 \]
 \end{lemma}
 %At first we remark that for upper bounding the difference between the games we use a statistical argument. Because $r$ appears only in the exponent of the group generator, we later sample a random element from the group $\qrn$ which can be done efficiently. 
-Since the only difference between the two games is in the set from which we sample $r$, to upper bound the advantage of adversary we can use \Cref{sampling-lemma}, which directly yields required upper bound.
+Since the only difference between the two games is in the set from which we sample $r$, to upper bound the advantage of adversary we can use \Cref{sampling-lemma} with $\ell:=4$, which directly yields required upper bound.
 
 %\nextgame{ReRand}
 %In Game $\games_\thisgame$ we produce the challenge commitment by encrypting the challenge message using two independent random exponents $r \rand \smplset, r' \rand [\varphi(N)/4]$ to obtain $c:= (g^{r}, h_1^{r}\cdot m_b), c':= (g^{r'}, h_2^{r'}\cdot m_b)$ and then run $\rerand(c,c',N, \allowbreak h_1, h_2,k,r)$ to obtain resulting ciphertext $(c_0^*, c_1^*, c_2^*)$. Since $r'$ is sampled uniformly at random from $[\varphi(N)/4]$ the ciphertext distributions in both games  are the same. Therefore 
@@ -410,15 +410,15 @@ Notice that if $c_1$ and $c_3$ contain the same message, both oracles answer dec
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
 \]
 
-We construct an adversary $\advB$ that breaks soundness of the NIZK. 
-The adversary $\advB_{\secpar}$ proceeds as follows:
+We construct an adversary $\advB$ that breaks soundness with respect to auxiliary input $\aux:=(p,q)$ of the NIZK. 
+The adversary $\advB_{\secpar}(p,q)$ proceeds as follows:
 \vspace{-2mm}
 \begin{enumerate}
-\item It computes $\crs \leftarrow \pgen(\seck, T)$ as defined in the construction where the value $h_3$ is computed using repeated squaring instead.
+\item Samples $k_1, k_2\rand \smplset$, computes $h_1 := g^{k_1} \bmod N, h_2:=g^{k_2} \bmod N, \varphi(N):=(p-1)(q-1), t:=2^{T} \bmod \ord$ and sets $\crs:=(N, T, g, h_1, h_2, h_3)$ where $h_3$ is given by $L$. 
 \item Then it runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
 \item It samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{rN}(1+N)^{m_b}, c_2^*:=h_2^{rN}(1+N)^{m_b}, c_3^*:=h_3^{rN}(1+N)^{m_b}$. It sets $(s:=\mathlist(h_1, h_2, c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ and runs $\pi^* \leftarrow \nizk.\prove(s,w)$.
 \item Next, it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
-\item Finally, it checks whether there exists a decommitment query $c: = \mathlist(c_0, c_1, c_2, c_3, \pi)$ such that $\fdecom(\crs, c, 1) \neq \dec(\crs,c,1)$. If $\event$ occurs, then this is the case, and it returns $((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$. %Notice that this can be done efficiently with the knowledge of $t$.
+\item Finally, it checks whether there exists a decommitment query $c: = \mathlist(c_0, c_1, c_2, c_3, \pi)$ such that $\fdecom(\crs, c, 1) \neq \dec(\crs,c,1)$. If $\event$ occurs, then this is the case, and it returns $((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$. Notice that finding such a query can be done efficiently with the knowledge of $t$ since instead of running $\fdecom$ it is possible to verify the proof and simply compute $\frac{c_3\cdot (c_0^t)^{-N}(\bmod N^2)-1}{N}$ which produce the same result as $\fdecom$.
 \end{enumerate}
 
 $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, then it outputs a valid proof for a statement which is not in the specified language $L$. Therefore we get
@@ -466,7 +466,7 @@ In $\games_\thisgame$ we sample $r$ uniformly at random from $[\varphi(N)/2]$.
 \]
 \end{lemma}
 %At first we remark that for upper bounding the difference between the games we use a statistical argument. Because $r$ appears only in the exponent of the group generator, we later sample a random element from the group $\qrn$ which can be done efficiently. 
-Since the only difference between the two games is in the set from which we sample $r$, to upper bound the advantage of adversary we can use \Cref{sampling-lemma}, which directly yields required upper bound.
+Since the only difference between the two games is in the set from which we sample $r$, to upper bound the advantage of adversary we can use \Cref{sampling-lemma} with $\ell:=2$, which directly yields required upper bound.
 
 %\nextgame{ReRand}
 %In Game $\games_\thisgame$ we produce the challenge commitment by encrypting the challenge message using two independent random exponents $r \rand \smplset, r' \rand [\varphi(N)/4]$ to obtain $c:= (g^{r}, h_1^{r}\cdot m_b), c':= (g^{r'}, h_2^{r'}\cdot m_b)$ and then run $\rerand(c,c',N, \allowbreak h_1, h_2,k,r)$ to obtain resulting ciphertext $(c_0^*, c_1^*, c_2^*)$. Since $r'$ is sampled uniformly at random from $[\varphi(N)/4]$ the ciphertext distributions in both games  are the same. Therefore 
@@ -563,7 +563,7 @@ In $\games_\thisgame$ we sample $k_2$ uniformly at random from $[\varphi(N)/2]$.
 \]
 \end{lemma}
 
-Again using a statistical argument this lemma directly follows from \Cref{sampling-lemma}.
+Again using a statistical argument this lemma directly follows from \Cref{sampling-lemma} with $\ell:=2$.
 
 \nextgame{DDH}
 In $\games_\thisgame$ we sample $y_2 \rand \Jn$ and compute $c_2^*$ as  $y_2^N(1+N)^{m_b}$. 
@@ -668,7 +668,7 @@ In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/2]$.
 \]
 \end{lemma}
 
-This lemma directly follows from \Cref{sampling-lemma}.
+This lemma directly follows from \Cref{sampling-lemma} with $\ell:=2$.
 
 \nextgame{DDH2}
 In $\games_\thisgame$ we sample $y_1 \rand \Jn$ and compute $c_1^*$ as  $y_1^{N} (1+N)^{m_b}$. 
@@ -798,7 +798,7 @@ The adversary $\advB_{\secpar}(p,q)$ proceeds as follows:
 \end{itemize}
 \item It samples $b \rand \bits, r \rand \smplsetqrn$ and computes $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b$. It sets $(s:=\mathlist(h_1, h_2,c_0^*, c_1^*, c_2^*), w:=(m,r))$ and produces honest proof $\pi^*$.
 \item Next, it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
-\item Finally, it checks whether there exists a decommitment query $c: = \mathlist(c_0, c_1, c_2, \pi=(a,z))$ such that $\fdecom(\crs, c) \neq \dec(\crs,c,k_1,1)$. If $\event$ occurs and $\advB$ guessed index $i$ correctly, then value $z$ allows $\advB$ succeed in the attack game.. %Notice that this can be done efficiently with the knowledge of $t$.
+\item Finally, it checks whether there exists a decommitment query $c: = \mathlist(c_0, c_1, c_2, \pi=(a,z))$ such that $\fdecom(\crs, c) \neq \dec(\crs,c,k_1,1)$. This check can be done efficiently with the knowledge of $t$. If $\event$ occurs and $\advB$ guessed index $i$ correctly, then value $z$ allows $\advB$ succeed in the attack game.. %Notice that this can be done efficiently with the knowledge of $t$.
 \end{enumerate}
 
 Suppose that the query $(h_1, h_2,c_0,c_1,c_2,a)$ has been asked to the random oracle as $i^*$-th query and that $i=i^*$. Then it holds
@@ -917,7 +917,7 @@ In $\games_\thisgame$ we sample $r$ uniformly at random from $[\ordqrn]$.
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
 \]
 \end{lemma}
-Since the only difference between the two games is in the set from which we sample $r$, to upper bound the advantage of adversary we can use \Cref{sampling-lemma}, which directly yields required upper bound.
+Since the only difference between the two games is in the set from which we sample $r$, to upper bound the advantage of adversary we can use \Cref{sampling-lemma} with $\ell:=4$, which directly yields required upper bound.
 
 \nextgame{SSSA}
 In $\games_\thisgame$ we sample $y_2 \rand \qrn$ and compute $c_2^*$ as $y_2 m_b$.
@@ -1034,7 +1034,7 @@ In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\ordqrn]$.
 \]
 \end{lemma}
 
-This lemma directly follows from \Cref{sampling-lemma}.
+This lemma directly follows from \Cref{sampling-lemma} with $\ell:=4$.
 
 \nextgame{DDH1}
 In $\games_\thisgame$ we sample $y_1 \rand \qrn$ and compute $c_1^*$ as  $y_1 m_b$. 

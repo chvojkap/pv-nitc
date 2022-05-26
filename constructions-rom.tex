@@ -157,7 +157,7 @@ L = \left\{(h_1, h_2, c_0, c_1, c_2)| \exists (m,r):
 \]
 where $g, N$ are parameters specifying the language.
 
-
+Our construction is given in \Cref{table:nitc-mh-rom} where $(\nizk.\prove, \nizk.\vrfy)$ is the Fiat-Shamir transform of the Sigma protocol for language $L$. Since it is not straightforward to provide a security proof directly with respect to standard definition of one-time simulation sound NIZK, we provide the security proof in the random oracle model relying on the properties of the underlying Sigma protocol.
 
 
 \begin{figure}[h!]
@@ -204,11 +204,11 @@ return $\bot$ & \\
 \end{center}
 \end{figure}
 
-Where $(\nizk.\prove, \nizk.\vrfy)$ is the Fiat-Shamir transform of the Sigma protocol for language $L_4$ defined in Cref.... Concretely, $H$ is a hash function modelled as a random oracle, then our $\nizk$ is defined as follows
-\begin{itemize}
-\item $\nizk.\prove(s:=(h_1, h_2, c_0, c_1, c_2), w:=(m, r)):$ Compute $\alpha \rand \smplsetqrn, a_0:=g^\alpha \bmod N, a_1:= (h_1\cdot h_2^{-1})^\alpha \bmod N, v:=H(s,a_0,a_1), z:= \alpha + v \cdot r$ and return $\pi:=(a_0,a_1,z)$.
-\item $\nizk.\vrfy(s:=(h_1, h_2, c_0, c_1, c_2),\pi:=(a_0,a_1,z)):$ Compute $v:=v:=H(s,a_0,a_1)$ and return 1 if and only if $g^z = a_0 \cdot c_0^v \bmod N \land (h_1\cdot h_2^{-1})^z = a_1 \cdot (c_1\cdot c_2^{-1})^v \bmod N \land z \in [\estordqrn + v\estordqrn]$.
-\end{itemize}
+%Where $(\nizk.\prove, \nizk.\vrfy)$ is the Fiat-Shamir transform of the Sigma protocol for language $L_4$ defined in Cref.... Concretely, $H$ is a hash function modelled as a random oracle, then our $\nizk$ is defined as follows
+%\begin{itemize}
+%\item $\nizk.\prove(s:=(h_1, h_2, c_0, c_1, c_2), w:=(m, r)):$ Compute $\alpha \rand \smplsetqrn, a_0:=g^\alpha \bmod N, a_1:= (h_1\cdot h_2^{-1})^\alpha \bmod N, v:=H(s,a_0,a_1), z:= \alpha + v \cdot r$ and return $\pi:=(a_0,a_1,z)$.
+%\item $\nizk.\vrfy(s:=(h_1, h_2, c_0, c_1, c_2),\pi:=(a_0,a_1,z)):$ Compute $v:=v:=H(s,a_0,a_1)$ and return 1 if and only if $g^z = a_0 \cdot c_0^v \bmod N \land (h_1\cdot h_2^{-1})^z = a_1 \cdot (c_1\cdot c_2^{-1})^v \bmod N \land z \in [\estordqrn + v\estordqrn]$.
+%\end{itemize}
 
 %\begin{figure}[h!]
 %\begin{center}
@@ -258,7 +258,7 @@ Where $(\nizk.\prove, \nizk.\vrfy)$ is the Fiat-Shamir transform of the Sigma pr
 
 \begin{theorem}
 \label{thm:NITC-mul-ROM}
-If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-mh-rom} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
+If $\Sigma = (\prv, \vrf)$ is a Sigma protocol for $L$ with quasi unique responses which is sound with respect to auxiliary input $\aux=(p,q)$ and is honest verifier zero-knowledge, $H: \qrn^7 \rightarrow [2^d]$ is a hash function modelled as a random oracle,  the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\qrn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-mh-rom} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
 \end{theorem}
 The proof can be found in \Cref{app:NITC-mul-ROM}.
 

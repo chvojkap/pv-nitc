@@ -1,0 +1,283 @@
+%!TEX root=main.tex
+\subsection{Non-Interactive Zero-Knowledge Proofs in the Random Oracle Model}
+%Since we can build a very efficient NIZK proof system for our constructions in the random oracle model (ROM), we recall the definition of NIZKs in the ROM.  
+
+\begin{definition} 
+A \emph{non-interactive proof system} for an NP language $L$ with relation $\rel$ is a pair of algorithms $(\prove, \vrfy)$, which work as follows:
+\begin{itemize}
+\item $\pi \leftarrow \prove(s,w)$ is a PPT algorithm which takes as input a statement $s$ and a witness $w$ such that $(s,w) \in \rel$ and outputs a proof $\pi$.
+\item $\vrfy(s, \pi) \in \{0,1\}$ is a deterministic algorithm which takes as input a statement $s$ and a proof $\pi$ and outputs either 1 or 0, where 1 means that the proof is ``accepted'' and 0 means it is ``rejected''.
+\end{itemize}
+We say that a non-interactive proof system is \emph{complete}, if for all $(s, w) \in \rel$ holds:
+\[\Pr[\vrfy(s,\pi)=1:\pi \leftarrow \prove(s,w)] =1.\] 
+
+We say that a non-interactive proof system is \emph{sound} if for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in N$
+\[
+\snd_\adv^\nizk = \Pr\left[
+\begin{aligned}
+s \notin L \land
+\vrfy(s, \pi) = 1
+\end{aligned}
+:
+\begin{aligned}
+(\pi, s) \leftarrow \adv_\secpar
+\end{aligned} \right] \leq \negl(\secpar).
+\]
+
+%We say that a non-interactive proof system is \emph{sound with respect to auxiliary input $\aux$} if for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in N$
+%\[
+%\snd_\adv^\nizk = \Pr\left[
+%\begin{aligned}
+%s \notin L \land
+%\vrfy(s, \pi) = 1
+%\end{aligned}
+%:
+%\begin{aligned}
+%(\pi, s) \leftarrow \adv_\secpar(\aux)
+%\end{aligned} \right] \leq \negl(\secpar).
+%\]
+\end{definition}
+
+Next we define the \emph{zero-knowledge} property for non-interactive proof system in the random oracle model. The simulator $\simul$ of a non-interactive zero-knowledge proof system is modelled as a stateful algorithm which provides two modes, namely $(\pi, \st) \leftarrow \simul(1, \st, s)$  for answering proof queries and $(v, \st) \leftarrow \simul(2, \st, u)$ for answering random oracle queries. The common state $\st$ is updated after each operation.
+
+
+
+\begin{definition}[Zero-Knowledge in the ROM]
+Let $(\prove, \allowbreak \vrfy)$ be a non-interactive proof system for a relation $\rel$ which may make use of a hash function $H : \hdom \rightarrow \himg$. Let $\funs$ be the set of all functions from the set $\hdom$ to the set $\himg$. We say that $(\prove, \vrfy)$ is \emph{non-interactive zero-knowledge proof in the random oracle model (NIZK)}, if there exists an efficient simulator $\simul$ such that for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[\zk_\adv^\nizk = 
+\left| \Pr\left[ \adv_\secpar^{\prove^H(\cdot, \cdot), H(\cdot)} = 1 \right] -  \Pr\left[\adv_\secpar^{\simul_1(\cdot, \cdot), \simul_2(\cdot)} \right] = 1 \right|
+\leq \negl(\secpar),
+\]
+where 
+\begin{itemize}
+\item $H$ is a function sampled uniformly at random from $\funs$,
+\item $\prove^H$ corresponds to the $\prove$ algorithm, having oracle access to $H$,
+\item $\pi \leftarrow \simul_1(s, w)$ takes as input $(s, w) \in \rel$, and outputs the first output of $(\pi, \st) \leftarrow \simul(1, \st, s)$,
+\item $v \leftarrow \simul_2(u)$ takes as input $u \in \hdom$ and outputs the first output of $(v, \st) \leftarrow \simul(2, \st, u)$.
+\end{itemize}
+\end{definition}
+
+\begin{definition}[One-Time Simulation Soundness]
+Let $(\prove, \vrfy)$ be a non-interactive proof system for an NP language $L$ with zero-knowledge simulator $\simul$. We say that $(\prove, \vrfy)$ is \emph{one-time simulation sound} in the random oracle model, if for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[
+\simsnd_\adv^\nizk = \Pr\left[
+\begin{aligned}
+s \notin L \land (s, \pi) \neq (s', \pi') \\
+\land \vrfy^{\simul_2(\cdot)}(s, \pi) = 1
+\end{aligned}
+:(s, \pi) \leftarrow \adv_\secpar^{\simul_1(\cdot), \simul_2(\cdot)} \right] \leq \negl(\secpar),
+\]
+where $\simul_1(\cdot)$ is a single query oracle which on input $s'$ returns the first output of $(\pi', \st) \leftarrow \simul(1, \st, s')$ and $\simul_2(u)$ returns the first output of $(v, \st) \leftarrow \simul(2, \st, u)$.
+\end{definition}
+
+\subsection{Efficient Instantiation of SS-NIZK in the ROM}\label{sec:nizk} 
+In this section we provide efficient simulation sound NIZK proof systems in the ROM for languages $L_3$ and $L_4$ that are used in our constructions. The languages are defined in the following way:
+\[
+L_3 = \left\{(h_1, h_2, c_0, c_1, c_2, c_3)| \exists (m,r):
+\begin{aligned}
+       (\land_{i=1}^3 c_i = h_i^{rN}(1+N)^m \bmod N^2) \land \\
+       c_0 = g^r \bmod N\\
+    \end{aligned}
+    \right\} \text{ and }
+\]
+\[
+L_4 = \left\{(h_1, h_2, c_0, c_1, c_2)| \exists (m,r):
+\begin{aligned}
+       (\land_{i=1}^2 c_i = h_i^{r}m \bmod N) \land
+       c_0 = g^r \bmod N\\
+    \end{aligned}
+    \right\}, 
+\]
+where $g, h_3, N$ are parameters defining the language. For the language $L_3$ this is equivalent to proving that $(c_0^N, (h_1\cdot (h_2)^{-1})^N , (c_1\cdot (c_2)^{-1}))$ and $(c_0^N, (h_3\cdot (h_2)^{-1})^N, (c_3\cdot (c_2)^{-1}))$ are two DDH tuples where all computations are done $\bmod N^2$. Similarly, for the language $L_4$ this is equivalent to proving that $(c_0, (h_1\cdot (h_2)^{-1}), (c_1\cdot (c_2)^{-1}))$ is a DDH tuple where all computations are done $\bmod N$. Therefore, we can instantiate the required NIZKs using Sigma protocols that prove that given tuples are DDH tuples. These Sigma protocols can be turned into efficient simulation-sound NIZKs in the ROM using the Fiat-Shamir transformation \cite{C:FiaSha86}. We remark that we have to design a Sigma protocols in a hidden order group setting, since the orders of the groups $\Jn$ and $\qrn$ are known neither by the prover, nor by the verifier. Current constructions of Sigma protocols in hidden order groups are far less efficient than standard Sigma protocols. However, we observe that to obtain simulation-sound NIZKs, it is sufficient to design a Sigma protocol which has a negligible soundness error and we do not have to care about special soundness. Therefore we are able to avoid the strong RSA assumption which is often needed in Sigma protocols in hidden order groups to prove special soundness. As a result we are able to avoid both using an unnecessary large modulus $N$ and a large number of sequential repetitions as discussed in \cite{SPEED:BKSST}. 
+%Hence it is possible to sample individual messages of our Sigma protocol  from the sets which are smaller than the sets typically used in Sigma protocols in hidden order groups where one is interested in special soundness. 
+This results in particularly short proofs. 
+%   Essentially, we use the Sigma protocol described in \cite{SCN:BiaMasVen16} which can be turn i Since the order of the group $\qrn$ is not known, we provide detailed proof that the constructed Sigma protocol is indeed complete, special sound, special honest verifier zero-knowledge and has quasi-unique responses.  
+
+We recall at first definition of a Sigma protocol. 
+
+\begin{definition} A Sigma protocol for an NP language $L$ and a corresponding binary relation $\rel$ is an interactive 3-move protocol $\Sigma$ between two interactive algorithms which we will call $\prv$ and $\vrf$. $\prv$ is given input a statement and a witness $(s, w)$ and the $\vrf$ is given as input a statement $s$. The protocol works as follows:
+\begin{enumerate}
+\item $\prv$ starts the protocol by computing a message $\fm$, called the \emph{commitment}, and sends $\fm$ to $\vrf$. \emph{commitment}, and a state $\st$. The message $\fm$ is sent to the $\vrf$.
+\item $\vrf$ receives $\fm$ and samples a \emph{challenge} $\sm$ uniformly from a finite challenge space $\scset$ and sends it to the $\prv$.
+\item $\prv$ receives the challenge $c$ end computes a \emph{response} $\tm \in \thset$. It sends the response $\tm$ to $\vrf$.
+\item $\vrf$ runs a deterministic function $\vr(s,\fm,\sm,\tm)$ which outputs 0 or 1 meaning reject or accept, respectively.
+\end{enumerate}
+A triple $(\fm,\sm,\tm)$ is called a \emph{transcript} of the Sigma protocol. A transcript $(\fm,\sm,\tm)$ is called an \emph{accepting} transcript for $s$ if it cause $\vr(s,\fm,\sm,\tm) =1$. 
+We say that a Sigma protocol is \emph{complete} if for all $(s, w) \in \rel$ it holds that whenever a $\prv(s,w)$ and a $\vrf(s)$ interact, then the $\vrf$ always accepts. 
+\end{definition}
+
+
+%\begin{definition}[Special Honest Verifier Zero-Knowledge]
+%We say that a Sigma protocol for relation $\rel \subseteq \sset \times \wset$ with challenge space $\scset$ is \emph{special honest verifier zero-knowledge (SHVZK)}, if there exists a PPT simulator $\simul$ which takes as input $(s, \sm) \in \sset \times \scset$ such that:
+%\begin{enumerate}
+%\item  For all $s \in \sset, \sm \in \scset$ it holds:
+%\[\Pr[\vr(s,\fm,\sm,\tm)=1: (\fm,\tm) \leftarrow \simul(s,\sm)] = 1.\]
+%\item For all $(s, w) \in \rel$, if we compute 
+%\[(\fm,\tm) \leftarrow \simul(s,\sm)\]
+%with uniformly random $\sm \rand \scset$, then $(\fm,\sm,\tm)$ has the same distribution as a transcript of a conversation between the $\prv(s,w)$ and the $\vrf(s)$.
+%\end{enumerate}
+%\end{definition}
+
+\begin{definition}[Honest Verifier Zero-Knowledge]
+We say that a Sigma protocol for an NP language  $L$ is \emph{honest verifier zero-knowledge (HVZK)}, if there exists a PPT simulator $\simul$ which takes as input $s \in L$ and outputs transcript $(\fm,\sm,\tm)$ that that has the same distribution as honest
+transcript resulting from interactions between $\prv$ and $\vrf$ on common input $s$.
+%is computationally indistinguishable from honest
+%transcripts resulting from interactions between $\prv$ and $\vrf$ on common input $s$.
+\end{definition}
+
+\begin{definition}[Soundness]
+We say that a Sigma protocol for an NP language $L$ is \emph{sound}, if a proof for a statement $x \notin L$ output by any (even unbounded) adversary is accepted only with negligible probability.
+\end{definition}
+We define also slightly stronger soundness definition where adversary is given an auxiliary input.
+\begin{definition}[Soundness with respect to auxiliary input]\label{def:nizk-snd-aux}
+We say that a Sigma protocol for an NP language $L$ is \emph{sound with respect to auxiliary input $\aux$}, if a proof for a statement $x \notin L$ output by any (even unbounded) adversary which is given $\aux$ as input is accepted only with negligible probability. We use $\snd^\sigma_\adv$ to denote the advantage of $\adv$.
+\end{definition}
+
+\begin{definition}[Quasi Unique Responses]
+Let $\Sigma$ be a Sigma protocol. We say that $\Sigma$ has \emph{quasi unique responses} if for every non-uniform polynomial-size adversary $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[\qur^\Sigma_\advB = \Pr\left[ 
+\begin{aligned}
+\vr(s,\fm,\sm,\tm) = \vr(s,\fm,\sm,\tm' ) = 1 \\
+ \land \tm \neq \tm' 
+\end{aligned}
+:(s, \fm, \sm , \tm, \tm')\leftarrow \adv_\secpar \right] \leq \negl(\secpar).\]
+\end{definition}
+
+\begin{definition}[Unpredictable Commitments]
+Let $\Sigma$ be a Sigma protocol for a relation $\rel$ with transcripts $(\fm,\sm,\tm) \in \frset \times \scset \times \thset$. We say that $\Sigma$ has $\delta$-\emph{unpredictable commitments} if for all $(s,w) \in \rel$ and for all $\fm^* \in \frset$ holds that with probability at most $\delta$, an interaction between $\prv(s,w)$ and $\vrf(s)$ produce a transcript $(\fm,\sm,\tm)$ with $fm^*= \fm$.
+\end{definition}
+
+Faust \etal \cite{INDOCRYPT:FKMV12} have shown that Sigma protocols fulfilling the above definitions can be turned into simulation-sound NIZK via the Fiat-Shamir transform. 
+
+\begin{theorem}[\cite{INDOCRYPT:FKMV12}]\label{thm:fs}
+Consider a non-trivial three-round public-coin honest verifier zero-knowledge interactive proof system $(\prv, \vrf)$ for an NP language $L$, with quasi unique responses. In the random oracle model, the proof system $(\prove, \vrfy)$ derived from $(\prv, \vrf)$ via the Fiat-Shamir transform is a simulation-sound NIZK with respect to its canonical simulator $\simul$.
+\end{theorem}
+
+Now we are ready to describe our Sigma protocol $\Sigma = (\prv, \vrf)$ for language $L_3$. At first, we recall that $f:\Zn^* \times \Zn \rightarrow \Zns$ defined as $f(x,y)=x^N(1+N)^y$ is an isomorphism. Since $g$ is generator of $\Jn$ and has order $\ord$, also $g^N \bmod N^2$ has order $\ord$. 
+\begin{enumerate}
+\item $\prv$ samples $\alpha \rand \smplset$, computes $a_0:=g^{N\alpha}, a_1:= (h_1\cdot h_2^{-1})^{N\alpha}, a_2:= (h_3\cdot h_2^{-1})^{N\alpha} \bmod N^2$ and sends $(a_0, a_1, a_2)$ to $\vrf$.
+\item $\vrf$ samples $v \rand [2^d]$ and sends $v$ to $\prv$.
+\item $\prv$ computes the response $z:= \alpha + v \cdot r$ and sends it to $\vrf$.
+\item $\vrf$ accepts if and only if $g^{Nz} = a_0 \cdot c_0^{Nv} \land (h_1\cdot h_2^{-1})^{Nz} = a_1 \cdot (c_1\cdot c_2^{-1})^v  \land (h_3\cdot h_2^{-1})^{Nz} = a_2 \cdot (c_3\cdot c_2^{-1})^v$ where all computation are done $\bmod N^2$ and $z \in [\estord + v\estord]$.
+\end{enumerate}
+
+\begin{theorem}
+\label{thm:SigmaROMFactoring}
+If the factoring assumption holds relative $\genmod$, then the above defined protocol $\Sigma = (\prv, \vrf)$ is a Sigma protocol for language $L_3$ that is perfectly complete, honest verifier zero-knowledge, sound with respect to auxiliary input $\aux=(p,q)$ and has quasi-unique responses. 
+\end{theorem}
+
+\begin{proof} 
+Completeness is straightforward to verify:
+\begin{enumerate}
+\item $g^{Nz} = g^{N(\alpha + v \cdot r)} = g^{N\alpha} + (g^r)^{Nv} = a_0 \cdot c_0^{Nv} \bmod N^2$;
+\item $(h_1\cdot h_2^{-1})^{Nz} = (h_1\cdot h_2^{-1})^{N(\alpha + v \cdot r)} = (h_1\cdot h_2^{-1})^{N\alpha} \cdot (h_1^{Nr}\cdot (h_2^{Nr})^{-1})^v = a_1 \cdot (h_1^{Nr} \cdot m \cdot (h_2^{Nr} \cdot m)^{-1})^v = a_1 \cdot (c_1\cdot c_2^{-1})^v \bmod N^2$;
+\item $(h_3\cdot h_2^{-1})^{Nz} = (h_3\cdot h_2^{-1})^{N(\alpha + v \cdot r)} = (h_3\cdot h_2^{-1})^{N\alpha} \cdot (h_3^{Nr}\cdot (h_2^{Nr})^{-1})^v = a_1 \cdot (h_3^{Nr} \cdot m \cdot (h_2^{Nr} \cdot m)^{-1})^v = a_2 \cdot (c_3\cdot c_2^{-1})^v \bmod N^2$;
+\item Since $r, \alpha \in \smplset$ and $v \in [2^d]$, therefore $z:= \alpha + v \cdot r \in [\estord + v\estord]$. 
+\end{enumerate}
+
+\paragraph{HVZK.} The simulator $\simul((h_1, h_2, c_0, c_1, c_2, c_3))$ works as follows:
+\begin{enumerate}
+\item Samples $v \rand [2^d], z \rand [\estord + v\estord]$.
+\item Computes $a_0:= g^{Nz} \cdot c_0^{-v}, a_1:= (h_1 \cdot h_2^{-1})^{Nz} \cdot (c_1 \cdot c_2^{-1})^{-v}, a_2:= (h_3 \cdot h_2^{-1})^{Nz} \cdot (c_3 \cdot c_2^{-1})^{-v} \bmod N^2$ and returns $((a_0, a_1, a_2), v, z)$.
+\end{enumerate}
+It is easy to verify that the produced transcript is valid and has the same distribution as an honest transcript. 
+
+%\paragraph{SHVZK.} The simulator $\simul((c_0, c_1, c_2), v)$ works as follows:
+%\begin{enumerate}
+%\item Samples $z \rand [\estord + v\estord]$.
+%\item Computes $a_0:= g^z \cdot c_0^{-v}, a_1:= (h_1 \cdot h_2^{-1})^z \cdot (c_1 \cdot c_2^{-1})^{-v}$ and returns $(a_0, a_1), z$.
+%\end{enumerate}
+%It is easy to verify that produced transcript is accepting and moreover if $v$ is sampled uniformly at random from $[2^d]$, then the given transcript has the same distribution as a honest transcript. 
+
+\paragraph{Soundness.} Let $((a_0, a_1, a_2), v, z)$ is accepting transcript for $(h_1, h_2, c_0, c_1, c_2, c_3) \notin L_3$. That means $c_0 = g^{Nr_0}, (c_1\cdot (c_2)^{-1}) = (h_1\cdot (h_2)^{-1})^{Nr_1} \bmod N, (c_3\cdot (c_2)^{-1}) = (h_3\cdot (h_2)^{-1})^{Nr_2} \bmod N$ and $r_0 \neq r_1 \mod \varphi(N)/2$ or $r_0 \neq r_2 \mod \varphi(N)/2$. Let $a_0 = g^{N\alpha_0} \bmod N^2, a_1 = (h_1\cdot (h_2)^{-1})^{N\alpha_1} \bmod N^2, a_2 = (h_3\cdot (h_2)^{-1})^{N\alpha_2} \bmod N^2$. Considering the first verification equation, taking discrete logarithms to base $g^N$, the second verification equation with discrete logarithms to base $(h_1 \cdot h_2^{-1})^N$, and the third verification equation with discrete logarithms to base $(h_3 \cdot h_2^{-1})^N$, we obtain following equations:
+\begin{align}
+z = \alpha_0 + r_0 v \bmod \ord\\
+z = \alpha_1 + r_1 v \bmod \ord \\
+z = \alpha_2 + r_2 v \bmod \ord
+\end{align}
+Computing (1)-(2) we obtain
+\begin{align*}
+0 = (\alpha_0 - \alpha_1)+ (r_0-r_1)v \bmod \ord \\
+v = \frac{\alpha_1 - \alpha_0}{r_0-r_1} \bmod \ord
+\end{align*}
+Computing (1)-(3) we obtain
+\begin{align*}
+0 = (\alpha_0 - \alpha_2)+ (r_0-r_2)v \bmod \ord \\
+v = \frac{\alpha_2 - \alpha_0}{r_0-r_2} \bmod \ord
+\end{align*}
+Now notice that at least one of $(r_0 - r_1)$ and $(r_0 - r_2)$ is not zero and values $\alpha_0, \alpha_1, \alpha_2, r_0, r_1, r_2$ are fixed before challenge $v$ is provided by $\vrf$. Therefore, in order to provide an accepting proof, the adversary has to predict value $v$. If we choose $2^d < \ord$, then $v$ is unique and therefore the probability that the adversary produces an accepting transcript for a statement that is not in $L_3$ is at most $2^{-d}$, which can be set to be negligible in $\secpar$. This holds even for unbounded adversaries. 
+
+%Let $((a_0, a_1), v, z), ((a_0, a_1), v', z')$ are two accepting transcripts such that $v \neq v'$. Then $g^z = a_0 \cdot g^{rv} \bmod N$ and $g^{z'} = a_0 \cdot g^{rv'} \bmod N$. Hence $r = (z-z') \cdot (v-v')^{-1}$ a since $v \neq v'$
+\paragraph{Soundness with auxiliary input $\aux = (p,q)$} Notice that proof of soundness holds even if an adversary is given as input factorization of $N$.
+
+\paragraph{Quasi Unique Responses.} We show that our Sigma protocol has quasi unique responses, otherwise we are able to factorize $N$. Assume that an adversary can output a statement $((h_1, h_2, c_0, c_1, c_2,c_3), (a_0, a_1, a_2), v, z, z')$ such that $((a_0, a_1, a_2), v, z)$ and $((a_0, a_1, a_2), v, z')$ are accepting transcripts for $(h_1, h_2, c_0, c_1, c_2, c_3)$ and $z \neq z'$. Therefore using the first verification equation it holds $g^{Nz} = a_0 \cdot c_0^v = g^{Nz'} \bmod N \implies z = z' \bmod \varphi(N)$. Hence, $z-z' = \alpha \cdot \ord \implies 2(z-z') = \alpha \cdot \varphi(N) $ for some $\alpha \neq 0$. Applying \Cref{factor-lemma} for $M=2(z-z')$ we are able to factorize $N$.
+
+This concludes the proof.
+\end{proof}
+
+Next we describe our Sigma protocol $\Sigma = (\prv, \vrf)$ for language $L_4$:
+\begin{enumerate}
+\item $\prv$ samples $\alpha \rand \smplsetqrn$, computes $a_0:=g^\alpha \bmod N, a_1:= (h_1\cdot h_2^{-1})^\alpha \bmod N$ and sends $(a_0, a_1)$ to $\vrf$.
+\item $\vrf$ samples $v \rand [2^d]$ and sends $v$ to $\prv$.
+\item $\prv$ computes the response $z:= \alpha + v \cdot r$ and sends it to $\vrf$.
+\item $\vrf$ accepts if and only if $g^z = a_0 \cdot c_0^v \bmod N \land (h_1\cdot h_2^{-1})^z = a_1 \cdot (c_1\cdot c_2^{-1})^v \bmod N \land z \in [\estordqrn + v\estordqrn]$.
+\end{enumerate}
+
+\begin{theorem}
+If the factoring assumption holds relative $\genmod$, then the above defined protocol $\Sigma = (\prv, \vrf)$ is a Sigma protocol for language $L_4$ that is perfectly complete, honest verifier zero-knowledge, sound with auxiliary input $aux:=(p,q)$, has quasi-unique responses and $\frac{2}{p'q'}$-unpredictable commitments. 
+\end{theorem}
+
+\begin{proof} 
+We prove required properties. 
+
+\paragraph{Completeness.} We verify the given requirements:
+\begin{enumerate}
+\item $g^z = g^{\alpha + v \cdot r} = g^\alpha + (g^r)^v = a_0 \cdot c_0^v \bmod N$;
+\item $(h_1\cdot h_2^{-1})^z = (h_1\cdot h_2^{-1})^{\alpha + v \cdot r} = (h_1\cdot h_2^{-1})^\alpha \cdot (h_1^r\cdot (h_2^r)^{-1})^v = a_1 \cdot (h_1^r \cdot m \cdot (h_2^r \cdot m)^{-1})^v = a_1 \cdot (c_1\cdot c_2^{-1})^v$;
+\item since $r, \alpha \in \smplsetqrn$ and $v \in [2^d]$, therefore $z:= \alpha + v \cdot r \in [ \estordqrn + v\estordqrn]$. 
+\end{enumerate}
+
+\paragraph{HVZK.} The simulator $\simul((h_1, h_2, c_0, c_1, c_2))$ works as follows:
+\begin{enumerate}
+\item Samples $v \rand [2^d], z \rand [\estordqrn + v\estordqrn]$.
+\item Computes $a_0:= g^z \cdot c_0^{-v}, a_1:= (h_1 \cdot h_2^{-1})^z \cdot (c_1 \cdot c_2^{-1})^{-v}$ and returns $((a_0, a_1), v, z)$.
+\end{enumerate}
+It is easy to verify that produced transcript is accepting and moreover it has the same distribution as a honest transcript. 
+
+%\paragraph{SHVZK.} The simulator $\simul((c_0, c_1, c_2), v)$ works as follows:
+%\begin{enumerate}
+%\item Samples $z \rand [\estord + v\estord]$.
+%\item Computes $a_0:= g^z \cdot c_0^{-v}, a_1:= (h_1 \cdot h_2^{-1})^z \cdot (c_1 \cdot c_2^{-1})^{-v}$ and returns $(a_0, a_1), z$.
+%\end{enumerate}
+%It is easy to verify that produced transcript is accepting and moreover if $v$ is sampled uniformly at random from $[2^d]$, then the given transcript has the same distribution as a honest transcript. 
+
+\paragraph{Soundness.} Let $((a_0, a_1), v, z)$ be an accepting transcript for $(h_1, h_2, c_0, c_1, c_2) \notin L_4$. That means $c_0 = g^{r_0}, (c_1\cdot (c_2)^{-1}) = (h_1\cdot (h_2)^{-1})^{r_1} \bmod N,$ and $r_0 \neq r_1 \mod \ordqrn$. Let $a_0 = g^{\alpha_0} \bmod N, a_1 = (h_1\cdot (h_2)^{-1})^{\alpha_1} \bmod N$. Considering the first verification equation with discrete logarithms to base $g$ and the second verification equation with discrete logarithm to base $(h_1 \cdot h_2^{-1})$ we obtain following equations:
+\begin{align}
+z = \alpha_0 + r_0 v \bmod \ordqrn\\
+z = \alpha_1 + r_1 v \bmod \ordqrn \\
+\end{align}
+Computing (1)-(2) we obtain
+\begin{align*}
+0 = (\alpha_0 - \alpha_1)+ (r_0-r_1)v \bmod \ordqrn \\
+v = \frac{\alpha_1 - \alpha_0}{r_0-r_1} \bmod \ordqrn
+\end{align*}
+
+Now notice that $(r_0 - r_1)$ is not zero and values $\alpha_0, \alpha_1, r_0, r_1, $ are fixed before challenge $v$ is provided by $\vrf$. Therefore in order to provide accepting proof, the adversary has to correctly guess value $v$. If we choose $2^d < \ord$ value $v$ is unique and therefore probability the adversary produce accepting transcript for a statement that is not in $L_4$ is at most $2^{-d}$ which can be set to be negligible in $\secpar$. This holds even for unbounded adversaries. 
+
+%Let $((a_0, a_1), v, z), ((a_0, a_1), v', z')$ are two accepting transcripts such that $v \neq v'$. Then $g^z = a_0 \cdot g^{rv} \bmod N$ and $g^{z'} = a_0 \cdot g^{rv'} \bmod N$. Hence $r = (z-z') \cdot (v-v')^{-1}$ a since $v \neq v'$
+\paragraph{Soundness with auxiliary input $\aux = (p,q)$} Notice that proof of soundness holds even if an adversary is given as input factorization of $N$.
+
+\paragraph{Quasi Unique Responses.} We show that our Sigma protocol has quasi unique responses, otherwise we are able to factorize $N$. Assume that an adversary can output a statement $((h_1, h_2, c_0, c_1, c_2), (a_0, a_1), v, z, z')$ such that $((a_0, a_1), v, z)$ and $((a_0, a_1), v, z')$ are accepting transcripts for $(h_1, h_2, c_0, c_1, c_2)$ and $z \neq z'$. Therefore using the first verification equation it holds $g^z = a_0 \cdot c_0^v = g^{z'} \bmod N \implies z = z' \bmod \ordqrn$. Hence, $z-z' = \alpha \cdot \ordqrn \implies 4(z-z') = \alpha \cdot \varphi(N) $ for some $\alpha \neq 0$. Applying \Cref{factor-lemma} for $M=4(z-z')$ we are able to factorize $N$.
+\end{proof}
+
+\paragraph{Unpredictable Commitments}. Elements $a_0, a_1$ are essentially random elements in $\qrn$. But since we sample exponent $alpha$ from $\smplsetqrn$ which is slightly bigger than $\ordqrn$ some elements are twice so likely to be sampled. Therefore $\delta = 2 \frac{4}{\ordqrn} = \frac{2}{p'q'}$.
+
+By \Cref{thm:fs} our Sigma protocols can be turned into simulation-sound NIZKs with alogrithms $(\prove, \vrfy)$ in the random oracle model via the Fiat-Shamir transform. Moreover since the underlying sigma protocols are sound with respect to auxiliary input $\aux:=(p,q)$ the NIZKs obtained via Fiat-Shamir transformation are also sound with respect to auxiliary input in the sense of \Cref{def:nizk-snd-aux}.
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

@@ -1,0 +1,439 @@
+%!TEX root=./main.tex
+\section{Preliminaries}
+We denote our security parameter by $\lambda$. For $n \in \mathbb{N}$ we write $1^n$ to denote the $n$-bit string of all ones. For any element $x$ in a set $X$, we use $x \rand X$ to indicate that we choose $x$ uniformly at random from $X$. For simplicity we model all algorithms as Turing machines, however, all adversaries are modeled as non-uniform polynomial-size circuits to simplify concrete time bounds in the security definitions of non-interactive timed commitments and the strong sequential squaring assumption. All algorithms are randomized, unless explicitly defined as deterministic. For any PPT algorithm $A$, we define $x \leftarrow A(1^\secpar,a_1,\ldots,a_n)$ as the execution of $A$ with inputs security parameter $\secpar$, $a_1,\ldots,a_n$ and fresh randomness and then assigning the output to $x$. We write $[n]$ to denote the set of integers $\{1, \dots, n\}$ and $\floor{x}$ to denote the greatest integer that is less than or equal to $x$.
+
+
+
+\paragraph{Non-interactive timed commitments.}
+The following definition of a non-interactive timed commitment scheme is from~\cite{TCC:KatLosXu20}.
+\begin{definition}
+\label{def:nitc_syntax}
+A non-interactive timed commitments scheme $\nitc$ with message space $\msgspace$ is a tuple of algorithms $\nitc = (\pgen, \com, \cvrfy, \dvrfy, \allowbreak \fdecom)$ with the following syntax.
+\begin{itemize}
+\item $\crs \leftarrow \pgen(\seck, T)$ is a probabilistic algorithm that takes as input the security parameter $\seck$ and a hardness parameter $T$ and outputs a common reference string $\crs$ and a secret key.
+\item $(c, \pi_\com, \pi_\dec) \leftarrow \com(\crs, m)$ is a probabilistic algorithm that takes as input a common reference string $\crs$ and a message $m$ and outputs a commitment $c$ and proofs $\pi_\com, \pi_\dec$.
+\item $0/1 \leftarrow \cvrfy(\crs, c, \pi_\com)$ is a deterministic algorithm that takes as input a common reference string $\crs$, a commitment $c$ and proof $\pi_\com$ and outputs $0$ (reject) or $1$ (accept).
+\item $0/1 \leftarrow \dvrfy(\crs, c, m, \pi_\dec)$ is a deterministic algorithm that takes as input a common reference string $\crs$, a commitment $c$, a message $m$ and proof $\pi_\dec$ and outputs $0$ (reject) or $1$ (accept).
+%\item $m \leftarrow \decom(\crs,\sk, c)$ is a deterministic algorithm that takes as input a common reference string $\crs$, a secret key $\sk$ and a commitment $c$ and outputs $m \in \msgspace \cup \{\bot\}$. The running time of $\decom$ should be independent of $T$.
+\item $m \leftarrow \fdecom(\crs, c)$ is a deterministic forced decommit algorithm that takes as input a common reference string $\crs$ and a ciphertext $c$ and outputs $m \in \msgspace \cup \{\bot\}$ in time at most $T \cdot \poly(\secpar)$.
+\end{itemize}
+We say $\nitc$ is correct if for all $\secpar, T \in \nats$ and all $m \in \msgspace$ holds:
+\[\Pr\left[
+\begin{aligned}
+%\decom(\crs, \sk, c) = 
+\fdecom(\crs, c) = m \\
+\land \; \cvrfy(\crs, c, \pi_\com) = 1 \\
+\land \; \dvrfy(\crs, c, m, \pi_\dec)=1
+\end{aligned}
+: 
+\begin{aligned}
+      \crs \leftarrow \pgen(\seck, T) \\
+      (c, \pi_\com, \pi_\dec) \leftarrow \com(\crs, m) \\
+    \end{aligned}
+\right] = 1.
+\]
+\end{definition}
+
+\begin{remark}
+Following \cite{TCC:KatLosXu20} we make $\pi_\com$ explicit, however, $\pi_\com$ could alternatively be seen as part of a commitment $c$. In particular, for our constructions we will have $\pi_\com = \bot$ empty, since our commitments $c$ will be standalone verifiable.  
+\end{remark}
+
+%As the names of the decryption algorithms in \Cref{def:tpke_syntax} suggest, it should hold that $\tfd$ is much smaller than $\tsd$. Now we state the original security definition, however, adjusted to the computational model which is used in this paper. 
+
+%\paragraph{Timed commitments.}
+%The following definition of an interactive timed commitment scheme is adjusted definition from~\cite{TCC:KatLosXu20} to an interactive setting.
+%\begin{definition}
+%\label{def:tpke_syntax}
+%An interactive timed commitments scheme $\tc$ with message space $\msgspace$ is a tuple $\tc = (\pgen, \com = \prot{C,R}, \cvrfy, \dvrfy, \decom, \allowbreak \fdecom)$ with the following syntax.
+%\begin{itemize}
+%\item $\crs \leftarrow \pgen(\seck, T)$ is a probabilistic algorithm that takes as input the security parameter $\seck$ and a hardness parameter $T$ and outputs a common reference string $\crs$ and a secret key.
+%\item $(c, \pi_\com, \pi_\dec) \leftarrow \com(\crs, m) = \prot{C(m),R}(\crs)$ is an interactive protocol between two PPT algorithms $C$ and $R$, where $C$ takes as input a common reference string $\crs$ and a message $m$ and $R$ takes as input $\crs$. At the end of the protocol $C$ and $R$ has a joint  output a commitment $c$ and proof $\pi_\com$ and additionally $C$ has private output $\pi_\dec$.
+%\item $0/1 \leftarrow \cvrfy(\crs, c, \pi_\com)$ is a deterministic algorithm that takes as input a common reference string $\crs$, a commitment $c$ and proof $\pi_\com$ and outputs $0$ (reject) or $1$ (accept).
+%\item $0/1 \leftarrow \dvrfy(\crs, c, m, \pi_\dec)$ is a deterministic algorithm that takes as input a common reference string $\crs$, a commitment $c$, a message $m$ and proof $\pi_\dec$ and outputs $0$ (reject) or $1$ (accept).
+%%\item $m \leftarrow \decom(\crs,\sk, c)$ is a deterministic algorithm that takes as input a common reference string $\crs$, a secret key $\sk$ and a commitment $c$ and outputs $m \in \msgspace \cup \{\bot\}$. The running time of $\decom$ should be independent of $T$.
+%\item $m \leftarrow \fdecom(\crs, c)$ is a deterministic forced decommit algorithm that takes as input a common reference string $\crs$ and a ciphertext $c$ and outputs $m \in \msgspace \cup \{\bot\}$ in time at most $T \cdot \poly(\secpar)$.
+%\end{itemize}
+%We say $\tc$ is correct if for all $\secpar, T \in \nats$ and all $m \in \msgspace$ holds:
+%\[\Pr\left[
+%\begin{aligned}
+%%\decom(\crs, \sk, c) = 
+%\fdecom(\crs, c) = m \\
+%\land \; \cvrfy(\crs, c, \pi_\com) = 1 \\
+%\land \; \dvrfy(\crs, c, m, \pi_\dec)=1
+%\end{aligned}
+%: 
+%\begin{aligned}
+%      \crs \leftarrow \pgen(\seck, T) \\
+%      (c, \pi_\com, \pi_\dec) \leftarrow \com(\crs, m) \\
+%    \end{aligned}
+%\right] = 1.
+%\]
+%\end{definition}
+%
+%\begin{definition}
+%We say that timed commitment scheme $(\pgen, \com, \cvrfy, \allowbreak \dvrfy, \decom, \fdecom)$ is non-interactive timed commitment $\nitc$ if $(c, \pi_\com, \pi_\dec) \leftarrow \com(\crs, m)$ is a probabilistic algorithm that takes as input a common reference string $\crs$ and a message $m$ and outputs a commitment $c$ and proofs $\pi_\com, \pi_\dec$. All other algorithms are defined as for an interactive timed commitment scheme.
+%
+%\end{definition}
+
+%\begin{definition}
+%\label{def:nitc_cca}
+%A timed commitment scheme $\tc$ is \emph{IND-CCA secure} with gap $0 < \gap < 1$ if there exists a polynomial $\tilde{T}(\cdot)$ such that for all polynomials $T(\cdot) \geq \tilde{T}(\cdot)$ and every non-uniform polynomial-size adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$, where the depth of $\adv_{2, \secpar}$ is at most $T^{\gap}(\secpar)$, there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ it holds 
+%\[ \advtg^{\tc}_{\adv} = 
+%\left| \Pr\left[ 
+%    b = b'
+%    \;:\;
+%    \begin{aligned}
+%    \crs \leftarrow \pgen(\seck, T(\secpar)) \\
+%      (m_0, m_1, \st) \leftarrow \adv_{1,\secpar}^{\deco(\cdot)}(\crs) \\
+%      b \rand \bits\\
+%      (c^*, \pi_\com, \pi_\dec) \leftarrow \com(\crs, m_b) \\
+%      b' \leftarrow \adv_{2,\secpar}^{\deco(\cdot)}(c^*, \pi_\com, \st)
+%    \end{aligned}
+%    \right] -  \half \right|
+%\leq \negl(\secpar),  
+%\]
+%where $|m_0|=|m_1|$ and the oracle ${\deco(c)}$ returns value which is equal to $\fdecom(\crs, c)$ with the restriction that $\adv_{2, \secpar}$ is not allowed to query the oracle $\deco(\cdot)$ for decommitment of the challenge commitment $c^*$. We require that $\deco(\cdot)$ must be able to answer decommitment queries in time which is independent of $T$.
+%\end{definition}
+
+The following definition is based on \cite{TCC:KatLosXu20}, however, adjusted to computational model considered by Bitansky \etal \cite{ITCS:BGJPVW16}. 
+\begin{definition}
+\label{def:nitc_cca}
+A non-interactive timed commitment scheme $\nitc$ is \emph{IND-CCA secure} with gap $0 < \gap < 1$ if there exists a polynomial $\tilde{T}(\cdot)$ such that for all polynomials $T(\cdot) \geq \tilde{T}(\cdot)$ and every non-uniform polynomial-size adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$, where the depth of $\adv_{2, \secpar}$ is at most $T^{\gap}(\secpar)$, there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ it holds 
+\[ \advtg^{\nitc}_{\adv} = 
+\left| \Pr\left[ 
+    b = b'
+    \;:\;
+    \begin{aligned}
+    \crs \leftarrow \pgen(\seck, T(\secpar)) \\
+      (m_0, m_1, \st) \leftarrow \adv_{1,\secpar}^{\deco(\cdot)}(\crs) \\
+      b \rand \bits\\
+      (c^*, \pi_\com, \pi_\dec) \leftarrow \com(\crs, m_b) \\
+      b' \leftarrow \adv_{2,\secpar}^{\deco(\cdot)}(c^*, \pi_\com, \st)
+    \end{aligned}
+    \right] -  \half \right|
+\leq \negl(\secpar),  
+\]
+where $|m_0|=|m_1|$ and the oracle ${\deco(c)}$ returns the result of $\fdecom(\crs, c)$, with the restriction that $\adv_{2, \secpar}$ is not allowed to query the oracle $\deco(\cdot)$ for a decommitment of the challenge commitment $c^*$. %We require that $\deco(\cdot)$ must be able to answer decommitment queries in time which is independent of $T$. 
+\end{definition}
+
+As already observed in \cite{TCC:KatLosXu20}, a challenge for a security proof of a concrete timed commitment construction is that the reduction must be able to answer decommitment queries to $\deco(\cdot)$ in time which is independent of $T$, as otherwise one is not able to obtain a sound proof when reducing to a time-sensitive assumption, such as the strong sequential squaring assumption. This in particular means that decommitment queries in the security proof can not be simply answered by executing the forced decommitment algorithm $\fdecom$, as its runtime depends on $T$, but there must exist another way.  Thus, as in \cite{TCC:KatLosXu20}, $\deco(\cdot)$ must be able to answer decommitment queries in time independent of $T$. 
+
+%Now we state a binding property for a non-interactive timed commitment scheme. 
+
+\begin{definition}
+\label{def:nitc-bnd}
+We define the $\mathsf{BND \mhyphen CCA}_\adv(\secpar)$ experiment as follows:
+\begin{enumerate}
+\item $\crs \leftarrow \pgen(\seck, T(\secpar))$;
+\item $(m, c, \pi_\com, \pi_\dec, m', \pi_\dec') \leftarrow \adv_{\secpar}^{\deco(\cdot)}(\crs)$, where the oracle $\deco(c)$ returns $\fdecom(\crs, c)$;
+\item Output 1 iff $\cvrfy(\crs, c, \pi_\com)= 1$ and either:
+\begin{itemize}
+\item $m \neq m' \; \land \; \dvrfy(\crs, c, m, \pi_\dec) = \dvrfy(\crs, c, m', \pi_\dec') = 1$;
+\item $\dvrfy(\crs, c, m, \pi_\dec) = 1 \; \land \; \fdecom(\crs, c) \neq m$.
+\end{itemize}
+\end{enumerate}
+A non-interactive timed commitment scheme $\nitc$ is \emph{BND-CCA secure} if for all non-uniform polynomial-size adversaries $\adv = \{\adv_{\secpar}\}_{\secpar \in \nats}$ there is a negligible function $\negl(\cdot)$ such that for all $\secpar \in \N$ 
+\[ \advtg^{\nitc}_{\adv} = 
+\Pr\left[ \mathsf{BND \mhyphen CCA}_\adv(\secpar) = 1 \right] \leq \negl(\secpar). 
+\]
+\end{definition}
+
+%Now we state a binding property for a timed commitment scheme. 
+%
+%\begin{definition}
+%\label{def:nitc-bnd}
+%A  timed commitment scheme $tc$ is \emph{perfectly binding} if for all $\secpar, T \in \N, m, m' \in \msgspace$ such that $m \neq m'$, for all $\crs$ in the support of $\pgen(\secpar, T)$, for all $c, \pi_\com, \pi_\dec, \pi_\dec'$ it holds 
+%\[ \Pr\left[ 
+%    \begin{aligned}
+%    (\dvrfy(\crs, c, m, \pi_\dec) = \dvrfy(\crs, c, m', \pi_\dec') = 1 \\
+%    \land \cvrfy(\crs, c, \pi_\com)= 1)
+%    \lor(\cvrfy(\crs, c, \pi_\com)= 1  \\
+%    \land \dvrfy(\crs, c, m, \pi_\dec) = 1 \; \land \; \fdecom(\crs, c) \neq m) \\
+%    \end{aligned}
+%    \right]
+%= 0,
+%\]
+%\end{definition}
+
+Next we define a new property of NITCs, which allows for efficient verification that a forced decommitment was executed correctly, without the need to execute expensive sequential computation. This property was first suggested for time-lock puzzles by \cite{EPRINT:EFKP20a} and denoted as public verifiability.
+
+\begin{definition}
+\label{def:nitc_pubver}
+A non-interactive timed commitments scheme $\nitc$ is \emph{publicly verifiable} if $\fdecom$ additionally outputs a proof $\pi_\fdecom$ and has an additional algorithm $\fdvrfy$ with the following syntax:
+\begin{itemize}
+\item $0/1 \leftarrow \fdvrfy(\crs, c, m, \pi_\fdecom)$ is a deterministic algorithm that takes as input a common reference string $\crs$, a commitment $c$, a message $m$, and a proof $\pi_\fdecom$ and outputs 0 (reject) or 1 (accept) in time $\poly(\log T, \secpar)$.
+\end{itemize}
+Moreover, a publicly verifiable NITC must have the following properties:
+\begin{itemize}
+\item \emph{Completeness} for all $\secpar, T \in \nats$ and all $m \in \msgspace$ holds:
+\[\Pr\left[
+\begin{aligned}
+\fdvrfy(\crs, c, m, \pi_\fdecom)=1
+\end{aligned}
+: 
+\begin{aligned}
+      \crs \leftarrow \pgen(\seck, T) \\
+      (c, \pi_\com, \pi_\dec) \leftarrow \com(\crs, m) \\
+      (m, \pi_\fdecom) \leftarrow \fdecom(\crs, c) \\
+    \end{aligned}
+\right] = 1.
+\]
+\item \emph{Soundness} for all non-uniform polynomial-size adversaries $\adv = \{\adv_{\secpar}\}_{\secpar \in \nats}$ there is a negligible function $\negl(\cdot)$ such that for all $\secpar \in \N$
+\[\Pr\left[
+\begin{aligned}
+\fdvrfy(\crs, c, m', \pi_\fdecom') = 1 \\
+ \land \; \cvrfy(\crs, c, \pi_\com) = 1 \\
+\land \; m \neq m' \\
+\end{aligned}
+: 
+\begin{aligned}
+      \crs \leftarrow \pgen(\seck, T) \\
+      (c, \pi_\com, m', \pi_\fdecom') \leftarrow \adv_\secpar(\crs) \\
+      (m,\pi_\fdecom) \leftarrow \fdecom(\crs,c)
+    \end{aligned}
+\right] \leq \negl(\secpar).
+\]
+\end{itemize}
+
+\end{definition}
+
+The following definition is inspired by the definition of homomorphic time-lock puzzles of Malavolta~\etal \cite{C:MalThy19}. 
+
+\begin{definition}
+\label{def:nitc_hom}
+A non-interactive timed commitments scheme $\nitc$ is homomorphic with respect to a class of circuits $\mathcal{C} = \{\mathcal{C}_\secpar\}_{\secpar \in \N}$, if there is an additional algorithm $\eval$ with the following syntax:
+\begin{itemize}
+\item $c \leftarrow \eval(\crs, C, c_1, \dots, c_n)$ is a probabilistic algorithm that takes as input a common reference string $\crs$, a circuit $C \in \mathcal{C}_\secpar$, and set of $n$ commitments $(c_1, \dots, c_n)$. It outputs a commitment $c$. 
+\end{itemize}
+Additionally, a homomorphic NITC fulfils the following properties:
+\item \emph{Correctness:} for all $\secpar, T \in \N$, $C \in \mathcal{C}_\secpar$, $(m_1, \dots, m_n) \in \msgspace^n$, all $\crs$ in the support of $\pgen(\seck, T)$, all $c_i$ in the support of $\com(\crs, m_i)$ we have:
+\begin{enumerate}
+\item There exists a negligible function $\negl$ such that 
+\[\Pr\left[\fdecom(\crs, \eval(\crs, C, c_1, \dots, c_n)) \neq C(m_1, \dots, m_n) \right] \leq \negl(\secpar).
+\]
+\item The exists a fixed polynomial $\poly$ such that the runtime of $\fdecom(\crs, c)$ is bounded by $\poly(\secpar, T)$, where $c \leftarrow \eval(\crs, C, c_1, \dots, c_n)$.
+\end{enumerate}
+\item \emph{Compactness:} for all $\secpar, T \in \N$, $C \in \mathcal{C}_\secpar$, $(m_1, \dots, m_n) \in \msgspace^n$, all $\crs$ in the support of $\pgen(\seck, T)$, all $c_i$ in the support of $\com(\crs, m_i)$, the following two conditions are satisfied:
+\begin{enumerate}
+\item The exists a fixed polynomial $\hat{\poly}$ such that $|c|=\hat{\poly}(\secpar, |C(m_1, \dots, m_n)|)$, where $c \leftarrow \eval(\crs, C, c_1, \dots, c_n)$.
+\item The exists a fixed polynomial $\tilde{\poly}$ such that the runtime of $\eval(\crs, C, c_1, \dots, c_n)$ is bounded by $\tilde{\poly}(\secpar, |C|)$.
+\end{enumerate}
+\end{definition}
+
+
+\paragraph{Complexity assumptions.}
+We base our constructions on the strong sequential squaring assumption. Let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function, by $\Zn^*$ the group $\{x \in \Zn: \gcd(N,x) = 1\}$ and by $\Jn$ the cyclic subgroup of elements of $\Zn^*$ with Jacobi symbol 1 which has order $|\Jn| = \frac{\varphi(N)}{2} = \frac{(p-1)(q-1)}{2}$. By $\qrn$ we denote the cyclic group of quadratic residues modulo $N$ which has order $|\qrn| = \frac{\varphi(N)}{4} = \frac{(p-1)(q-1)}{4}$. To efficiently sample a random generator $g$ from $\Jn$, it is sufficient to be able sample random element from $\Jn \setminus \qrn$, since with all but negligible probability a random element of $\Jn \setminus \qrn$ is a generator. Moreover, when the factors $p,q$ are known, then it easy to check if the given element is a generator of $\Jn$ by testing possible orders. 
+
+To sample a random element of $\Jn \setminus \qrn$, we can sample $r \rand \Zn^*$ and let $g:= -r^2 \bmod N$. Now notice that $r^2 \bmod N$ is a random element in the group of the quadratic residues and $-1 \bmod N \in \Jn \setminus \qrn$. To see this, notice that for any strong prime $p$ it holds that $p = 3 \bmod 4$. By Euler's criterion we have $\left( \frac{x}{p} \right)= x^{\frac{p-1}{2}} \bmod p$ for odd primes $p$ and every $x$ which is coprime to $p$.  Therefore $\left( \frac{-1}{p} \right)= \left( \frac{-1}{q} \right) = -1$, meaning that $-1 \bmod N \in \Jn \setminus \qrn$. By multiplying a fixed element of $\Jn \setminus \qrn$ with a random element of $\qrn$ we obtain a random element of $\Jn \setminus \qrn$. %Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator of $\Jn$.
+
+As mentioned above, to sample a random element from $\qrn$, we can sample $r \rand \Zn^*$ and let $g:= r^2 \bmod N$. Again $g$ is a generator of $\qrn$ with all but negligible probability. When the factors $p,q$ are known, then it easy to check if the given element is a generator of $\qrn$ by checking if $g^{p'} \neq 1 \bmod N \land g^{q'} \neq 1 \bmod N$. Therefore we are able to efficiently sample a random generator of $\qrn$. %Let $\genmod'$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator of $\qrn$.
+
+Since our constructions relies on the strong sequential squaring assumption either in the group $\Jn$ \cite{C:MalThy19} or in the group $\qrn$ \cite{TCC:KatLosXu20} for brevity we state the strong sequntial squaring assumption in the group $\G$, where $\G$ is one of the mentioned groups. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator g of the group $\G$.
+
+
+
+%To efficiently sample a random generator $g$ from $\Jn$ when the factorization of $N$ is unknown, we can sample $r \rand \Zn^*$ and let $g:= -r^2 \bmod N$ which yields a generator with all but negligible probability. When the factors $p,q$ are known, then it easy to check if the given element $g$ is a generator of $\Jn$ by testing possible orders of $g$. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator $g$ of $\Jn$. Now we state the strong sequential squaring assumption. 
+
+%We base our construction on the strong sequential squaring assumption in the group of quadratic residues. Precisely, let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function and by $\qrn$ the cyclic group of quadratic residues modulo $N$ which has order $|\qrn| = \frac{\varphi(N)}{4} = \frac{(p-1)(q-1)}{4}$. To efficiently sample a random element $x$ from $\qrn$, we can sample $r \rand \Zn^*$ and let $x:= r^2 \bmod N$. When the factors $p,q$ are known, then it easy to check if the given element is a generator of $\qrn$ by checking if $x^{p'} \neq 1 \bmod N \land x^{q'} \neq 1 \bmod N$. Therefore we are able to efficiently sample a random generator of $\qrn$. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator $g$ of $\qrn$. Now we state the strong sequential squaring assumption. 
+
+
+\begin{figure}[h]
+\begin{center}
+\begin{tabular}{l}
+$\mathsf{ExpSSS}_{\adv}^{b}(\secpar)$: \\
+\hline
+$(p, q, N,g) \leftarrow \genmod(\seck)$ \\
+$\st \leftarrow \adv_{1, \secpar}(N, T(\lambda),g)$\\
+$x \rand \G$ \\
+$\text{if } b = 0: y:=x^{2^{T(\secpar)}} \bmod N$\\
+$\text{if } b = 1: y \rand \G$\\
+return	$b' \leftarrow \adv_{2,\secpar}(x, y, \st)$
+\end{tabular}
+\end{center}
+\caption{\label{fig:sss}Security experiment for the strong sequential squaring assumption.}
+\end{figure}
+
+
+\begin{definition}[Strong Sequential Squaring Assumption (SSS)]\label{def:sssa}
+Consider the security experiment $\mathsf{ExpSSS}_{\adv}^{b}(\secpar)$ in \Cref{fig:sss}. The \emph{strong sequential squaring assumption} with gap $0< \gap <1$ holds relative to $\genmod$ if there exists a polynomial $\tilde{T}(\cdot)$ such that for all polynomials $T(\cdot) \geq \tilde{T}(\cdot)$ and for every non-uniform polynomial-size adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2,\secpar})\}_{\secpar \in \nats}$, where the depth of $\adv_{2,\secpar}$ is at most $T^{\gap}(\secpar)$, there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[\advtg^\sss_\adv = \abs{\Pr[\mathsf{ExpSSS}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpSSS}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
+\end{definition}
+
+Next we define the DDH experiment in the group $\Jn$, as originally stated by Castagnos \etal \cite{C:CouPetPoi16}. Castagnos \etal have shown that this problem is hard assuming that DDH is hard in the subgroups of $\Zn^*$ of order $p'$ and $q'$ and that the quadratic residuosity problem is hard in $\Zn^*$.  We also define DDH experiment in the group of quadratic residues modulo $N$ where the factors of $N$ are given to an adversary. Castagnos \etal \cite{C:CouPetPoi16} have shown that DDH problem is hard in $\qrn$ assuming that DDH is hard in the large prime-order subgroups of $\Zn^*$. This is shown as part of the proof of their Theorem 9. We remark that even though in the mentioned proof the prime factors $p,q$ are not given to DDH adversary in the group $\qrn$, but the proof relies on the fact that the constructed reduction knows factors $p, q$. Therefore the proof is valid even if $p,q$ are given to DDH adversary in $\qrn$ as input.
+
+\begin{figure}[h]
+\begin{center}
+\begin{tabular}{cc}
+\begin{tabular}{l}
+$\mathsf{ExpJ_NDDH}_{\adv}^{b}(\secpar)$: \\
+\hline
+$(p, q, N,g) \leftarrow \genmod(\seck)$ \\
+$\alpha, \beta \rand [\varphi(N)/2]$ \\
+$\text{if } b = 0: \gamma = a\cdot b \bmod \varphi(N)/2$\\
+$\text{if } b = 1: \gamma \rand [\varphi(N)/2]$ \\
+return	$b' \leftarrow \adv_{\secpar}(N,g,g^\alpha, g^\beta, g^\gamma)$
+\end{tabular}&
+\begin{tabular}{l}
+$\mathsf{ExpQR_NDDH}_{\adv}^{b}(\secpar)$: \\
+\hline
+$(p, q, N,g) \leftarrow \genmod(\seck)$ \\
+$\alpha, \beta \rand [\varphi(N)/4]$ \\
+$\text{if } b = 0: \gamma = a\cdot b \bmod \varphi(N)$\\
+$\text{if } b = 1: \gamma \rand [\varphi(N)/4]$ \\
+return	$b' \leftarrow \adv_{\secpar}(N,p,q,g,g^\alpha, g^\beta, g^\gamma)$
+\end{tabular}
+\end{tabular}
+\end{center}
+\caption{\label{fig:ddh}Security experiments for DDH in $\Jn$ and $\qrn$.}
+\end{figure}
+ 
+
+\begin{definition}[Decisional Diffie-Hellman in $\Jn$]\label{thm:ddh}
+Consider the security experiment $\mathsf{ExpJ_NDDH}_{\adv}^{b}(\secpar)$ in \Cref{fig:ddh}.
+The decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$ if for every non-uniform polynomial-size adversary $\adv = \{\adv_{\secpar}\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[\advtg^\ddh_\adv = \abs{\Pr[\mathsf{ExpJ_NDDH}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpJ_NDDH}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
+\end{definition} 
+
+\begin{definition}[Decisional Diffie-Hellman in $\qrn$]\label{thm:ddhqrn}
+Consider the security experiment $\mathsf{ExpQR_NDDH}_{\adv}^{b}(\secpar)$ in \Cref{fig:ddh}.
+The decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\qrn$ if for every non-uniform polynomial-size adversary $\adv = \{\adv_{\secpar}\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[\advtg^\ddh_\adv = \abs{\Pr[\mathsf{ExpQR_NDDH}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpQR_NDDH}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
+\end{definition} 
+
+\begin{figure}[h]
+\begin{center}
+\begin{tabular}{l}
+$\mathsf{ExpDCR}_{\adv}^{b}(\secpar)$: \\
+\hline
+$(p, q, N, g) \leftarrow \genmod(\seck)$ \\
+$y_1 \rand \Zns$ \\
+$y_0 = y_1^N \bmod N^2$\\
+return	$b' \leftarrow \adv_{\secpar}(N,y_b)$
+\end{tabular}
+\end{center}
+\caption{\label{fig:dcr}Security experiment for DCR.}
+\end{figure}
+
+
+
+\begin{definition}[Decisional Composite Residuosity Assumption]
+Consider the security experiment $\mathsf{ExpDCR}_{\adv}^{b}(\secpar)$ in \Cref{fig:dcr}.
+The decisional composite residuosity assumption holds relative to $\genmod$ if for every non-uniform polynomial-size adversary $\adv = \{\adv_{\secpar}\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[\advtg^\dcr_\adv = \abs{\Pr[\mathsf{ExpDCR}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpDCR}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
+\end{definition} 
+
+
+When designing an efficient simulation sound NIZK for our scheme, we rely on factoring assumption. 
+
+\begin{definition}[Factoring Assumption]
+The \emph{factoring assumption} holds relative to $\genmod$ if  for every non-uniform polynomial-size adversary $\adv = \{\adv_{\secpar}\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[ \advtg_\adv^\fac = 
+\Pr\left[ 
+		N = p'q'
+		\;:\;
+    \begin{aligned}
+    	(p, q, N, g) \leftarrow \genmod(\seck) \\
+			p',q' \leftarrow \adv_{\secpar}(N), \\
+			\text{ such that }  p', q' \in \N; p', q'>1
+    \end{aligned}
+    \right] 
+\leq \negl(\secpar). 
+\]
+\end{definition}
+
+To argue that our proof system fulfils required properties, we make of use the following lemma, which states that it is possible factorize $N$ if a positive multiple of $\varphi(N)$ is known. The proof of this lemma is part of an analysis of \cite[Theorem 8.50]{books/crc/KatzLindell2014}.
+\begin{lemma}\label{factor-lemma}
+Let $(p,q,N)  \leftarrow \genmod(\seck)$ and let $M = \alpha\varphi(N)$ for some positive integer $\alpha\in \Z^+$. There exists a PPT algorithm $\factor(N, M)$ which, on input $(N,M)$, outputs $p',q' \in \N$, $p', q'>1$ such that $N = p'q'$ with probability at least $1-2^{-\secpar}$. 
+\end{lemma}
+
+
+\paragraph{On sampling random exponents for $\Jn$ and $\qrn$.}
+Since in our construction the order $\ord$ of the group $\Jn$ and the order $\ordqrn$ of $\qrn$ are unknown, we use the set $\smplset$, respectively $\smplsetqrn$, whenever we should sample from the sets $[\ord]$, respectively $[\ordqrn]$ without knowing the factorization of $N$. Sampling from $\smplset$ is statistically indistinguishable from sampling from $[\ord]$ and similarly sampling from $\smplsetqrn$ is statistically indistinguishable from sampling from $[\ordqrn]$. 
+
+%Since in our construction the order $\ord$ of the group $\qrn$ is unknown, we use the set $\smplset$ whenever we should sample from the set $[\ord]$ without knowing the factorization of $N$. Sampling from $\smplset$ is statistically indistinguishable from sampling from $[\ord]$. 
+
+\begin{definition}[Statistical Distance]
+Let $X$ and $Y$ be two random variables over a finite set $S$. The statistical distance between $X$ and $Y$ is defined as 
+\[\sd(X, Y) = \half \sum_{s \in S} \abs{\Pr[X = s] - \Pr[Y = s]}.\]
+\end{definition}
+
+
+\begin{restatable}{lemma}{primelemma}\label{sampling-lemma}
+Let $p,q$ be strong primes, $N=pq$, $\ell \in \nats$ such that $\gcd(\ell, \varphi(N)) = \ell$ and  $X$ and $Y$ be random variables defined on domain $[\floor{N/\ell}]$ as follows:
+\[
+\Pr[X = r] = 1/\floor{N/\ell} \; \forall r \in [\floor{N/\ell}] \text{ and } \Pr[Y = r] = 
+\begin{cases} 
+     \ell/\varphi(N) & \forall r \in [\varphi(N)/\ell] \\
+     0 & \text{otherwise}. 
+   \end{cases}
+\]
+Then 
+\[
+\sd(X, Y) \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
+\]
+\end{restatable}
+
+We defer the proof of this lemma to \Cref{proof:smpl-lemma}.
+
+
+
+%\begin{proof}
+%The following computation proves the lemma:
+%\begin{align*}
+%\sd(X, Y) = \half \sum_{r \in [\floor{N/2}]} \abs{\Pr[X = r] - \Pr[Y = r]} = \\ 
+%\half \left( \sum_{r = 1}^{\varphi(N)/2} \abs{\Pr[X = r] - \Pr[Y = r]} + \sum_{r = \varphi(N)/2+1}^{\floor{N/2}} \abs{\Pr[X = r] - \Pr[Y = r]} \right) = 
+%\\
+%\half \left( \sum_{r = 1}^{\varphi(N)/2} \abs{\frac{1}{\floor{N/2}} - \frac{2}{\varphi(N)}} + \sum_{r = \varphi(N)/2+1}^{\floor{N/2}} \abs{\frac{1}{\floor{N/2}} - 0} \right) \leq \\
+%\half \left( \sum_{r = 1}^{\varphi(N)/2} \abs{\frac{2}{N} - \frac{2}{\varphi(N)}} + \sum_{r = \varphi(N)/2+1}^{\floor{N/2}} \abs{\frac{1}{\floor{N/2}} - 0} \right) = \\
+%\half \left( \varphi(N)/2 \abs{\frac{2(\varphi(N) - N)}{\varphi(N)N}} + (\floor{N/2}-\varphi(N)/2) \frac{1}{\floor{N/2}} \right) = \\
+% \half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/2}{{\floor{N/2}}} \right) \leq 
+%\half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/2}{{N/2}} \right) = \\
+% \half\frac{2(N-\varphi(N))}{N} = 
+%\frac{(N-(N-p-q+1))}{N} = \frac{p+q-1}{N} = \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
+%\end{align*}
+%\end{proof}
+
+
+
+%\begin{lemma}\label{sampling-lemma}
+%Let $p,q$ be strong primes, $N=pq$ and  $X$ and $Y$ be random variables defined on domain $[\floor{N/4}]$ as follows:
+%\[
+%\Pr[X = r] = 1/\floor{N/4} \; \forall r \in [\floor{N/4}] \text{ and } \Pr[Y = r] = 
+%\begin{cases} 
+%     4/\varphi(N) & \forall r \in [\varphi(N)/4] \\
+%     0 & \text{otherwise}. 
+%   \end{cases}
+%\]
+%Then 
+%\[
+%\sd(X, Y) \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
+%\]
+%\end{lemma}
+%
+%
+%\todo{Move to appendix.}
+%\begin{proof}
+%The following computation proves the lemma:
+%\begin{align*}
+%\sd(X, Y) = \half \sum_{r \in [\floor{N/4}]} \abs{\Pr[X = r] - \Pr[Y = r]} = \\ 
+%\half \left( \sum_{r = 1}^{\varphi(N)/4} \abs{\Pr[X = r] - \Pr[Y = r]} + \sum_{r = \varphi(N)/4+1}^{\floor{N/4}} \abs{\Pr[X = r] - \Pr[Y = r]} \right) = 
+%\\
+%\half \left( \sum_{r = 1}^{\varphi(N)/4} \abs{\frac{1}{\floor{N/4}} - \frac{4}{\varphi(N)}} + \sum_{r = \varphi(N)/4+1}^{\floor{N/4}} \abs{\frac{1}{\floor{N/4}} - 0} \right) \leq \\
+%\half \left( \sum_{r = 1}^{\varphi(N)/4} \abs{\frac{4}{N} - \frac{4}{\varphi(N)}} + \sum_{r = \varphi(N)/4+1}^{\floor{N/4}} \abs{\frac{1}{\floor{N/4}} - 0} \right) = \\
+%\half \left( \varphi(N)/4 \abs{\frac{4(\varphi(N) - N)}{\varphi(N)N}} + (\floor{N/4}-\varphi(N)/4) \frac{1}{\floor{N/4}} \right) = \\
+% \half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/4}{{\floor{N/4}}} \right) \leq 
+%\half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/4}{{N/4}} \right) = \\
+% \half\frac{2(N-\varphi(N))}{N} = 
+%\frac{(N-(N-p-q+1))}{N} = \frac{p+q-1}{N} = \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
+%\end{align*}
+%\end{proof}
+
+
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

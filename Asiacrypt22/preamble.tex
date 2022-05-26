@@ -1,0 +1,106 @@
+\usepackage{amsmath,amsfonts,amssymb,amstext}
+\usepackage{latexsym,ifthen,url}
+\usepackage[pdftex,usenames,dvipsnames]{color}
+
+
+% \usepackage{amsthm}
+% \theoremstyle{plain}
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{lemma}{Lemma}
+% \newtheorem{claim}{Claim}
+% \newtheorem{corollary}{Corollary}
+
+% \theoremstyle{definition}
+% \newtheorem{definition}{Definition}
+
+% \theoremstyle{remark}
+% \newtheorem{remark}{Remark}
+% \newtheorem{example}{Example}
+
+% \renewenvironment{proof}{\vspace{1mm}\noindent{\sc Proof.}}{\hfill$\square$\newline\vspace{1mm}}
+\DeclareMathAlphabet{\mathscript}{OT1}{pzc}{m}{it} 
+
+\usepackage[pdftex,colorlinks,backref]{hyperref}
+\hypersetup{colorlinks=false, linkcolor=blue, menucolor=blue, urlcolor=blue, citecolor=blue}
+\renewcommand*{\backref}[1]{}
+\def\sectionautorefname{Section}
+\def\subsectionautorefname{Section}
+\def\subsubsectionautorefname{Section}
+\def\appendixautorefname{Appendix}
+\def\definitionautorefname{Definition}
+\def\claimautorefname{Claim}
+\def\lemmaautorefname{Lemma}
+\def\theoremautorefname{Theorem}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\newcommand{\newsequenceofgames}[1]{
+%  \newcounter{#1}
+%  \setcounter{#1}{-1}
+%
+%  \ifx \GameID \undefined
+%    \newcommand{\GameID}{#1}
+%  \else
+%    \renewcommand{\GameID}{#1}
+%  \fi
+%
+%  \ifx \PrevLabel \undefined
+%    \newcommand{\PrevLabel}{\GameID.NULL}
+%  \else
+%    \renewcommand{\PrevLabel}{\GameID.NULL}
+%  \fi
+%
+%  \ifx \ThisLabel \undefined
+%    \newcommand{\ThisLabel}{\GameID.NULL}
+%  \else
+%    \renewcommand{\ThisLabel}{\GameID.NULL}
+%  \fi
+%}
+%
+%
+%\newcommand{\nextgame}[1]{
+%  \let\PrevLabel\ThisLabel
+%  \renewcommand{\ThisLabel}{\GameID.#1}
+%  \refstepcounter{\GameID}\label{\GameID.#1}
+%  \paragraph{Game~\arabic{\GameID}.}
+%}
+%
+%\newcommand{\thisgame}{{\ref{\ThisLabel}}\xspace}
+%\newcommand{\prevgame}{{\ref{\PrevLabel}}\xspace}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{color}
+\usepackage{marginnote}
+%\newcommand{\todo}[1]{{\marginnote{\textcolor{red}{TODO}}\textcolor{red}{(todo: #1)}}}
+%
+%\newcommand{\heading}[1]{\paragraph{\sc #1}}
+
+\usepackage{xspace}
+%\newcommand{\x}{\ensuremath{\cdot}}
+%\newcommand{\Z}{\ensuremath{\mathbb{Z}}\xspace}
+%\newcommand{\N}{\ensuremath{\mathbb{N}}\xspace}
+%\newcommand{\Q}{\ensuremath{\mathbb{Q}}\xspace}
+%\newcommand{\R}{\ensuremath{\mathbb{R}}\xspace}
+%\newcommand{\F}{\ensuremath{\mathbb{F}}\xspace}
+%\newcommand{\G}{\ensuremath{\mathbb{G}}\xspace}
+%
+%\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+%\newcommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+%\newcommand{\abs}[1]{\left| #1 \right|}
+%
+%\newcommand{\rand}{\stackrel{{\scriptscriptstyle\$}}{\leftarrow}}
+%\newcommand{\testequal}{\stackrel{{\scriptscriptstyle ?}}{=}}
+%
+%\newcommand{\Adversary}{\ensuremath{\mathcal{A}}\xspace}
+%\newcommand{\AdversaryB}{\ensuremath{\mathcal{B}}\xspace}
+%\newcommand{\Algo}{\ensuremath{\mathcal{A}}\xspace}
+%\newcommand{\AlgoB}{\ensuremath{\mathcal{B}}\xspace}
+%\newcommand{\Challenger}{\ensuremath{\mathcal{C}}\xspace}
+%\newcommand{\Oracle}{\ensuremath{\mathcal{O}}\xspace}
+
+\usepackage{cleveref}
+\usepackage{thmtools,thm-restate}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

@@ -1,345 +1,122 @@
 %!TEX root=./main.tex
-\section{Proof of  \Cref{sampling-lemma}}\label{proof:smpl-lemma}
-\primelemma*
+%\section{Constructions of Non-Malleable NITC using NIZK in ROM}
+\subsection{Construction of Linearly Homomorphic Non-Malleable NITC}
+We define language for our construction of a linearly homomorphic NITC depicted in \Cref{table:nitc-lh-rom} which relies on a one-time simulation sound NIZKs in the ROM in the following way:
+
+\[
+L = \left\{(h_1, h_2, c_0, c_1, c_2, c_3)| \exists (m,r):
+\begin{aligned}
+       (\land_{i=1}^3 c_i = h_i^{rN}(1+N)^m \bmod N^2) \land \\
+       c_0 = g^r \bmod N\\
+    \end{aligned}
+    \right\}, 
+\]
+where $g, h_3, N$ are parameters specifying the language.
 
 
-\begin{proof}
-The following computation proves the lemma:
-\begin{align*}
-\sd(X, Y) = \half \sum_{r \in [\floor{N/\ell}]} \abs{\Pr[X = r] - \Pr[Y = r]} = \\ 
-\half \left( \sum_{r = 1}^{\varphi(N)/\ell} \abs{\Pr[X = r] - \Pr[Y = r]} + \sum_{r = \varphi(N)/\ell+1}^{\floor{N/\ell}} \abs{\Pr[X = r] - \Pr[Y = r]} \right) = 
-\\
-\half \left( \sum_{r = 1}^{\varphi(N)/\ell} \abs{\frac{1}{\floor{N/\ell}} - \frac{\ell}{\varphi(N)}} + \sum_{r = \varphi(N)/\ell+1}^{\floor{N/\ell}} \abs{\frac{1}{\floor{N/\ell}} - 0} \right) \leq \\
-\half \left( \sum_{r = 1}^{\varphi(N)/\ell} \abs{\frac{\ell}{N} - \frac{\ell}{\varphi(N)}} + \sum_{r = \varphi(N)/\ell+1}^{\floor{N/\ell}} \abs{\frac{1}{\floor{N/\ell}} - 0} \right) = \\
-\half \left( \varphi(N)/\ell \abs{\frac{\ell(\varphi(N) - N)}{\varphi(N)N}} + (\floor{N/\ell}-\varphi(N)/\ell) \frac{1}{\floor{N/\ell}} \right) = \\
- \half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/\ell}{{\floor{N/\ell}}} \right) \leq 
-\half \left(\frac{(N-\varphi(N))}{N} + 1 - \frac{\varphi(N)/\ell}{{N/\ell}} \right) = \\
- \half\frac{2(N-\varphi(N))}{N} = 
-\frac{(N-(N-p-q+1))}{N} = \frac{p+q-1}{N} = \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
-\end{align*}
-\end{proof}
-
-
-
-\section{Proof of Theorem \ref{thm:NITC-IND-Mul-Std}} % (fold)
-\label{app:NITC-IND-Mul-Std}
-
-
-%\todo{Put the proof into an appendix}
-%\begin{proof}
-Completeness is implied by the completeness of the NIZK and can be verified by inspection. 
-
-%Our construction is based on the Naor-Yung paradigm where we combine three ElGamal-type ciphertext with shared randomness.  
-
-
-%Similarly to \cite{SCN:BiaMasVen16} we define a PPT algorithm $\rerand$ in Figure~\ref{fig:rerand}, which takes two ciphertexts generated with independent randomness, both public keys, only one secret key (in our case $k$) and randomness which was used to encrypt a message using the public key $g, h_1$. 
-%%We assume that modulus $N$ is implicitly known.\todo{Why not explicit?} 
-%% which corresponds to the secret key which is given as the input. 
-%
-%\begin{figure}[tb]
-%\centering
-%\begin{minipage}{0.75\textwidth}
-%$\underline{\rerand(c:= (g^{r}, h_1^{r}\cdot m), c':= (g^{r'}, h_2^{r'}\cdot m), N, h_1, h_2, k, r)}:$
-%\vspace{-2mm}
-%\begin{itemize}
-%\item $c_0:= g^{r}\cdot{g^{r'}} = g^{r+r'} \bmod N$;
-%\item $c_1:= (g^{r'})^k \cdot h_1^{r}\cdot m  =  h_1^{r'}\cdot h_1^{r}\cdot m = h_1^{r+r'}\cdot m \bmod N$;
-%\item $c_2:=h_2^{r} \cdot h_2^{r'}\cdot m = h_2^{r+r'}\cdot m \bmod N$.
-%\end{itemize}
-%\end{minipage}
-%\caption{\label{fig:rerand}Algorithm $\rerand$.}
-%\end{figure}
-%
-%
-%
-%
-%It is straightforward to see that the ciphertext returned by $\rerand$ is perfectly distributed to the ciphertext produced using a shared randomness where the pair $(c_0, c_1)$ encrypts a message $m$ and the pair $(c_0, c_2)$ encrypts message $m'$.
-
-
-% We note that if we use value $2^T$ as a secret key, then in order to compute $c_2$ we have to execute $T$ repeated squarings, but since $T$ is polynomial in $\secpar$ this computations is considered to be efficient.
-
-\newsequenceofgames{NITC-MH}
-To prove security we define a sequence of games $\games_0 - \games_{8}$.  For $i \in \{0,1,\dots,8\}$ we denote by $\games_i = 1$ the event that the adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$ outputs $b'$ in the game $\games_i$ such that $b = b'$.
-%In individual games we use the algorithm $\decom$ define in \Cref{fig:deco} to answer decommitment queries efficiently. 
 \begin{figure}[h!]
 \begin{center}
-\begin{tabular}{|l|}
+\begin{tabular}{|ll|}
 \hline
-$\underline{\decom(\crs, c, \sk)}$\\
-Parse $c$ as $(c_0, c_1, c_2, \pi)$\\
-if $\nizk.\vrfy(\crs_\nizk,(c_0, c_1, c_2), \pi)= 1$\\
-\tab Compute $y:= c_0^{\sk} \bmod N$\\
-\tab return $c_i \cdot y^{-1} \bmod N$\\
-return $\bot$\\
+$\underline{\pgen(\seck, T)}$ 							   & $\underline{\com(\crs, m)}$ \\
+$(p, q_, N, g) \leftarrow \genmod(\seck)$ & $r \rand \smplset$  \\
+$\varphi(N):= (p-1)(q-1)$   & $c_0:= g^r \bmod N$ \\
+$k_1, k_2 \rand \smplset$ & For $i \in [3]: c_i:= h_i^{rN}(1+N)^m \bmod N^2$\\
+$t:= 2^T \bmod \varphi(N)/2$ & $\Phi := (h_1, h_2, c_0, c_1, c_2, c_3), w := (m, r)$ \\
+For $i \in [2]: h_i:= g^{k_i} \bmod N$ &  $\pi \leftarrow \nizk.\prove(\Phi, w)$\\
+$h_3:=g^{t} \bmod N$ &  $c := (c_0, c_1, c_2, c_3, \pi)$\\
+return $\crs:= (N,T,g,h_1,h_2, h_3)$ &  $\pi_\com:= \bot, \pi_\dec: = r$ \\
+%$\crs \leftarrow \nizk.\setup(\seck)$ & \\
+ & return $(c, \pi_\com, \pi_\dec)$\\
+%return $\crs$     & \\
+                                             &\\
+$\underline{\cvrfy(\crs, c, \pi_\com)}$     & $\underline{\dvrfy(\crs,c, m, \pi_\dec)}$ \\
+Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ \\
+return $\nizk.\vrfy((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$  & if $ \land_{i=1}^3 c_i = h_i^{\pi_\dec N}(1+N)^m  \bmod N^2$ \\
+ & $\land c_0 = g^{\pi_\dec} \bmod N$\\
+ & \tab return 1 \\
+& return 0 \\
+                                             &\\
+$\underline{\fdecom(\crs,c)}$ & $\underline{\fdvrfy(\crs,c, m, \pi_\fdecom)}$ \\
+Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$\\
+if $\nizk.\vrfy((h_1, h_2, c_0, c_1, c_2, c_3), \pi)$ & if $c_3 = \pi_\fdecom^N (1+N)^m \bmod N^2$\\
+\tab Compute $ \pi_\fdecom:=c_0^{2^T} \bmod N$ &  \tab return 1\\
+\tab $m:=\frac{c_3 \cdot \pi_\fdecom^{-N} (\bmod N^2) -1}{N}$ & return 0\\
+\tab return $(m,\pi_\fdecom)$ & \\
+return $\bot$ & \\
+                                             &\\
+$\underline{\eval(\crs,\oplus_N, c_1, \dots, c_n)}$ &  \\
+Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2}, c_{i,3}, \pi_i)$ & \\
+\multicolumn{2}{|l|}{Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N, c_1:= \bot, c_2:=\bot, c_3 := \prod_{i=1}^n c_{i,3} \bmod N^2, \pi:= \bot$} \\
+return $c := (c_0, c_1, c_2, c_3, \pi)$ & \\
+%$\underline{\decom(\crs, \sk, c)}$     & $\underline{\fdecom(\crs,c)}$ \\
+%Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
+%if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$  & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$\\
+%\tab Compute $y_1:= c_0^{k} \bmod N$  &   \tab Compute $ y_2:=c_0^{2^T} \bmod N$ \\
+%\tab return $c_1 \cdot y_1^{-1} \bmod N$ & \tab return $c_2 \cdot y_2^{-1} \bmod N$ \\
+%return $\bot$ & return $\bot$\\
 \hline          
 \end{tabular}
-\caption{Decommitment oracle}
-\label{fig:deco-mh}
+\caption{Construction of Linearly Homomorphic NITC in ROM. \\ $\oplus_N$ refers to addition $\bmod N$}
+\label{table:nitc-lh-rom}
 \end{center}
 \end{figure}
 
-\nextgame{G0}
-Game $\games_\thisgame$ corresponds to the original security experiment where decommitment queries are answered using $\fdecom$.
-
-\nextgame{DecOracle}
-In game $\games_\thisgame$ decommitment queries are answered using the algorithm $\decom$ defined in \Cref{fig:deco-mh} with $i:=2, \sk:=t$ which means that secret key $t$ and ciphertext $c_2$ are used, to answer decommitment queries efficiently. 
-
-
-\begin{lemma}\label{nitc-mh:flem}
-\[
-\Pr[\games_\prevgame = 1] = \Pr[\games_\thisgame = 1].
-\]
-\end{lemma}
-
-Notice that both $\fdecom$ and $\decom$ answer decommitment queries in the exactly same way, hence the change is only syntactical. 
-
-
-% if $c_1$ and $c_2$ contain the same message, both oracles answer decommitment queries consistently. Let $\event$ denote the event that the adversary $\adv$ asks a decommitment query $c$ such that its decommitment using the key $k_1$ is different from its decommitment using $\fdecom$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ happens, we bound the probability of $\event$. Concretely, we have
+%\begin{figure}[h!]
+%\begin{center}
+%\begin{tabular}{|ll|}
+%\hline
+%$\underline{\pgen(\seck, T)}$ 							   & $\underline{\com(\pk, m)}$ \\
+%$(p, q_, N) \leftarrow \genmod(\seck)$ & $r \rand \smplset$  \\
+%$\varphi(N):= (p-1)(q-1)$   & Compute $c_0:= g^r \bmod N$ \\
+%Sample random generator $g$ of $\Jn$ & For $i \in [3]: c_i:= h_i^{rN}(1+N)^m \bmod N^2$\\
+%$k_1, k_2 \rand \smplset$ & $\Phi := (h_1c_0, c_1, c_2, c_3), w := (m, r)$ \\
+%$t:= 2^T \bmod \varphi(N)/2$ &  $\pi \leftarrow \nizk.\prove(\Phi, w)$\\
+%For $i \in [2]: h_i:= g^{k_i} \bmod N$ &  $c := (c_0, c_1, c_2, c_3, \pi)$\\
+%$h_3:=g^{t} \bmod N$ &  $\pi_\com:= \bot, \pi_\dec: = r$ \\
+%%$\crs \leftarrow \nizk.\setup(\seck)$ & \\
+%return $\crs:= (N,T,g,h_1,h_2, h_3)$ & return $(c, \pi_\com, \pi_\dec)$\\
+%%return $\crs$     & \\
+%                                             &\\
+%$\underline{\cvrfy(\crs, c, \pi_\com)}$     & $\underline{\dvrfy(\crs,c, m, \pi_\dec)}$ \\
+%Parse $c$ as $(c_0, c_1, c_2, c_3 \pi)$  & Parse $c$ as $(c_0, c_1, c_2, c_3 \pi)$ \\
+%return $\nizk.\vrfy((c_0, c_1, c_2, c_3,), \pi)$  & if $ \land_{i=1}^3 c_i = h_i^{rN}(1+N)^m  \bmod N^2 \land c_0 = g^r \bmod N$\\
+% & \tab return 1 \\
+%& return 0 \\
+%                                             &\\
+%$\underline{\fdecom(\crs,c)}$ & $\underline{\fdvrfy(\crs,c, m, \pi_\fdecom)}$ \\
+%Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$\\
+%if $\nizk.\vrfy((c_0, c_1, c_2,c_3), \pi)= 1$& if $\nizk.\vrfy((c_0, c_1, c_2,c_3), \pi)= 1 \land $\\
+%\tab Compute $ \pi_\fdecom:=c_0^{2^T} \bmod N$ &  $c_3 = \pi_\fdecom^N (1+N)^m \bmod N^2$\\
+%\tab Compute $m:=\frac{c_3 \cdot \pi_\fdecom^{-N} (\bmod N^2) -1}{N}$ &\tab return 1\\
+%\tab return $(m,\pi_\fdecom)$ & return 0\\
+%return $\bot$ & \\
 %
-%\[
-%\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
-%\]
+%%$\underline{\decom(\crs, \sk, c)}$     & $\underline{\fdecom(\crs,c)}$ \\
+%%Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
+%%if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$  & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$\\
+%%\tab Compute $y_1:= c_0^{k} \bmod N$  &   \tab Compute $ y_2:=c_0^{2^T} \bmod N$ \\
+%%\tab return $c_1 \cdot y_1^{-1} \bmod N$ & \tab return $c_2 \cdot y_2^{-1} \bmod N$ \\
+%%return $\bot$ & return $\bot$\\
 %
-%We construct an adversary $\advB$ that breaks soundness of the NIZK. It is given as input $\crs_\nizk$ together with a membership testing trapdoor $\tau_L:=(k_1, t)$ where $t:=2^T \bmod \varphi(N)/4$. 
-%The adversary $\advB_{\secpar}(\crs_\nizk, \tau_L)$ proceeds as follows:
-%\vspace{-2mm}
-%\begin{enumerate}
-%\item It computes $h_1:= g^{k_1} \bmod N, h_2:= g^{t} \bmod N$ using the membership testing trapdoor $\tau_L:=(k_1, t)$ and sets $\crs:=\mathlist(N, T, g, h_1, h_2, \crs_\nizk)$.
-%\item Then it runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
-%\item It samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b$. It sets $(s:=\mathlist(c_0^*, c_1^*, c_2^*), w:=(m,r))$ and runs $\pi^* \leftarrow \nizk.\prove(s,w)$.
-%\item Next, it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
-%\item Finally, it checks whether there exists a decommitment query $c: = (c_0, c_1, c_2, \pi)$ such that $\fdecom(\crs, c) \neq \dec(\crs,c,2)$. If $\event$ occurs, then this is the case, and it returns $((c_0, c_1, c_2), \pi)$. Notice that this can be done efficiently with the knowledge of $t$.
-%\end{enumerate}
-%
-%$\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, then it outputs a valid proof for a statement which is not in the specified language $L$. Therefore we get
-%\[\Pr[\event] \leq \snd^\nizk_\advB.\]
-
-%Let $\gnr$ denote the event that the sampled $g$ in $\kgen$ is a generator of $\qrn$. Recall that $N = pq$ where $p = 2p'+1$ and $q = 2q'+1$. Because $g$ is sampled uniformly at random and $\qrn$ has $\varphi(|\qrn|) = (p'-1)(q'-1)$ generators, this event happens with overwhelming probability. Concretely, $\Pr[\gnr] = 1-\frac{1}{p'}-\frac{1}{q'}+\frac{1}{p'q'}$.
-%Therefore the following holds.
-%\begin{lemma}\label{tpke3:flem} 
-%\begin{align*}
-%\Pr[\games_\thisgame = 1] &= \Pr[\games_\thisgame = 1| \gnr]\Pr[\gnr] + \Pr[\games_\thisgame = 1| \overline{\gnr}]\Pr[\overline{\gnr}] \\
-%&\leq \Pr[\games_\thisgame = 1| \gnr]\Pr[\gnr] + \Pr[\overline{\gnr}] \\
-%&= \Pr[\games_\thisgame = 1| \gnr]\left( 1-\frac{1}{p'}-\frac{1}{q'}+\frac{1}{p'q'} \right) + \frac{1}{p'}+\frac{1}{q'}-\frac{1}{p'q'}.
-%\end{align*}
-%\end{lemma}
+%\hline          
+%\end{tabular}
+%\caption{NY Construction of NITC}
+%\label{table:nitc}
+%\end{center}
+%\end{figure}
 
 
 
-
-\nextgame{SimulProof}
-Game $\games_\thisgame$ proceeds exactly as the previous game but we run the zero-knowledge simulator $(\crs, \tau) \leftarrow \simul_1(\seck, L)$ in $\pgen$ and produce a simulated proof for the challenge commitment as $\pi \leftarrow \simul_2(\crs, \tau, (c_0^*,c_1^*,c_2^*))$. By the zero-knowledge security of the NIZK we directly obtain
-\begin{lemma}
-\[
-\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \zk^\nizk_\advB.
-\]
-\end{lemma}
-
-We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against the zero-knowledge security of NIZK as follows:
-$\advB_\secpar(\crs_\nizk, \tau_L):$
-\vspace{-2mm}
-\begin{enumerate}
-\item Set $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, \crs_\nizk)$, run $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$, and answer decommitment queries using $t$ which is included in $\tau_L = (k_1, t)$.
-\item Sample $b \rand \bits, r \rand \smplsetqrn$ and compute $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b \bmod N$. Then submit $(s:=\mathlist(h_1,h_2,c_0^*, c_1^*, c_2^*), w:=(m,r))$ to the oracle to obtain proof $\pi^*$.
-\item Run $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*), \pi^*, \st)$, answering decommitment queries using $t$.
-\item Return the truth value of $b=b'$.
-\end{enumerate}
-If the proof $\pi^*$ is generated using $\nizk.\prove$, then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise, $\pi^*$ is generated using $\simul_1$ and $\advB$ simulates $\games_\thisgame$ perfectly. This proves the lemma.
-
-\nextgame{RndExp4}
-In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/4]$. 
-
-\begin{lemma}
-\[
-\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
-\]
-\end{lemma}
-
-This lemma directly follows from \Cref{sampling-lemma} with $\ell:=4$.
-
-\nextgame{DDH1}
-In $\games_\thisgame$ we sample $y_1 \rand \qrn$ and compute $c_1^*$ as  $y_1 m_b$. 
-
-\begin{lemma}
-\[
-\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \advtg_\advB^\ddh.
-\]
-\end{lemma}
-We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against DDH in the group $\qrn$. %Given \Cref{thm:ddh} this implies an adversary against DDH in large prime-order subgroups of $\Zn^*$.
-
-$\advB_{\secpar}(N,p,q,g,g^\alpha, g^\beta, g^\gamma):$
-\vspace{-2mm}
-\begin{enumerate}
-\item Computes $\varphi(N):=(p-1)(q-1), t:=2^{T} \bmod \varphi(N)/4, h_2:=g^t \bmod N$ and sets $\crs:=(N, T, g, h_1: = g^\alpha, h_2)$.
-\item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $t$.
-\item Samples $b \rand \bits$ and computes $(c_0^*, c_1^*, c_2^*):=(g^\beta, g^\gamma \cdot m_b, (g^\beta)^t \cdot m_b).$ Runs $\pi^* \leftarrow \simul(1, \st', (c_0^*, c_1^*, c_2^*))$.
-\item Runs $b' \leftarrow \adv_{2, \secpar}(c_0^*, c_1^*, c_2^*, \pi^*), \st)$ and answers decommitment queries using $t$.
-\item Returns the truth value of $b=b'$. We remark that at this point $c_1^*$ does not reveal any information about $m_b$.
-\end{enumerate}
-If $\gamma = \alpha\beta$ then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $g^\gamma$ is uniform random element in $\qrn$ and $\advB$ simulates $\games_\thisgame$ perfectly. This proofs the lemma. We remark that at this point $c_1^*$ does not reveal any information about $m_b$.
+\begin{theorem}
+\label{thm:NITC-lin-ROM}
+If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$ which is sound with respect to auxiliary input $\aux:=(p,q)$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-lh-rom} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
+\end{theorem}
 
 
-\nextgame{RndExp2}
-In $\games_\thisgame$ we sample $k_1$ uniformly at random from $\smplsetqrn$. 
-
-\begin{lemma}
-\[
-\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
-\]
-\end{lemma}
-
-This lemma directly follows from \Cref{sampling-lemma} with $\ell:=4$.
-
-
-\nextgame{SimSnd}
-
-In $\games_\thisgame$ we answer decommitment queries using $\dec$ (\Cref{fig:deco-mh}) with $i:=1, \sk:=k_1$ which means that secret key $k_1$ and ciphertext $c_1$ are used. 
-
-\begin{lemma}
-\[
-\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \simsnd^\nizk_\advB. 
-\]
-\end{lemma}
-
-Let $\event$ denote the event that adversary $\adv$ asks a decommitment query $c$ such that its decommitment using the key $k_1$ is different from its decommitment using the key $t$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ does not happen, by the standard argument it is sufficient to upper bound the probability of happening $\event$. Concretely,  
-
-\[
-\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
-\]
-
-We construct an adversary $\advB$ that breaks one-time simulation soundness of the NIZK and it is given as input $\crs_\nizk$ together with a membership testing trapdoor $\tau_L:=(k_1, t)$ where $t:=2^T \bmod \varphi(N)/4$. 
-
-The adversary $\advB_{\secpar}^{\simul_2}(\crs_\nizk, \tau_L):$
-\vspace{-2mm}
-\begin{enumerate}
-\item Computes $h_1:= g^{k_1} \bmod N, h_2:= g^{t} \bmod N$ using the membership testing trapdoor $\tau_L$ and sets $\crs:=(N, T, g, h_1, h_2, \crs_\nizk)$.
-\item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
-\item Samples $b \rand \bits, x, y_1\rand \qrn$ and computes $(c_0^*, c_1^*, c_2^*):=(x, y_1 m_b,\allowbreak x^t m_b)$. Forwards $(c_0^*, c_1^*, c_2^*)$ to simulation oracle $\simul_2$ and obtains a proof $\pi^*$.
-\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
-\item Find a decommitment query $c: = (c_0, c_1, c_2, \pi)$ such that $\dec(\crs, c, k_1, 1) \neq \dec(\crs,c,t,2)$ and returns $((c_0, c_1, c_2), \pi)$
-\end{enumerate}
-
-$\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, it outputs a valid proof for a statement which is not in the specified language $L$. Therefore
-\[\Pr[\event] \leq \simsnd^\nizk_\advB,\]
-which concludes the proof of the lemma.  
-
-
-\nextgame{RndExp}
-In $\games_\thisgame$ we sample $r$ uniformly at random from $[\varphi(N)/4]$. 
-
-\begin{lemma}
-\[
-\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
-\]
-\end{lemma}
-%At first we remark that for upper bounding the difference between the games we use a statistical argument. Because $r$ appears only in the exponent of the group generator, we later sample a random element from the group $\qrn$ which can be done efficiently. 
-Since the only difference between the two games is in the set from which we sample $r$, to upper bound the advantage of adversary we can use \Cref{sampling-lemma} with $\ell:=4$, which directly yields required upper bound.
-
-%\nextgame{ReRand}
-%In Game $\games_\thisgame$ we produce the challenge commitment by encrypting the challenge message using two independent random exponents $r \rand \smplset, r' \rand [\varphi(N)/4]$ to obtain $c:= (g^{r}, h_1^{r}\cdot m_b), c':= (g^{r'}, h_2^{r'}\cdot m_b)$ and then run $\rerand(c,c',N, \allowbreak h_1, h_2,k,r)$ to obtain resulting ciphertext $(c_0^*, c_1^*, c_2^*)$. Since $r'$ is sampled uniformly at random from $[\varphi(N)/4]$ the ciphertext distributions in both games  are the same. Therefore 
-%
-%\begin{lemma}
-%\[
-%\Pr[\games_\prevgame = 1] = \Pr[\games_\thisgame = 1].
-%\]
-%\end{lemma}
-
-
-\nextgame{SSSA}
-In $\games_\thisgame$ we sample $y_2 \rand \qrn$ and compute $c_2^*$ as $y_2 m_b$.
-
-Let $\tilT_\sss(\secpar)$ be the polynomial whose existence is guaranteed by the SSS assumption.
-Let $\poly_\advB(\secpar)$ be the fixed polynomial which bounds the time required to execute Steps 1--2 and answer decommitment queries in Step 3 of the adversary $\advB_{2, \secpar}$ defined below. Set $\undT := (\poly_\advB(\secpar))^{1 / \ugap}$.  Set $\tilT_\nitc := \max(\tilT_\sss, \undT)$.
-\begin{lemma}
-From any polynomial-size adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$, where depth of $\adv_{2, \secpar}$ is at most $T^{\ugap}(\secpar)$ for some $T(\cdot) \geq \undT(\cdot)$ we can construct a polynomial-size adversary $\advB = \{(\advB_{1,\secpar}, \advB_{2, \secpar})\}_{\secpar \in \nats}$ where the depth of $\advB_{2, \secpar}$ is at most $T^{\gap}(\secpar)$ with
-\[
-\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \advtg_\advB^\sss.
-\]
-\end{lemma}
-
-The adversary $\advB_{1,\secpar}(N, T(\secpar), g):$
-\vspace{-2mm}
-\begin{enumerate}
-\item Samples $k_1\rand \smplsetqrn$, computes $h_1 := g^{k_1} \bmod N, h_2 := g^{2^{T(\secpar)}} \bmod N$, runs $(\crs_\nizk, \tau) \leftarrow \nizk.\simul_1(\seck, L)$ and sets $\crs:=\mathlist(N, T(\secpar), g, h_1, h_2, \crs_\nizk)$. Notice that value $h_2$ is computed by repeated squaring.
-\item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
-\item Outputs $(N,g,k_1, h_1,h_2,\crs_\nizk, \tau, m_0, m_1, \st)$
-\end{enumerate}
-
-The adversary $\advB_{2,\secpar}(x,y,(N,g,k_1, h_1,h_2, \crs_\nizk, \tau, m_0, m_1, \st)):$
-\vspace{-2mm}
-\begin{enumerate}
-\item Samples $b \rand \bits, y_1 \rand \qrn$, computes $c_0^*:=x, c_1^*:=y_1 m_b,  c_2^*:=y m_b$.
-\item Runs $\pi^* \leftarrow \simul(\crs_\nizk, \tau, (c_0^*, c_1^*, c_2^*))$.
-\item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*), \pi^*), \st)$ and answers decommitment queries using $k_1$.
-\item Returns the truth value of $b=b'$.
-\end{enumerate}
-Since $g$ is a generator of $\qrn$ and $x$ is sampled uniformly at random from $\qrn$ there exists some $r \in [\varphi(N)/4]$ such that $x = g^{r}$. Therefore when $y = x^{2^T} = (g^{2^T})^{r} \bmod N$, then $\advB$ simulates $\games_\prevgame$ perfectly. Otherwise $y$ is random value and $\advB$ simulates $\games_\thisgame$ perfectly. We remark that at this point $c_2^*$ does not reveal any information about $m_b$.
-
-Now we analyse the running time of the constructed adversary. Adversary $\advB_1$ computes $h_2$ by $T(\secpar)$ consecutive squarings and because $T(\secpar)$ is polynomial in $\secpar$, $\advB_1$ is efficient. Moreover, $\advB_2$ fulfils the depth constraint:
-\[ \dep(\advB_{2,\secpar}) = \poly_\advB(\secpar) + \dep(\adv_{2,\secpar}) \leq \undT^{\ugap}(\secpar) + T^{\ugap}(\secpar) \leq 2 T^{\ugap}(\secpar) = o(T^{\gap}(\secpar)). \] 
-
-Also $T(\cdot) \geq \tilT_\nitc(\cdot) \geq \tilT_\sss(\cdot)$ as required.  
-
-%\nextgame{RndExp2}
-%In $\games_\thisgame$ we stop to use $\rerand$ algorithm. Concretely, we sample $r \rand [\varphi(N)/4], y_2 \rand \qrn$ and compute challenge ciphertext as $c^*:=(g^r, h_1^r \cdot m_b, y_2 \cdot m_b)$. The ciphertext has the same distribution as in the previous game. Therefore 
-%
-%\begin{lemma}
-%\[
-%\Pr[\games_\prevgame = 1] = \Pr[\games_\thisgame = 1].
-%\]
-%\end{lemma}
-%\nextgame{RndExp3}
-
-
-
-
-
-
-
-%\nextgame{ReRand2}
-%In $\games_\thisgame$ we use the key $t$ and randomness $r'$ as input for rerandomization. Concretely we compute $\rerand(c,c',h_1,h_2,t,r')$. This is just conceptual change since the ciphertext distributions are the same in both games and therefore 
-%
-%\begin{lemma}
-%\[
-%\left|\Pr[\games_\prevgame = 1] = \Pr[\games_\thisgame = 1]\right|.
-%\]
-%\end{lemma}
-%
-%\nextgame{RndExp4}
-%In $\games_\thisgame$ we sample $r$ uniformly at random from $\varphi(N)$. 
-%
-%\begin{lemma}
-%\[
-%\left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \frac{1}{N}.
-%\]
-%\end{lemma}
-
-
-
-\begin{lemma}\label{nitc-mh:llem}
-\[
-\Pr[\games_\thisgame = 1] = \half.
-\]
-\end{lemma}
-
-Clearly, $c_0^*$ is uniform random element in $\qrn$ and hence it does not contain any information about the challenge message. Since $y_1, y_2$ are sampled uniformly at random from $\qrn$ the ciphertexts $c_1^*, c_2^*$ are also uniform random elements in $\qrn$ and hence do not contain any information about the challenge message $m_b$. Therefore, an adversary can not do better than guessing.
-
-By combining Lemmas \ref{nitc-mh:flem} - \ref{nitc-mh:llem} we obtain the following:
-\begin{align*}
-&\advtg^{\nitc}_{\adv} = \left| \Pr[\games_0 = 1] - \half \right| \leq \sum_{i=0}^7 \left|\Pr[\games_i = 1] - \Pr[\games_{i+1} = 1] \right| + \left|\Pr[\games_{8}- \half\right| \\
- &\leq \zk^\nizk_\advB + \advtg^{\sss}_{\advB} + \simsnd^{\nizk}_{\advB} + \advtg^{\ddh}_{\advB} + 3 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right),
-\end{align*}
-which concludes the proof.
-%\end{proof}
-
-% section proof_of_theorem_thm:nitc-ind-mul-std (end)
-
-
-\section{Proof of Theorem \ref{thm:NITC-lin-ROM}} % (fold)
-\label{app:NITC-lin-ROM}
 
 % \todo{appendix?}
-% \begin{proof}
+\begin{proof}
 Completeness is implied by the completeness of the NIZK and can be verified by inspection. 
 
 %Our construction is based on the Naor-Yung paradigm where we combine three Paillier-type ciphertext with shared randomness.  
@@ -704,17 +481,160 @@ By combining Lemmas \ref{nitc-rom-lh:flem} - \ref{nitc-rom-lh:llem} we obtain th
  &\leq  \snd^\nizk_\advB + \zk^\nizk_\advB + \advtg^{\sss}_{\advB} + \simsnd^{\nizk}_{\advB} + 2 \advtg^{\ddh}_{\advB} + 3 \advtg^{\dcr}_{\advB} \\ &+ 4 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right).
 \end{align*}
 which concludes the proof.
-% \end{proof}
+\end{proof}
 % \todo{appendix end}
 
 
-% section proof_of_theorem_nitc-lin-rom (end)
 
-\section{Proof of Theorem \ref{thm:NITC-mul-ROM}} % (fold)
-\label{app:NITC-mul-ROM}
 
-% \todo{appendix?}
-% \begin{proof}
+\begin{theorem}
+$(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc-lh-rom} is a BND-CCA-secure non-interactive timed commitment scheme. 
+\end{theorem}
+{}
+\begin{proof}
+This can be proven in the same way as \Cref{bnd-cca-lh}.
+\end{proof}
+
+\begin{theorem}
+If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero-knowledge proof system for $L$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy)} defined in \Cref{table:nitc-lh-rom} is a publicly verifiable non-interactive timed commitment scheme.
+\end{theorem}
+
+\begin{proof}
+This can be proven in the same way as \Cref{pv-lh}.
+\end{proof}
+
+It is straightforward to verify that considering $\eval$ algorithm, our construction yields linearly homomorphic NITC. 
+\begin{theorem}\label{hom-lh-rom}
+The NITC \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy, \eval)} defined in \Cref{table:nitc-lh-rom} is a linearly homomorphic non-interactive timed commitment scheme.
+\end{theorem}
+
+
+
+
+
+
+
+
+
+\subsection{Construction of Multiplicatively Homomorphic Non-Malleable NITC}
+We define language for our construction of a multiplicatively homomorphic NITC which relies on a Sigma protocol in the following way:
+\[
+L = \left\{(h_1, h_2, c_0, c_1, c_2)| \exists (m,r):
+\begin{aligned}
+       (\land_{i=1}^3 c_i = h_i^{r}m \bmod N) \land
+       c_0 = g^r \bmod N\\
+    \end{aligned}
+    \right\}, 
+\]
+where $g, N$ are parameters specifying the language.
+
+Our construction is given in \Cref{table:nitc-mh-rom} where $(\nizk.\prove, \nizk.\vrfy)$ is the Fiat-Shamir transform of a Sigma protocol for language $L$. Since it is not straightforward to provide a security proof directly with respect to standard definition of one-time simulation sound NIZK, we provide the security proof in the random oracle model relying on the properties of the underlying Sigma protocol.
+
+
+\begin{figure}[h!]
+\begin{center}
+\begin{tabular}{|ll|}
+\hline
+$\underline{\pgen(\seck, T)}$ 							   & $\underline{\com(\crs, m)}$ \\
+$(p, q_, N, g) \leftarrow \genmod(\seck)$ & $r \rand \smplset$  \\
+$\varphi(N):= (p-1)(q-1)$   & $c_0:= g^r \bmod N$ \\
+$k_1\rand \smplsetqrn$ & For $i \in [2]: c_i:= h_i^{r}m \bmod N$\\
+$t:= 2^T \bmod \varphi(N)/4$ & $\Phi := (h_1, h_2, c_0, c_1, c_2), w := (m, r)$ \\
+$h_1:= g^{k_1} \bmod N$ &  $\pi \leftarrow \nizk.\prove(\Phi, w)$\\
+$h_2:=g^{t} \bmod N$ &  $c := (c_0, c_1, c_2, \pi)$\\
+return $\crs:= (N,T,g,h_1,h_2)$ &  $\pi_\com:= \bot, \pi_\dec: = r$ \\
+%$\crs \leftarrow \nizk.\setup(\seck)$ & \\
+ & return $(c, \pi_\com, \pi_\dec)$\\
+%return $\crs$     & \\
+                                             &\\
+$\underline{\cvrfy(\crs, c, \pi_\com)}$     & $\underline{\dvrfy(\crs,c, m, \pi_\dec)}$ \\
+Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2 \pi)$ \\
+return $\nizk.\vrfy((h_1, h_2, c_0, c_1, c_2), \pi)$  & if $ \land_{i=1}^2 c_i = h_i^{\pi_\dec}m  \bmod N \land c_0 = g^{\pi_\dec} \bmod N$\\
+ & \tab return 1 \\
+& return 0 \\
+                                             &\\
+$\underline{\fdecom(\crs,c)}$ & $\underline{\eval(\crs,\otimes_N, c_1, \dots, c_n)}$ \\
+Parse $c$ as $(c_0, c_1, c_2, \pi)$ & Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2}, \pi_i)$\\
+if $\nizk.\vrfy((h_1, h_2, c_0, c_1, c_2), \pi)$ & Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N$\\
+\tab Compute $ y:=c_0^{2^T} \bmod N$ &   Compute $c_2 := \prod_{i=1}^n c_{i,2} \bmod N $\\
+\tab $m:=c_2 \cdot y^{-1} \bmod N$ & $c_1:= \bot, \pi:= \bot$\\
+\tab return $m$ & return $c := (c_0, c_1, c_2, \pi)$\\
+return $\bot$ & \\
+
+%$\underline{\decom(\crs, \sk, c)}$     & $\underline{\fdecom(\crs,c)}$ \\
+%Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
+%if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$  & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$\\
+%\tab Compute $y_1:= c_0^{k} \bmod N$  &   \tab Compute $ y_2:=c_0^{2^T} \bmod N$ \\
+%\tab return $c_1 \cdot y_1^{-1} \bmod N$ & \tab return $c_2 \cdot y_2^{-1} \bmod N$ \\
+%return $\bot$ & return $\bot$\\
+
+\hline          
+\end{tabular}
+\caption{Construction of Multiplicatively Homomorphic NITC in ROM. \\ $\otimes_N$ refers to multiplication $\bmod N$}
+\label{table:nitc-mh-rom}
+\end{center}
+\end{figure}
+
+%Where $(\nizk.\prove, \nizk.\vrfy)$ is the Fiat-Shamir transform of the Sigma protocol for language $L_4$ defined in Cref.... Concretely, $H$ is a hash function modelled as a random oracle, then our $\nizk$ is defined as follows
+%\begin{itemize}
+%\item $\nizk.\prove(s:=(h_1, h_2, c_0, c_1, c_2), w:=(m, r)):$ Compute $\alpha \rand \smplsetqrn, a_0:=g^\alpha \bmod N, a_1:= (h_1\cdot h_2^{-1})^\alpha \bmod N, v:=H(s,a_0,a_1), z:= \alpha + v \cdot r$ and return $\pi:=(a_0,a_1,z)$.
+%\item $\nizk.\vrfy(s:=(h_1, h_2, c_0, c_1, c_2),\pi:=(a_0,a_1,z)):$ Compute $v:=v:=H(s,a_0,a_1)$ and return 1 if and only if $g^z = a_0 \cdot c_0^v \bmod N \land (h_1\cdot h_2^{-1})^z = a_1 \cdot (c_1\cdot c_2^{-1})^v \bmod N \land z \in [\estordqrn + v\estordqrn]$.
+%\end{itemize}
+
+%\begin{figure}[h!]
+%\begin{center}
+%\begin{tabular}{|ll|}
+%\hline
+%$\underline{\pgen(\seck, T)}$ 							   & $\underline{\com(\pk, m)}$ \\
+%$(p, q_, N) \leftarrow \genmod(\seck)$ & $r \rand \smplset$  \\
+%$\varphi(N):= (p-1)(q-1)$   & Compute $c_0:= g^r \bmod N$ \\
+%Sample random generator $g$ of $\Jn$ & For $i \in [3]: c_i:= h_i^{rN}(1+N)^m \bmod N^2$\\
+%$k_1, k_2 \rand \smplset$ & $\Phi := (h_1c_0, c_1, c_2, c_3), w := (m, r)$ \\
+%$t:= 2^T \bmod \varphi(N)/2$ &  $\pi \leftarrow \nizk.\prove(\Phi, w)$\\
+%For $i \in [2]: h_i:= g^{k_i} \bmod N$ &  $c := (c_0, c_1, c_2, c_3, \pi)$\\
+%$h_3:=g^{t} \bmod N$ &  $\pi_\com:= \bot, \pi_\dec: = r$ \\
+%%$\crs \leftarrow \nizk.\setup(\seck)$ & \\
+%return $\crs:= (N,T,g,h_1,h_2, h_3)$ & return $(c, \pi_\com, \pi_\dec)$\\
+%%return $\crs$     & \\
+%                                             &\\
+%$\underline{\cvrfy(\crs, c, \pi_\com)}$     & $\underline{\dvrfy(\crs,c, m, \pi_\dec)}$ \\
+%Parse $c$ as $(c_0, c_1, c_2, c_3 \pi)$  & Parse $c$ as $(c_0, c_1, c_2, c_3 \pi)$ \\
+%return $\nizk.\vrfy((c_0, c_1, c_2, c_3,), \pi)$  & if $ \land_{i=1}^3 c_i = h_i^{rN}(1+N)^m  \bmod N^2 \land c_0 = g^r \bmod N$\\
+% & \tab return 1 \\
+%& return 0 \\
+%                                             &\\
+%$\underline{\fdecom(\crs,c)}$ & $\underline{\fdvrfy(\crs,c, m, \pi_\fdecom)}$ \\
+%Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$\\
+%if $\nizk.\vrfy((c_0, c_1, c_2,c_3), \pi)= 1$& if $\nizk.\vrfy((c_0, c_1, c_2,c_3), \pi)= 1 \land $\\
+%\tab Compute $ \pi_\fdecom:=c_0^{2^T} \bmod N$ &  $c_3 = \pi_\fdecom^N (1+N)^m \bmod N^2$\\
+%\tab Compute $m:=\frac{c_3 \cdot \pi_\fdecom^{-N} (\bmod N^2) -1}{N}$ &\tab return 1\\
+%\tab return $(m,\pi_\fdecom)$ & return 0\\
+%return $\bot$ & \\
+%
+%%$\underline{\decom(\crs, \sk, c)}$     & $\underline{\fdecom(\crs,c)}$ \\
+%%Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
+%%if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$  & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$\\
+%%\tab Compute $y_1:= c_0^{k} \bmod N$  &   \tab Compute $ y_2:=c_0^{2^T} \bmod N$ \\
+%%\tab return $c_1 \cdot y_1^{-1} \bmod N$ & \tab return $c_2 \cdot y_2^{-1} \bmod N$ \\
+%%return $\bot$ & return $\bot$\\
+%
+%\hline          
+%\end{tabular}
+%\caption{NY Construction of NITC}
+%\label{table:nitc}
+%\end{center}
+%\end{figure}
+
+
+
+\begin{theorem}
+\label{thm:NITC-mul-ROM}
+If $\Sigma = (\prv, \vrf)$ is a Sigma protocol for $L$ with quasi unique responses which is sound with respect to auxiliary input $\aux=(p,q)$ and is honest verifier zero-knowledge, $H: \qrn^7 \rightarrow [2^d]$ is a hash function modelled as a random oracle,  the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\qrn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-mh-rom} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
+\end{theorem}
+
+
+
+\begin{proof}
 Completeness is implied by the completeness of the NIZK and can be verified by inspection. 
 
 %Our construction is based on the Naor-Yung paradigm where we combine three ElGamal-type ciphertext with shared randomness.  
@@ -785,20 +705,20 @@ Notice that if $c_1$ and $c_2$ contain the same message, both oracles answer dec
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
 \]
 
-We construct an adversary $\advB$ that breaks soundness with respect to auxiliary input $\aux:=(p,q)$ of the Sigma protocol.  W.l.o.g. we assume that whenever event $\event$ happens, $\adv$ previously asked the random oracle $H$ on input $(h_1,h2,c_0,c_1,c_2,a)$. The argument for this is that it is straightforward to transform any adversary that violates this condition into an adversary that makes one additional query to $H$ and wins with the same probability. Let $\adv$ makes at most $Q$ random oracle queries. 
+We construct an adversary $\advB$ that breaks soundness with respect to auxiliary input $\aux:=(p,q)$ of the Sigma protocol.  W.l.o.g we assume that whenever event $\event$ happens, $\adv$ previously asked the random oracle $H$ on input $(h_1,h2,c_0,c_1,c_2,a)$. Let $\adv$ makes at most $Q$ random oracle queries. 
 The adversary $\advB_{\secpar}(p,q)$ proceeds as follows:
 \vspace{-2mm}
 \begin{enumerate}
 \item Samples $k_1\rand \smplsetqrn$, computes $h_1 := g^{k_1} \bmod N,\varphi(N):=(p-1)(q-1), t:=2^{T} \bmod \ordqrn, h_2:=g^t \bmod N$ and sets $\crs:=(N, T(\secpar), g, h_1, h_2)$. 
 \item Then it runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
-\item Samples $i \rand [Q]$ and answers random oracle queries $(h_1^j, h_2^j, c_0^j,c_1^j,c_2^j,a^j)$ in the following way:
+\item Samples $i \rand [Q]$ and answers random oracle queries $(h_1^j, h_2^j, c_0^j,c_1^j,c_2^j,a_0^j,a_1^j)$ in the following way:
 \begin{itemize}
-\item If $i=j$ it runs the protocol with the honest verifier $\vrf$ for statement $(h_1^j, h_2^j, c_0^j,c_1^j,c_2^j)$ using as a commitment value $a^j$. It obtains challenge $v$ from $\vrf$ and it programs the oracle $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a^j):=v$ if . Answer the query with $v$.
-\item Otherwise, it returns $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a^j)$ if it is set. If this is not the case samples $v_j$, sets $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a^j):=v_j$ and returns $v_j$.
+\item If $i=j$ it runs the protocol with the honest verifier $\vrf$ for statement $(h_1^j, h_2^j, c_0^j,c_1^j,c_2^j)$ using as a commitment value $a_0^j,a_1^j$. It obtains challenge $v$ from $\vrf$ and it programs the oracle $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a_0^j,a_1^j):=v$ if . Answer the query with $v$.
+\item Otherwise, it returns $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a_0^j,a_1^j)$ if it is set. If this is not the case samples $v_j$, sets $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a_0^j,a_1^j):=v_j$ and returns $v_j$.
 \end{itemize}
 \item It samples $b \rand \bits, r \rand \smplsetqrn$ and computes $c_0^*:=g^r, c_1^*:=h_1^{r}m_b, c_2^*:=h_2^{r}m_b$. It sets $(s:=\mathlist(h_1, h_2,c_0^*, c_1^*, c_2^*), w:=(m,r))$ and produces honest proof $\pi^*$.
 \item Next, it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
-\item Finally, it checks whether there exists a decommitment query $c: = \mathlist(c_0, c_1, c_2, \pi=(a,z))$ such that $\fdecom(\crs, c) \neq \dec(\crs,c,k_1,1)$. This check can be done efficiently with the knowledge of $t$. If $\event$ occurs and $\advB_\secpar$ has guessed index $i$ correctly, then value $z$ allows $\advB_\secpar$ succeed in the attack game. %Notice that this can be done efficiently with the knowledge of $t$.
+\item Finally, it checks whether there exists a decommitment query $c: = \mathlist(c_0, c_1, c_2, \pi=(a,z))$ such that $\fdecom(\crs, c) \neq \dec(\crs,c,k_1,1)$. This check can be done efficiently with the knowledge of $t$. If $\event$ occurs and $\advB$ guessed index $i$ correctly, then value $z$ allows $\advB$ succeed in the attack game.. %Notice that this can be done efficiently with the knowledge of $t$.
 \end{enumerate}
 
 Suppose that the query $(h_1, h_2,c_0,c_1,c_2,a)$ has been asked to the random oracle as $i^*$-th query and that $i=i^*$. Then it holds
@@ -983,7 +903,7 @@ The adversary $\advB_{\secpar}$ proceeds as follows:
 \item Finally, it checks whether there is a decommitment query $(c_0, c_1,c_2,\pi=(a,z))$ such that $c_0 = c_0^*, c_1 = c_1^*, c_2 = c_2^*, a = a^*$ and $z \neq z^*$. If $\event$ occurs, then this is the case, and it returns $((h_1, h_2, c_0^*, c_1^*, c_2^*),a^*,v^*,z^*,z)$ where $v^* = H(h_1, h_2, c_0^*, c_1^*, c_2^*,a^*)$.
 \end{enumerate}
 
-Notice, that if $\event$ happens that $\advB_\secpar$ indeed provides two transcripts which has different responses which yields
+Notice, that if $\event$ happens that $\advB$ indeed provides two transcripts which has different responses which yields
 \[\Pr[\event] \leq \qur^\Sigma_\advB.\]
 
 \nextgame{Snd2}
@@ -1002,7 +922,7 @@ Let $\event$ denote the event that adversary $\adv$ asks a decommitment query $c
 \]
 
 
-We construct an adversary $\advB$ that breaks soundness with respect to auxiliary input $\aux:=(p,q)$ of the Sigma protocol. W.l.o.g. we assume that whenever event $\event$ happens, $\adv$ previously asked the random oracle $H$ on input $(h_1,h_2,c_0,c_1,c_2,a)$. The argument for this is that it is straightforward to transform any adversary that violates this condition into an adversary that makes one additional query to $H$ and wins with the same probability. Let $\adv$ makes at most $Q$ random oracle queries. 
+We construct an adversary $\advB$ that breaks soundness with respect to auxiliary input $\aux:=(p,q)$ of the Sigma protocol. W.l.o.g we assume that whenever event $\event$ happens, $\adv$ previously asked the random oracle $H$ on input $(h_1,h_2,c_0,c_1,c_2,a_0,a_1)$. Let $\adv$ makes at most $Q$ random oracle queries. 
 The adversary $\advB_{\secpar}(p,q)$ proceeds as follows:
 \vspace{-2mm}
 \begin{enumerate}
@@ -1010,8 +930,8 @@ The adversary $\advB_{\secpar}(p,q)$ proceeds as follows:
 \item Then it runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
 \item Samples $i \rand [Q]$ and answers random oracle queries $(h_1^j, h_2^j, c_0^j,c_1^j,c_2^j,a^j,)$ in the following way:
 \begin{itemize}
-\item If $i=j$ it runs the protocol with the honest verifier $\vrf$ for statement $(h_1^j, h_2^j, c_0^j,c_1^j,c_2^j)$ using as a commitment value $a^j$. It obtains challenge $v$ from $\vrf$ and it programs the oracle $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a^j):=v$. Answer the query with $v$.
-\item Otherwise, if $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a^j) \neq \bot$ returns $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a^j)$. Else it samples $v_j$, sets $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a^j):=v_j$ and returns $v_j$.
+\item If $i=j$ it runs the protocol with the honest verifier $\vrf$ for statement $(h_1^j, h_2^j, c_0^j,c_1^j,c_2^j)$ using as a commitment value $a^j$. It obtains challenge $v$ from $\vrf$ and it programs the oracle $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a^j):=v$. Answer the query of $\adv$ with $v$.
+\item Otherwise, if $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a^j) \neq \bot$ returns $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a^j)$. Else it samples $v_j$, sets $H(h_1^j, h_2^j,c_0^j,c_1^j,c_2^j,a_0^j,a_1^j):=v_j$ and returns $v_j$.
 \end{itemize}
 \item Samples $b \rand \bits, x, y_2 \rand \qrn$ and computes $(c_0^*, c_1^*, c_2^*):=(x, x^{k_1} m_b,\allowbreak y_2 m_b)$. 
 \item Runs $(a^*,v^*,z^*) \leftarrow \simul(h_1, h_2, c_0^*, c_1^*, c_2^*)$. If $H(h_1, h_2, c_0^*, c_1^*, c_2^*,a^*) = \bot$ sets $H(h_1, h_2, c_0^*, c_1^*, c_2^*,a^*) = v^*$. Sets $\pi^* = (a^*,z^*)$.
@@ -1020,7 +940,7 @@ The adversary $\advB_{\secpar}(p,q)$ proceeds as follows:
 \item Finally, it checks whether there exists a decommitment query $c: = \mathlist(c_0, c_1, c_2, \pi=(a,z))$ such that $\dec(\crs, c, k_1,1) \neq \dec(\crs,c,t,2)$. If $\event$ occurs, then this is the case and it returns $z$ as a response to the challenge $v$. 
 \end{enumerate}
 
-Suppose that the query $(h_1, h_2,c_0,c_1,c_2,a)$ has been asked to the random oracle as $i^*$-th query and that $i=i^*$. Then $\advB_\secpar$ guesses a correct index for which $\adv$ asks decommitment query for a statement which is not in the specified language $L$. Therefore we get
+Suppose that the query $(h_1, h_2,c_0,c_1,c_2,a)$ has been asked to the random oracle as $i^*$-th query and that $i=i^*$. Then $\advB$ guesses a correct index for which $\adv$ asks decommitment query for a statement which is not in the specified language $L$. Therefore we get
 \[\snd^\Sigma_\advB = \Pr[\event \land i=i^*] = \Pr[\event]\Pr[i=i^*] = \frac{1}{Q}\Pr[\event],\]
 where the first equality holds since the events are independent.
 
@@ -1073,10 +993,95 @@ By combining Lemmas \ref{nitc-rom-mh:flem} - \ref{nitc-rom-mh:llem} we obtain th
  &\leq 2Q \cdot \snd^\Sigma_\advB + Q\delta + \advtg^{\sss}_{\advB} + \qur^\Sigma_\advB + \advtg^{\ddh}_{\advB} + 2 \left( \frac{1}{p}+\frac{1}{q}-\frac{1}{N} \right),
 \end{align*}
 which concludes the proof.
-% \end{proof}
-% \todo{appendix end}
+\end{proof}
 
-% section proof_of_theorem_thm:nitc-mul-rom (end)
+
+
+\begin{theorem}
+$(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc-mh-rom} is a BND-CCA-secure non-interactive timed commitment scheme. 
+\end{theorem}
+
+\begin{proof}
+This can be proven in the same way as \Cref{bnd-cca-mh}.
+\end{proof}
+
+It is straightforward to verify that considering $\eval$ algorithm, our construction yields multiplicatively homomorphic NITC. 
+\begin{theorem}\label{hom-mh-rom}
+The NITC \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy, \eval)} defined in \Cref{table:nitc-mh-rom} is a multiplicatively homomorphic non-interactive timed commitment scheme.
+\end{theorem}
+
+
+\begin{remark}[Public Verifiability]
+The construction can be made publicly verifiable in the same way as suggested in \Cref{rem:pv}. 
+ \end{remark}
+
+%\begin{figure}[h!]
+%\begin{center}
+%\begin{tabular}{|ll|}
+%\hline
+%$\underline{\kgen(\seck, T)}$ 							   & $\underline{\decf(\sk, c)}$\\
+%$(p, q_, N) \leftarrow \genmod(\seck)$ &  Parse $c$ as $(c_0, c_1, c_2, \pi)$\\
+%$\varphi(N):= (p-1)(q-1)$   & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$ \\
+%$g\rand \qrn$ & \tab Compute $y_1:= c_0^{k} \bmod N$\\
+%$k \rand \varphi(N)/4$ & \tab return $c_1 \cdot H(y_1)^{-1} \bmod N$ \\
+%$t:= 2^T \bmod \varphi(N)/4$ & return $\bot$\\
+%$h_1:= g^k \bmod N$ & \\
+%$h_2:=g^{t} \bmod N$ & \\
+%%$\crs \leftarrow \nizk.\setup(\seck)$ & \\
+%$\pk:= (N,T,g,h_1,h_2), \sk:= (N, k)$ & \\
+%return $(\pk, \sk)$       & \\
+%                                             &\\
+%$\underline{\enc(\pk, m)}$           & $\underline{\decs(\pk,c)}$ \\
+%$r \rand [\floor{N/4}]$     & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
+%Compute $c_0:= g^r \bmod N$ & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$\\
+%For $i \in [2]: y_i:= h_i^r \bmod N$   &   \tab Compute $ y_2:=c_0^{2^T} \bmod N$ \\
+%For $i \in [2]: c_i:= H(y_i) \cdot m \bmod N$ & \tab return $c_2 \cdot H(y_2)^{-1} \bmod N$ \\
+%$\Phi := (c_0, c_1, c_2), w := (m, r)$& return $\bot$\\
+%$\pi \leftarrow \nizk.\prove(\Phi, w)$  &  \\
+%return $c \leftarrow (c_0, c_1, c_2, \pi)$ &  \\
+%
+%\hline          
+%\end{tabular}
+%\caption{NY Construction of TPKE from SSSA}
+%\label{table:tpke-elgamal}
+%\end{center}
+%\end{figure}
+
+ 
+
+%\begin{figure}[h!]
+%\begin{center}
+%\begin{tabular}{|ll|}
+%\hline
+%$\underline{\kgen(\seck, T)}$ 							   & $\underline{\decf(\sk, c)}$\\
+%$(p, q_, N) \leftarrow \genmod(\seck)$ &  Parse $c$ as $(c_0, c_1, c_2, \pi)$\\
+%$\varphi(N):= (p-1)(q-1)$   & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$ \\
+%$g\rand \qrn$ & \tab Compute $y_1:= c_0^{k} \bmod N$\\
+%$k \rand \varphi(N)/4$ & \tab return $c_1 \cdot H(y_1)^{-1} \bmod N$ \\
+%$t:= 2^T \bmod \varphi(N)/4$ & return $\bot$\\
+%$h_1:= g^k \bmod N$ & \\
+%$h_2:=g^{t} \bmod N$ & \\
+%%$\crs \leftarrow \nizk.\setup(\seck)$ & \\
+%$\pk:= (N,T,g,h_1,h_2), \sk:= (N, k)$ & \\
+%return $(\pk, \sk)$       & \\
+%                                             &\\
+%$\underline{\enc(\pk, m)}$           & $\underline{\decs(\pk,c)}$ \\
+%$r \rand [\floor{N/4}]$     & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
+%Compute $c_0:= g^r \bmod N$ & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$\\
+%For $i \in [2]: y_i:= h_i^r \bmod N$   &   \tab Compute $ y_2:=c_0^{2^T} \bmod N$ \\
+%For $i \in [2]: c_i:= H(y_i) \cdot m \bmod N$ & \tab return $c_2 \cdot H(y_2)^{-1} \bmod N$ \\
+%$\Phi := (c_0, c_1, c_2), w := (m, r)$& return $\bot$\\
+%$\pi \leftarrow \nizk.\prove(\Phi, w)$  &  \\
+%return $c \leftarrow (c_0, c_1, c_2, \pi)$ &  \\
+%
+%\hline          
+%\end{tabular}
+%\caption{NY Construction of TPKE from SSSA}
+%\label{table:tpke-elgamal}
+%\end{center}
+%\end{figure}
+
+
 
 
 %%% Local Variables:

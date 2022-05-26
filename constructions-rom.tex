@@ -183,7 +183,7 @@ return $\nizk.\vrfy((h_1, h_2, c_0, c_1, c_2), \pi)$  & if $ \land_{i=1}^2 c_i =
 $\underline{\fdecom(\crs,c)}$ & $\underline{\eval(\crs,\otimes_N, c_1, \dots, c_n)}$ \\
 Parse $c$ as $(c_0, c_1, c_2, \pi)$ & Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2}, \pi_i)$\\
 if $\nizk.\vrfy((h_1, h_2, c_0, c_1, c_2), \pi)$ & Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N$\\
-\tab Compute $ y:=c_0^{2^T} \bmod N$ &   Compute $c_3 := \prod_{i=1}^n c_{i,3} \bmod N $\\
+\tab Compute $ y:=c_0^{2^T} \bmod N$ &   Compute $c_2 := \prod_{i=1}^n c_{i,2} \bmod N $\\
 \tab $m:=c_2 \cdot y^{-1} \bmod N$ & $c_1:= \bot, \pi:= \bot$\\
 \tab return $m$ & return $c := (c_0, c_1, c_2, \pi)$\\
 return $\bot$ & \\

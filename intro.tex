@@ -98,19 +98,19 @@ In comparison, the non-interactive construction of David \etal~\cite{EC:BDDNO21}
 \begin{table}
 \begin{center}
 \begin{tabular}{llclcclllc}
-\textbf{Construction}         & \textbf{Hom.} & \textbf{Std.} & \textbf{Setup} & \textbf{Com?} & \textbf{FDec?} & $|\textbf{Com}|$ & \textbf{$|\pi|$} & $t_{Com}$   & \textbf{Tight} \\
+\textbf{Construction}         & \textbf{Hom.} & \textbf{Std.} & \textbf{Setup} & \textbf{Com?} & \textbf{FDec?} & $|\textbf{Com}|$ & \textbf{$|\pi_\com|$} & $t_{Com}$   & \textbf{Tight} \\
 \hline
-\cite{EPRINT:EFKP20a}         & ---           & \xmark        & ---            & \xmark        & \cmark         & $O(1)$           &                  & $O(\log T)$ & \cmark         \\
-\cite{TCC:KatLosXu20}         & ---           & \cmark        & priv.          & \cmark        & \xmark         & $O(1)$           &                  & $O(T)$      & \cmark         \\
-\cite{CCS:TCLM21}             & linear        & \xmark        & pub            & \cmark        & \xmark         & $O(\secpar)$     &                  & $O(1)$      & \xmark         \\
+\cite{EPRINT:EFKP20a}         & ---           & \xmark        & ---            & \xmark        & \cmark         & $O(1)$           &    ---     & $O(\log T)$ & \cmark         \\
+\cite{TCC:KatLosXu20}         & ---           & \cmark        & priv.          & \cmark        & \xmark         & $O(1)$           &    $O(1)$        & $O(T)$      & \cmark         \\
+\cite{CCS:TCLM21}             & linear        & \xmark        & pub.            & \cmark        & \xmark         & $O(\secpar)$     &    $O(\secpar)$      & $O(1)$      & \xmark         \\
 \hline
-\Cref{sec:linearNITCstdmodel} & linear        & \cmark        & priv.          & \cmark        & \cmark         & $O(\log\secpar)$ &                  & $O(1)$      & \cmark         \\
-\Cref{sec:multNITCstdmodel}   & mult.         & \cmark        & priv.          & \cmark        & \cmark         & $O(\log\secpar)$ &                  & $O(1)$      & \cmark         \\
-\Cref{sec:linear-ROM}         & linear        & \xmark        & priv.          & \cmark        & \cmark         & $O(1)$           &                  & $O(1)$      & \cmark         \\
-\Cref{sec:mult-ROM}           & mult.         & \xmark        & priv.          & \cmark        & \cmark         & $O(1)$           &                  & $O(1)$      & \cmark         \\
+\Cref{sec:linearNITCstdmodel} & linear        & \cmark        & priv.          & \cmark        & \cmark         & $O(1)$ &                 $O(\log\secpar)$ & $O(1)$      & \cmark         \\
+\Cref{sec:multNITCstdmodel}   & mult.         & \cmark        & priv.          & \cmark        & \cmark         & $O(1)$ &      $O(\log\secpar)$  & $O(1)$      & \cmark         \\
+\Cref{sec:linear-ROM}         & linear        & \xmark        & priv.          & \cmark        & \cmark         & $O(1)$           &    $O(1)$     & $O(1)$      & \cmark         \\
+\Cref{sec:mult-ROM}           & mult.         & \xmark        & priv.          & \cmark        & \cmark         & $O(1)$           &  $O(1)$    & $O(1)$      & \cmark         \\
 \hline
 \end{tabular}
-\caption{\label{tab:comparison-related-work}Comparison of our constructions with related work. Column \textbf{Hom.} indicates whether the construction provides a linear/multiplicative homomorphism, \textbf{Std.} whether the construction has a standard-model proof, \textbf{Com?} whether it is publicly verifiable that commitments are well-formed, \textbf{FDec?} efficient public verifiability of forced decommitments, $|\textbf{Com}|$ is the size of commitments, \textbf{$|\pi|$} the size of proofs,  $t_{Com}$ the running time of the commitment algorithm, and \textbf{Tight} whether the proof avoids running the forced decommitment algorithm to respond to CCA queries.}
+\caption{\label{tab:comparison-related-work}Comparison of our constructions with related work. Column \textbf{Hom.} indicates whether the construction provides a linear/multiplicative homomorphism, \textbf{Std.} whether the construction has a standard-model proof, \textbf{Com?} whether it is publicly verifiable that commitments are well-formed, \textbf{FDec?} efficient public verifiability of forced decommitments, $|\textbf{Com}|$ is the size of commitments, \textbf{$|\pi_\com|$} the size of proofs,  $t_{Com}$ the running time of the commitment algorithm, and \textbf{Tight} whether the proof avoids running the forced decommitment algorithm to respond to CCA queries.}
 \end{center}
 \end{table}
 

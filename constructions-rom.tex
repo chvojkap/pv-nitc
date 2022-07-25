@@ -1,6 +1,7 @@
 %!TEX root=./main.tex
 %\section{Constructions of Non-Malleable NITC using NIZK in ROM}
 \subsection{Construction of Linearly Homomorphic Non-Malleable NITC}
+\label{sec:linear-ROM}
 We define language for our construction of a linearly homomorphic NITC depicted in \Cref{table:nitc-lh-rom} which relies on a one-time simulation sound NIZKs in the ROM in the following way:
 
 \[
@@ -144,6 +145,7 @@ The NITC \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy, \eval)} defin
 
 
 \subsection{Construction of Multiplicatively Homomorphic Non-Malleable NITC}
+\label{sec:mult-ROM}
 We define language for our construction of a multiplicatively homomorphic NITC which relies on a Sigma protocol in the following way:
 \[
 L = \left\{(h_1, h_2, c_0, c_1, c_2)| \exists (m,r):

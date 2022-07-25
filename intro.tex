@@ -93,6 +93,31 @@ However, in contrast to \cite{TCC:KatLosXu20}, we do not start from a timed publ
 In comparison, the non-interactive construction of David \etal~\cite{EC:BDDNO21} is in the programmable random oracle model, while ours can also be instantiated in the standard model. David \etal achieve fast commitments, however the construction does not provide public verifiability of commitments, public verifiability of forced opening nor homomorphic properties. The work of Ephraim et al. \cite{EPRINT:EFKP20a} does support fast commitments and public verifiability of forced opening, but is also in the (auxiliary non-programmable) random oracle model and does not support public verifiability of commitments and homomorphic properties.
 
 
+\todo{Connect table to rest of intro.}
+
+\begin{table}
+\begin{center}
+\begin{tabular}{llclcclllc}
+\textbf{Construction}         & \textbf{Hom.} & \textbf{Std.} & \textbf{Setup} & \textbf{Com?} & \textbf{FDec?} & $|\textbf{Com}|$ & \textbf{$|\pi|$} & $t_{Com}$   & \textbf{Tight} \\
+\hline
+\cite{EPRINT:EFKP20a}         & ---           & \xmark        & ---            & \xmark        & \cmark         & $O(1)$           &                  & $O(\log T)$ & \cmark         \\
+\cite{TCC:KatLosXu20}         & ---           & \cmark        & priv.          & \cmark        & \xmark         & $O(1)$           &                  & $O(T)$      & \cmark         \\
+\cite{CCS:TCLM21}             & linear        & \xmark        & pub            & \cmark        & \xmark         & $O(\secpar)$     &                  & $O(1)$      & \xmark         \\
+\hline
+\Cref{sec:linearNITCstdmodel} & linear        & \cmark        & priv.          & \cmark        & \cmark         & $O(\log\secpar)$ &                  & $O(1)$      & \cmark         \\
+\Cref{sec:multNITCstdmodel}   & mult.         & \cmark        & priv.          & \cmark        & \cmark         & $O(\log\secpar)$ &                  & $O(1)$      & \cmark         \\
+\Cref{sec:linear-ROM}         & linear        & \xmark        & priv.          & \cmark        & \cmark         & $O(1)$           &                  & $O(1)$      & \cmark         \\
+\Cref{sec:mult-ROM}           & mult.         & \xmark        & priv.          & \cmark        & \cmark         & $O(1)$           &                  & $O(1)$      & \cmark         \\
+\hline
+\end{tabular}
+\caption{\label{tab:comparison-related-work}Comparison of our constructions with related work. Column \textbf{Hom.} indicates whether the construction provides a linear/multiplicative homomorphism, \textbf{Std.} whether the construction has a standard-model proof, \textbf{Com?} whether it is publicly verifiable that commitments are well-formed, \textbf{FDec?} efficient public verifiability of forced decommitments, $|\textbf{Com}|$ is the size of commitments, \textbf{$|\pi|$} the size of proofs,  $t_{Com}$ the running time of the commitment algorithm, and \textbf{Tight} whether the proof avoids running the forced decommitment algorithm to respond to CCA queries.}
+\end{center}
+\end{table}
+
+
+
+
+
 
 %%% Local Variables:
 %%% mode: latex

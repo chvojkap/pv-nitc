@@ -25,29 +25,28 @@ $\underline{\pgen(\seck, T)}$ 							   & $\underline{\com(\crs, m)}$ \\
 $(p, q_, N, g) \leftarrow \genmod(\seck)$ & $r \rand \smplsetqrn$  \\
 $\varphi(N):= (p-1)(q-1)$   & $c_0:= g^r \bmod N$ \\
 $k_1\rand \smplsetqrn$ & For $i \in [2]: c_i:= h_i^{r}m \bmod N$\\
-$t:= 2^T \bmod \varphi(N)/4$ & $\Phi := (c_0, c_1, c_2), w := (m, r)$ \\
-$ h_1:= g^{k_1} \bmod N$ &  $\pi \leftarrow \nizk.\prove(\crs_\nizk, \Phi, w)$\\
-$h_2:=g^{t} \bmod N$ &  $c := (c_0, c_1, c_2, \pi)$\\
-$\crs_\nizk \leftarrow \nizk.\setup(\seck, L)$ &  $\pi_\com:= \bot, \pi_\dec: = r$ \\
-return $\crs:= (N,T,g,h_1,h_2,\crs_\nizk)$ & return $(c, \pi_\com, \pi_\dec)$\\
+$t:= 2^T \bmod \varphi(N)/4$ & $c := (c_0, c_1, c_2), w := (m, r)$ \\
+$ h_1:= g^{k_1} \bmod N$ &  $\pi_\com \leftarrow \nizk.\prove(\crs_\nizk, c, w)$\\
+$h_2:=g^{t} \bmod N$ &   $\pi_\dec: = r$ \\
+$\crs_\nizk \leftarrow \nizk.\setup(\seck, L)$ &  return $(c, \pi_\com, \pi_\dec)$ \\
+return $\crs:= (N,T,g,h_1,h_2,\crs_\nizk)$ &\\
 %$\crs_\nizk \leftarrow \nizk.\setup(\seck, L, (k_1, k_2, p,q))$ & return $(c, \pi_\com, \pi_\dec)$\\
 %$\crs_L \leftarrow \nizk.\gen_L(\seck, L, k_1)$ & \\ 
 %$\crs_\nizk:=(\param, \crs_L)$ & \\
 
                                              &\\
 $\underline{\cvrfy(\crs, c, \pi_\com)}$     & $\underline{\dvrfy(\crs,c, m, \pi_\dec)}$ \\
-Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
-return $\nizk.\vrfy(\crs_\nizk,(c_0, c_1, c_2), \pi)$  & if $ \land_{i=1}^2 c_i = h_i^{\pi_\dec}m  \bmod N \land c_0 = g^{\pi_\dec} \bmod N$\\
+return $\nizk.\vrfy(\crs_\nizk,c, \pi)$  & Parse $c$ as $(c_0, c_1, c_2)$ \\
+& if $ \land_{i=1}^2 c_i = h_i^{\pi_\dec}m  \bmod N \land c_0 = g^{\pi_\dec} \bmod N$\\
  & \tab return 1 \\
 & return 0 \\
                                              &\\
 $\underline{\fdecom(\crs,c)}$ & $\underline{\eval(\crs,\otimes_N, c_1, \dots, c_n)}$ \\
-Parse $c$ as $(c_0, c_1, c_2,\pi)$ & Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2}, \pi_i)$\\
-if $\nizk.\vrfy(\crs_\nizk,(c_0, c_1, c_2), \pi)$ & Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N$ \\
-\tab Compute $ y:=c_0^{2^T} \bmod N$ &  Compute $c_2 := \prod_{i=1}^n c_{i,2} \bmod N $\\
-\tab $m:=c_2 \cdot y^{-1} \bmod N$ & $c_1:= \bot,\pi:= \bot$\\
-\tab return $m$ & return $c := (c_0, c_1, c_2, \pi)$\\
-return $\bot$ & \\
+Parse $c$ as $(c_0, c_1, c_2)$ & Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2})$\\
+Compute $ y:=c_0^{2^T} \bmod N$ & Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N, c_1:= \bot$ \\
+$m:=c_2 \cdot y^{-1} \bmod N$ &  Compute $c_2 := \prod_{i=1}^n c_{i,2} \bmod N $\\
+return $m$  & return $c := (c_0, c_1, c_2)$\\
+
 
 %$\underline{\decom(\crs, \sk, c)}$     & $\underline{\fdecom(\crs,c)}$ \\
 %Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
@@ -143,7 +142,7 @@ It is natural to ask if it is possible to make the construction in \Cref{table:n
 \begin{tabular}{|ll|}
 \hline
 $\underline{\fdecom(\crs,c)}$ & $\underline{\fdvrfy(\crs,c, m, \pi_\fdecom)}$ \\
-Parse $c$ as $(c_0, c_1, c_2, \pi)$ & Parse $c$ as $(c_0, c_1, c_2, \pi)$\\
+Parse $c$ as $(c_0, c_1, c_2)$ & Parse $c$ as $(c_0, c_1, c_2)$\\
 $y:=c_0^{2^T} \bmod N$, $\pi_\poe=\poe.\prove(c_0,y)$ &  if $c_2= m \cdot y \bmod N \land \poe.\vrfy((c_0,y), \pi_\poe)$\\
 $\pi_\fdecom:=(y, \pi_\poe), m:=c_2 \cdot y{-1} \bmod N$ &\tab return 1\\
 return $(m,\pi_\fdecom)$ & return 0\\

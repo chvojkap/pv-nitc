@@ -15,7 +15,7 @@ A non-interactive timed commitments scheme $\nitc$ with message space $\msgspace
 \item $0/1 \leftarrow \cvrfy(\crs, c, \pi_\com)$ is a deterministic algorithm that takes as input a common reference string $\crs$, a commitment $c$ and proof $\pi_\com$ and outputs $0$ (reject) or $1$ (accept).
 \item $0/1 \leftarrow \dvrfy(\crs, c, m, \pi_\dec)$ is a deterministic algorithm that takes as input a common reference string $\crs$, a commitment $c$, a message $m$ and proof $\pi_\dec$ and outputs $0$ (reject) or $1$ (accept).
 %\item $m \leftarrow \decom(\crs,\sk, c)$ is a deterministic algorithm that takes as input a common reference string $\crs$, a secret key $\sk$ and a commitment $c$ and outputs $m \in \msgspace \cup \{\bot\}$. The running time of $\decom$ should be independent of $T$.
-\item $m \leftarrow \fdecom(\crs, c)$ is a deterministic forced decommit algorithm that takes as input a common reference string $\crs$ and a ciphertext $c$ and outputs $m \in \msgspace \cup \{\bot\}$ in time at most $T \cdot \poly(\secpar)$.
+\item $m \leftarrow \fdecom(\crs, c, \pi_\com)$ is a deterministic forced decommit algorithm that takes as input a common reference string $\crs$ and a ciphertext $c$ and outputs $m \in \msgspace \cup \{\bot\}$ in time at most $T \cdot \poly(\secpar)$.
 \end{itemize}
 We say $\nitc$ is correct if for all $\secpar, T \in \nats$ and all $m \in \msgspace$ holds:
 \[\Pr\left[
@@ -34,9 +34,9 @@ We say $\nitc$ is correct if for all $\secpar, T \in \nats$ and all $m \in \msgs
 \]
 \end{definition}
 
-\begin{remark}
-Following \cite{TCC:KatLosXu20} we make $\pi_\com$ explicit, however, $\pi_\com$ could alternatively be seen as part of a commitment $c$. In particular, for our constructions we will have $\pi_\com = \bot$ empty, since our commitments $c$ will be standalone verifiable.  
-\end{remark}
+%\begin{remark}
+%Following \cite{TCC:KatLosXu20} we make $\pi_\com$ explicit, however, $\pi_\com$ could alternatively be seen as part of a commitment $c$. In particular, for our constructions we will have $\pi_\com = \bot$ empty, since our commitments $c$ will be standalone verifiable.  
+%\end{remark}
 
 %As the names of the decryption algorithms in \Cref{def:tpke_syntax} suggest, it should hold that $\tfd$ is much smaller than $\tsd$. Now we state the original security definition, however, adjusted to the computational model which is used in this paper. 
 
@@ -105,18 +105,22 @@ A non-interactive timed commitment scheme $\nitc$ is \emph{IND-CCA secure} with 
     \;:\;
     \begin{aligned}
     \crs \leftarrow \pgen(\seck, T(\secpar)) \\
-      (m_0, m_1, \st) \leftarrow \adv_{1,\secpar}^{\deco(\cdot)}(\crs) \\
+      (m_0, m_1, \st) \leftarrow \adv_{1,\secpar}^{\deco(\cdot, \cdot)}(\crs) \\
       b \rand \bits\\
       (c^*, \pi_\com, \pi_\dec) \leftarrow \com(\crs, m_b) \\
-      b' \leftarrow \adv_{2,\secpar}^{\deco(\cdot)}(c^*, \pi_\com, \st)
+      b' \leftarrow \adv_{2,\secpar}^{\deco(\cdot)}(c^*, \pi_\com^*, \st)
     \end{aligned}
     \right] -  \half \right|
 \leq \negl(\secpar),  
 \]
-where $|m_0|=|m_1|$ and the oracle ${\deco(c)}$ returns the result of $\fdecom(\crs, c)$, with the restriction that $\adv_{2, \secpar}$ is not allowed to query the oracle $\deco(\cdot)$ for a decommitment of the challenge commitment $c^*$. %We require that $\deco(\cdot)$ must be able to answer decommitment queries in time which is independent of $T$. 
+where $|m_0|=|m_1|$ and the oracle ${\deco(c, \pi_\com)}$ returns the result of $\fdecom(\crs, c)$ if $\cvrfy(\crs,c,\pi_\com)$ = 1, otherwise it returns $\bot$, with the restriction that $\adv_{2, \secpar}$ is not allowed to query the oracle $\deco(\cdot, \cdot)$ for a decommitment of the challenge commitment $(c^*, \pi_\com^*)$. %We require that $\deco(\cdot)$ must be able to answer decommitment queries in time which is independent of $T$. 
 \end{definition}
 
-As already observed in \cite{TCC:KatLosXu20}, a challenge for a security proof of a concrete timed commitment construction is that the reduction must be able to answer decommitment queries to $\deco(\cdot)$ in time which is independent of $T$, as otherwise one is not able to obtain a sound proof when reducing to a time-sensitive assumption, such as the strong sequential squaring assumption. This in particular means that decommitment queries in the security proof can not be simply answered by executing the forced decommitment algorithm $\fdecom$, as its runtime depends on $T$, but there must exist another way.  Thus, as in \cite{TCC:KatLosXu20}, $\deco(\cdot)$ must be able to answer decommitment queries in time independent of $T$. 
+As already observed in \cite{TCC:KatLosXu20}, a challenge for a security proof of a concrete timed commitment construction is that the reduction must be able to answer decommitment queries to $\deco(\cdot,\cdot)$ in time which is independent of $T$, as otherwise one is not able to obtain a sound proof when reducing to a time-sensitive assumption, such as the strong sequential squaring assumption. This in particular means that decommitment queries in the security proof can not be simply answered by executing the forced decommitment algorithm $\fdecom$, as its runtime depends on $T$, but there must exist another way.  %Thus, as in \cite{TCC:KatLosXu20}, $\deco(\cdot,\cdot)$ must be able to answer decommitment queries in time independent of $T$. 
+
+\begin{remark} We note that our definition of the decommitment oracle $\deco$ slightly differs from the original definition in \cite{TCC:KatLosXu20}, since we require that oracle at first checks if the commitment is well formed and only then returns the result of $\fdecom$. All our constructions can achieve also original definition, since it is sufficient to include the proof $\pi$ that commitment is well formed as a part of the commitment and then directly include the check if a commitment is well formed in the description of $\fdecom$. However, in that case $\pi_\com$ would be empty and the whole idea of the separation of a commitment form a proof would be meaningless. This is also one of the reasons, why the original paper requires several NIZK proofs in order to achieve tight reductions, since in \cite{TCC:KatLosXu20} $\fdecom$ checks well-formedness under the hood in decryption algorithm of timed-encryption algorithm. There are several ways how to avoid this issue, if one wants to keep commitment and proof separated: 1. one can change the syntax of $\fdecom$ algorithm and include $\pi_\com$ as a part of the input parameters or 2. one can adjust the definition of $\deco$ oracle, as we did. We prefer the second solution, since from the correctness definition and $\mathsf{BND \mhyphen CCA}$ definition of NITC is clear that we care about $\fdecom$ only if $\cvrfy$ algorithm is executed. Therefore we believe this should be also the case for $\deco$ oracle.
+
+\end{remark}
 
 %Now we state a binding property for a non-interactive timed commitment scheme. 
 
@@ -125,7 +129,7 @@ As already observed in \cite{TCC:KatLosXu20}, a challenge for a security proof o
 We define the $\mathsf{BND \mhyphen CCA}_\adv(\secpar)$ experiment as follows:
 \begin{enumerate}
 \item $\crs \leftarrow \pgen(\seck, T(\secpar))$;
-\item $(m, c, \pi_\com, \pi_\dec, m', \pi_\dec') \leftarrow \adv_{\secpar}^{\deco(\cdot)}(\crs)$, where the oracle $\deco(c)$ returns $\fdecom(\crs, c)$;
+\item $(m, c, \pi_\com, \pi_\dec, m', \pi_\dec') \leftarrow \adv_{\secpar}^{\deco(\cdot,\cdot)}(\crs)$, where the oracle $\deco(c, \pi_\com)$ returns $\fdecom(\crs, c)$ if $\cvrfy(\crs,c,\pi_\com)$ = 1, otherwise it returns $\bot$;
 \item Output 1 iff $\cvrfy(\crs, c, \pi_\com)= 1$ and either:
 \begin{itemize}
 \item $m \neq m' \; \land \; \dvrfy(\crs, c, m, \pi_\dec) = \dvrfy(\crs, c, m', \pi_\dec') = 1$;

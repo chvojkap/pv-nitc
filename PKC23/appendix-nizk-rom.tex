@@ -1,0 +1,62 @@
+%!TEX root=./main.tex
+\section{Non-interactive zero-knowledge proofs in the Random Oracle Model}
+Since we can build a very efficient NIZK proof system for our constructions in the random oracle model (ROM), we recall the definition of NIZKs in the ROM.  
+
+\begin{definition} 
+A \emph{non-interactive proof system} for an NP language $L$ with relation $\rel$ is a pair of algorithms $(\prove, \vrfy)$, which work as follows:
+\begin{itemize}
+\item $\pi \leftarrow \prove(s,w)$ is a PPT algorithm which takes as input a statement $s$ and a witness $w$ such that $(s,w) \in \rel$ and outputs a proof $\pi$.
+\item $\vrfy(s, \pi) \in \{0,1\}$ is a deterministic algorithm which takes as input a statement $s$ and a proof $\pi$ and outputs either 1 or 0, where 1 means that the proof is ``accepted'' and 0 means it is ``rejected''.
+\end{itemize}
+We say that a non-interactive proof system is \emph{complete}, if for all $(s, w) \in \rel$ holds:
+\[\Pr[\vrfy(s,\pi)=1:\pi \leftarrow \prove(s,w)] =1.\] 
+\end{definition}
+
+Next we define \emph{zero-knowledge} property for non-interactive proof system in the random oracle model. The simulator $\simul$ of a non-interactive zero-knowledge proof system is modelled as a stateful algorithm which has two modes: $(\pi, \st) \leftarrow \simul(1, \st, s)$  for answering proof queries and $(v, \st) \leftarrow \simul(2, \st, u)$ for answering random oracle queries. The common state $\st$ is updated after each operation.
+
+
+
+\begin{definition}[Zero-Knowledge in the ROM]
+Let $(\prove, \allowbreak \vrfy)$ be a non-interactive proof system for a relation $\rel$ which may make use of a hash function $H : \hdom \rightarrow \himg$. Let $\funs$ be the set of all functions from the set $\hdom$ to the set $\himg$. We say that $(\prove, \vrfy)$ is \emph{non-interactive zero-knowledge proof in the random oracle model (NIZK)}, if there exists an efficient simulator $\simul$ such that for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[\zk_\adv^\nizk = 
+\left| \Pr\left[ \adv_\secpar^{\prove^H(\cdot, \cdot), H(\cdot)} = 1 \right] -  \Pr\left[\adv_\secpar^{\simul_1(\cdot, \cdot), \simul_2(\cdot)} \right] = 1 \right|
+\leq \negl(\secpar),
+\]
+where 
+\begin{itemize}
+\item $H$ is a function sampled uniformly at random from $\funs$,
+\item $\prove^H$ corresponds to the $\prove$ algorithm, having oracle access to $H$,
+\item $\pi \leftarrow \simul_1(s, w)$ takes as input $(s, w) \in \rel$, and outputs the first output of $(\pi, \st) \leftarrow \simul(1, \st, s)$,
+\item $v \leftarrow \simul_2(u)$ takes as input $u \in \hdom$ and outputs the first output of $(v, \st) \leftarrow \simul(2, \st, u)$.
+\end{itemize}
+\end{definition}
+
+\begin{definition}[One-Time Simulation Soundness]
+Let $(\prove, \vrfy)$ be a non-interactive proof system for an NP language $L$ with zero-knowledge simulator $\simul$. We say that $(\prove, \vrfy)$ is \emph{one-time simulation sound} in the random oracle model, if for all non-uniform polynomial-size adversaries $\adv = \{\adv_\secpar\}_{\secpar \in \nats}$ there exists a negligible function $\negl(\cdot)$ such that for all $\secpar \in \nats$ 
+\[
+\simsnd_\adv^\nizk = \Pr\left[
+\begin{aligned}
+s \notin L \land (s, \pi) \neq (s', \pi') \\
+\land \vrfy^{\simul_2(\cdot)}(s, \pi) = 1
+\end{aligned}
+:(s, \pi) \leftarrow \adv_\secpar^{\simul_1(\cdot), \simul_2(\cdot)} \right] \leq \negl(\secpar),
+\]
+where $\simul_1(\cdot)$ is a single query oracle which on input $s'$ returns the first output of $(\pi', \st) \leftarrow \simul(1, \st, s')$ and $\simul_2(u)$ returns the first output of $(v, \st) \leftarrow \simul(2, \st, u)$.
+\end{definition}
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

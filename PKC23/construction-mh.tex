@@ -1,0 +1,209 @@
+%!TEX root=./main.tex
+\subsection{Construction of Multiplicatively Homomorphic Non-Malleable NITC}
+\label{sec:multNITCstdmodel}
+The construction described in this section is similar to that from \Cref{sec:linearNITCstdmodel}, except that we replace Paillier encryption with ElGamal to obtain a multiplicative homomorphism and the construction is based on standard Naor-Yung paradigm. %The proof follows the same high-level outline, but is different in some details, and therefore we give a full proof, too. 
+Our construction is given in \Cref{table:nitc-mh} and we rely on a one-time simulation sound NIZK for the following language: 
+
+\[
+L = \left\{(c_0, c_1, c_2)| \exists (m,r):
+\begin{aligned}
+       (\land_{i=1}^2 c_i = h_i^{r}m \bmod N) \land
+       c_0 = g^r \bmod N\\
+    \end{aligned}
+    \right\}, 
+\]
+where $g, h_1, h_2, N$ are parameters specifying the language.
+
+
+%In the following we use $\crs_\nizk \leftarrow \nizk.\setup(\seck, L)$ to denote the following sequence of instructions: $\param \leftarrow \nizk.\gen_\param(\seck)$, $\crs_L \leftarrow \nizk.\gen_L(\seck, L)$, $\crs_\nizk:=(\param, \crs_L)$ .
+
+\begin{figure}[h!]
+\begin{center}
+\begin{tabular}{|ll|}
+\hline
+$\underline{\pgen(\seck, T)}$ 							   & $\underline{\com(\crs, m)}$ \\
+$(p, q_, N, g) \leftarrow \genmod(\seck)$ & $r \rand \smplsetqrn$  \\
+$\varphi(N):= (p-1)(q-1)$   & $c_0:= g^r \bmod N$ \\
+$k_1\rand \smplsetqrn$ & For $i \in [2]: c_i:= h_i^{r}m \bmod N$\\
+$t:= 2^T \bmod \varphi(N)/4$ & $c := (c_0, c_1, c_2), w := (m, r)$ \\
+$ h_1:= g^{k_1} \bmod N$ &  $\pi_\com \leftarrow \nizk.\prove(\crs_\nizk, c, w)$\\
+$h_2:=g^{t} \bmod N$ &   $\pi_\dec: = r$ \\
+$\crs_\nizk \leftarrow \nizk.\setup(\seck, L)$ &  return $(c, \pi_\com, \pi_\dec)$ \\
+return $\crs:= (N,T,g,h_1,h_2,\crs_\nizk)$ &\\
+%$\crs_\nizk \leftarrow \nizk.\setup(\seck, L, (k_1, k_2, p,q))$ & return $(c, \pi_\com, \pi_\dec)$\\
+%$\crs_L \leftarrow \nizk.\gen_L(\seck, L, k_1)$ & \\ 
+%$\crs_\nizk:=(\param, \crs_L)$ & \\
+
+                                             &\\
+$\underline{\cvrfy(\crs, c, \pi_\com)}$     & $\underline{\dvrfy(\crs,c, m, \pi_\dec)}$ \\
+return $\nizk.\vrfy(\crs_\nizk,c, \pi)$  & Parse $c$ as $(c_0, c_1, c_2)$ \\
+& if $ \land_{i=1}^2 c_i = h_i^{\pi_\dec}m  \bmod N \land c_0 = g^{\pi_\dec} \bmod N$\\
+ & \tab return 1 \\
+& return 0 \\
+                                             &\\
+$\underline{\fdecom(\crs,c)}$ & $\underline{\eval(\crs,\otimes_N, c_1, \dots, c_n)}$ \\
+Parse $c$ as $(c_0, c_1, c_2)$ & Parse $c_i$ as $(c_{i,0}, c_{i,1}, c_{i,2})$\\
+Compute $ y:=c_0^{2^T} \bmod N$ & Compute $c_0 := \prod_{i=1}^n c_{i,0} \bmod N, c_1:= \bot$ \\
+$m:=c_2 \cdot y^{-1} \bmod N$ &  Compute $c_2 := \prod_{i=1}^n c_{i,2} \bmod N $\\
+return $m$  & return $c := (c_0, c_1, c_2)$\\
+
+
+%$\underline{\decom(\crs, \sk, c)}$     & $\underline{\fdecom(\crs,c)}$ \\
+%Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
+%if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$  & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$\\
+%\tab Compute $y_1:= c_0^{k} \bmod N$  &   \tab Compute $ y_2:=c_0^{2^T} \bmod N$ \\
+%\tab return $c_1 \cdot y_1^{-1} \bmod N$ & \tab return $c_2 \cdot y_2^{-1} \bmod N$ \\
+%return $\bot$ & return $\bot$\\
+
+\hline          
+\end{tabular}
+\caption{Construction of Multiplicatively Homomorphic NITC in Standard Model. \\ $\otimes_N$ refers to multiplication $\bmod N$}
+\label{table:nitc-mh}
+\end{center}
+\end{figure}
+
+%\begin{figure}[h!]
+%\begin{center}
+%\begin{tabular}{|ll|}
+%\hline
+%$\underline{\pgen(\seck, T)}$ 							   & $\underline{\com(\pk, m)}$ \\
+%$(p, q_, N) \leftarrow \genmod(\seck)$ & $r \rand \smplset$  \\
+%$\varphi(N):= (p-1)(q-1)$   & Compute $c_0:= g^r \bmod N$ \\
+%Sample random generator $g$ of $\Jn$ & For $i \in [3]: c_i:= h_i^{rN}(1+N)^m \bmod N^2$\\
+%$k_1, k_2 \rand \smplset$ & $\Phi := (h_1c_0, c_1, c_2, c_3), w := (m, r)$ \\
+%$t:= 2^T \bmod \varphi(N)/2$ &  $\pi \leftarrow \nizk.\prove(\Phi, w)$\\
+%For $i \in [2]: h_i:= g^{k_i} \bmod N$ &  $c := (c_0, c_1, c_2, c_3, \pi)$\\
+%$h_3:=g^{t} \bmod N$ &  $\pi_\com:= \bot, \pi_\dec: = r$ \\
+%%$\crs \leftarrow \nizk.\setup(\seck)$ & \\
+%return $\crs:= (N,T,g,h_1,h_2, h_3)$ & return $(c, \pi_\com, \pi_\dec)$\\
+%%return $\crs$     & \\
+%                                             &\\
+%$\underline{\cvrfy(\crs, c, \pi_\com)}$     & $\underline{\dvrfy(\crs,c, m, \pi_\dec)}$ \\
+%Parse $c$ as $(c_0, c_1, c_2, c_3 \pi)$  & Parse $c$ as $(c_0, c_1, c_2, c_3 \pi)$ \\
+%return $\nizk.\vrfy((c_0, c_1, c_2, c_3,), \pi)$  & if $ \land_{i=1}^3 c_i = h_i^{rN}(1+N)^m  \bmod N^2 \land c_0 = g^r \bmod N$\\
+% & \tab return 1 \\
+%& return 0 \\
+%                                             &\\
+%$\underline{\fdecom(\crs,c)}$ & $\underline{\fdvrfy(\crs,c, m, \pi_\fdecom)}$ \\
+%Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$ & Parse $c$ as $(c_0, c_1, c_2, c_3, \pi)$\\
+%if $\nizk.\vrfy((c_0, c_1, c_2,c_3), \pi)= 1$& if $\nizk.\vrfy((c_0, c_1, c_2,c_3), \pi)= 1 \land $\\
+%\tab Compute $ \pi_\fdecom:=c_0^{2^T} \bmod N$ &  $c_3 = \pi_\fdecom^N (1+N)^m \bmod N^2$\\
+%\tab Compute $m:=\frac{c_3 \cdot \pi_\fdecom^{-N} (\bmod N^2) -1}{N}$ &\tab return 1\\
+%\tab return $(m,\pi_\fdecom)$ & return 0\\
+%return $\bot$ & \\
+%
+%%$\underline{\decom(\crs, \sk, c)}$     & $\underline{\fdecom(\crs,c)}$ \\
+%%Parse $c$ as $(c_0, c_1, c_2, \pi)$  & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
+%%if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$  & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$\\
+%%\tab Compute $y_1:= c_0^{k} \bmod N$  &   \tab Compute $ y_2:=c_0^{2^T} \bmod N$ \\
+%%\tab return $c_1 \cdot y_1^{-1} \bmod N$ & \tab return $c_2 \cdot y_2^{-1} \bmod N$ \\
+%%return $\bot$ & return $\bot$\\
+%
+%\hline          
+%\end{tabular}
+%\caption{NY Construction of NITC}
+%\label{table:nitc}
+%\end{center}
+%\end{figure}
+
+
+
+\begin{theorem}
+\label{thm:NITC-IND-Mul-Std}
+If $(\nizk.\setup, \nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$ in $\qrn$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\qrn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-mh} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
+\end{theorem}
+
+
+The proof can be found in \Cref{app:NITC-IND-Mul-Std}.
+
+
+
+
+
+\begin{theorem}\label{bnd-cca-mh}
+$(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc-mh} is a BND-CCA-secure non-interactive timed commitment scheme. 
+\end{theorem}
+
+\begin{proof}
+We show that the construction is perfectly binding. This is straightforward to show since ElGamal encryption is perfectly binding. Therefore there is exactly one message/randomness pair $(m,r)$ which can pass the check in $\dvrfy$. Therefore the first winning condition of BND-CCA experiment happens with probability 0. Moreover, since $\pgen$ is executed by the challenger, the value $h_3$ is computed correctly and therefore $\fdecom$ reconstructs always the correct message $m$. Therefore the second winning condition of BND-CCA experiment happens with probability 0 as well.
+\end{proof}
+
+It is straightforward to verify that considering $\eval$ algorithm, our construction yields multiplicatively homomorphic NITC. 
+\begin{theorem}\label{hom-mh}
+The NITC \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy, \eval)} defined in \Cref{table:nitc-mh} is a multiplicatively homomorphic non-interactive timed commitment scheme.
+\end{theorem}
+
+\begin{remark}[Public Verifiability]\label{rem:pv}
+It is natural to ask if it is possible to make the construction in \Cref{table:nitc-mh} publicly verifiable. Since the output $m$ of $\fdecom$ is perfectly determined by value $y:= c_0^{2^T} \bmod N$, it is possible to achieve public verifiability if one can efficiently check that indeed $y$ equals to $c_0^{2^T} \bmod N$ without executing $T$ squarings. However, this is exactly what proofs of exponentiation of Pietrzak \cite{ITCS:Pietrzak19b} and Wesolowski \cite{EC:Wesolowski19} do. Concretely, \cite{ITCS:Pietrzak19b,EC:Wesolowski19} propose efficient proofs systems for the language $L':=\{(G,a,b,T)|a,b \in G \land b=a^{2^T}\}$ where $G$ is some group where low order assumption \cite{ITCS:Pietrzak19b} or adaptive root assumption \cite{EC:Wesolowski19} hold. We remark, that for both suggested proof systems $G$ can be instantiated for example as $\Zn^*/ \{-1,1\}$ \cite{EC:Wesolowski19,EPRINT:BonBunFis18} or as it is proposed by Pietrzak $G$ can be instantiated as a group of signed quadratic residues $\qrn^+:=\{|x|:x \in \qrn\}$. One can argue that the strong sequential squaring assumption holds in $\qrn^+$ (see e.g. \cite{ITCS:Pietrzak19b,EPRINT:EFKP20a}). Therefore by adjusting the construction in \Cref{table:nitc-mh} to work in the group $\qrn^+$, one can obtain publicly verifiable NITC by outputing in $\fdecom$ the value $y$ together with a proof of exponentiation that $y=c_0^{2^T} \bmod N$ and $\fdvrfy$ just checks that the proof of exponentiation is valid and at the same time $c_2 = y \cdot m \bmod N$. For completeness we provide a description of these algorithms in \Cref{table:pv-nitc-lh}, where we use $(\poe.\prv, \poe.\vrfy)$ to denote a proof system for language $L'$. Both Pietrzak's and Wesolowski's proof system are interactive protocols which might be made non-interactive using Fiat-Shamir transformation. Thus we obtain a publicly verifiable NITC in ROM.   
+\end{remark}
+
+\begin{figure}[h!]
+\begin{center}
+\begin{tabular}{|ll|}
+\hline
+$\underline{\fdecom(\crs,c)}$ & $\underline{\fdvrfy(\crs,c, m, \pi_\fdecom)}$ \\
+Parse $c$ as $(c_0, c_1, c_2)$ & Parse $c$ as $(c_0, c_1, c_2)$\\
+$y:=c_0^{2^T} \bmod N$, $\pi_\poe=\poe.\prove(c_0,y)$ &  if $c_2= m \cdot y \bmod N \land \poe.\vrfy((c_0,y), \pi_\poe)$\\
+$\pi_\fdecom:=(y, \pi_\poe), m:=c_2 \cdot y{-1} \bmod N$ &\tab return 1\\
+return $(m,\pi_\fdecom)$ & return 0\\
+
+\hline          
+\end{tabular}
+\caption{$\fdecom$ and $\fdvrfy$ of Publicly Verifiable NITC}
+\label{table:pv-nitc-lh}
+\end{center}
+\end{figure}
+
+%\begin{theorem}
+%If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero-knowledge proof system for $L$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom, \fdvrfy)} defined in \Cref{table:nitc} is a publicly verifiable non-interactive timed commitment scheme.
+%\end{theorem}
+%
+%\begin{proof}
+%Completeness is straightforward to verify. 
+%
+%To prove the soundness notice that if commitment verifies, then we know that $c_0 = g^r$ and $c_3 = h_3^r(1+N)^m$ for honestly generated $g$ and $h_3$ and some $r$ and $m$. Otherwise, an adversary would be able to break soundness of the proof system. Since there is an isomorphism $f:\Zn^* \times \Zn \rightarrow\Zns$ given by $f(a,b)=a^N(1+N)^b \bmod N^2$ (see e.g. \cite[Proposition 13.6]{books/crc/KatzLindell2014}) there exist unique values $\pi_\fdecom$ and $m$ such that $c_3=\pi_\fdecom^N(1+N)^m \bmod N^2$ and therefore adversary is not able to provide different message $m'$ fulfilling required equation.
+%
+%Finally, the running time of $\fdvrfy$ is efficient, since it is independent of $T$.
+%\end{proof}
+
+ 
+
+%\begin{figure}[h!]
+%\begin{center}
+%\begin{tabular}{|ll|}
+%\hline
+%$\underline{\kgen(\seck, T)}$ 							   & $\underline{\decf(\sk, c)}$\\
+%$(p, q_, N) \leftarrow \genmod(\seck)$ &  Parse $c$ as $(c_0, c_1, c_2, \pi)$\\
+%$\varphi(N):= (p-1)(q-1)$   & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$ \\
+%$g\rand \qrn$ & \tab Compute $y_1:= c_0^{k} \bmod N$\\
+%$k \rand \varphi(N)/4$ & \tab return $c_1 \cdot H(y_1)^{-1} \bmod N$ \\
+%$t:= 2^T \bmod \varphi(N)/4$ & return $\bot$\\
+%$h_1:= g^k \bmod N$ & \\
+%$h_2:=g^{t} \bmod N$ & \\
+%%$\crs \leftarrow \nizk.\setup(\seck)$ & \\
+%$\pk:= (N,T,g,h_1,h_2), \sk:= (N, k)$ & \\
+%return $(\pk, \sk)$       & \\
+%                                             &\\
+%$\underline{\enc(\pk, m)}$           & $\underline{\decs(\pk,c)}$ \\
+%$r \rand [\floor{N/4}]$     & Parse $c$ as $(c_0, c_1, c_2, \pi)$ \\
+%Compute $c_0:= g^r \bmod N$ & if $\nizk.\vrfy((c_0, c_1, c_2), \pi)= 1$\\
+%For $i \in [2]: y_i:= h_i^r \bmod N$   &   \tab Compute $ y_2:=c_0^{2^T} \bmod N$ \\
+%For $i \in [2]: c_i:= H(y_i) \cdot m \bmod N$ & \tab return $c_2 \cdot H(y_2)^{-1} \bmod N$ \\
+%$\Phi := (c_0, c_1, c_2), w := (m, r)$& return $\bot$\\
+%$\pi \leftarrow \nizk.\prove(\Phi, w)$  &  \\
+%return $c \leftarrow (c_0, c_1, c_2, \pi)$ &  \\
+%
+%\hline          
+%\end{tabular}
+%\caption{NY Construction of TPKE from SSSA}
+%\label{table:tpke-elgamal}
+%\end{center}
+%\end{figure}
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

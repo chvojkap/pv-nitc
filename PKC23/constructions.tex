@@ -176,9 +176,9 @@ In game $\games_\thisgame$ decommitment queries are answered using the algorithm
 
 
 \begin{lemma}\label{nitc-lh:flem}
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \snd^\nizk_\advB.
-\]
+$
 \end{lemma}
 
 Notice that if $c_1$ and $c_3$ contain the same message, both oracles answer decommitment queries consistently. Let $\event$ denote the event that the adversary $\adv$ asks a decommitment query $(c, \pi_\com)$ such that its decommitment using the key $k_1$ is different from its decommitment using $\fdecom$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ happens, we bound the probability of $\event$. Concretely, we have
@@ -217,9 +217,9 @@ $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens
 \nextgame{SimulProof}
 Game $\games_\thisgame$ proceeds exactly as the previous game but we run the zero-knowledge simulator $(\crs, \tau) \leftarrow \simul_1(\seck, L)$ in $\pgen$ and produce a simulated proof for the challenge commitment as $\pi^* \leftarrow \simul_2(\crs, \tau, (c_0^*,c_1^*,c_2^*,c_3^*))$. By zero-knowledge security of underlying NIZK we directly obtain
 \begin{lemma}
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \zk^\nizk_\advB.
-\]
+$
 \end{lemma}
 
 We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against the zero-knowledge security of NIZK as follows:
@@ -239,9 +239,9 @@ If the proof $\pi^*$ is generated using $\nizk.\prove$, then $\advB$ simulates $
 In $\games_\thisgame$ we sample $r$ uniformly at random from $[\varphi(N)/2]$. 
 
 \begin{lemma}
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
-\]
+$
 \end{lemma}
 %At first we remark that for upper bounding the difference between the games we use a statistical argument. Because $r$ appears only in the exponent of the group generator, we later sample a random element from the group $\qrn$ which can be done efficiently. 
 Since the only difference between the two games is in the set from which we sample $r$, to upper bound the advantage of adversary we can use \Cref{sampling-lemma} with $\ell:=2$, which directly yields the required bound.
@@ -263,9 +263,9 @@ Let $\tilT_\sss(\secpar)$ be the polynomial whose existence is guaranteed by the
 Let $\poly_\advB(\secpar)$ be the fixed polynomial which bounds the time required to execute Steps 1--2 and answer decommitment queries in Step 3 of the adversary $\advB_{2, \secpar}$ defined below. Set $\undT := (\poly_\advB(\secpar))^{1 / \ugap}$.  Set $\tilT_\nitc := \max(\tilT_\sss, \undT)$.
 \begin{lemma}
 From any polynomial-size adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar})\}_{\secpar \in \nats}$, where depth of $\adv_{2, \secpar}$ is at most $T^{\ugap}(\secpar)$ for some $T(\cdot) \geq \undT(\cdot)$ we can construct a polynomial-size adversary $\advB = \{(\advB_{1,\secpar}, \advB_{2, \secpar})\}_{\secpar \in \nats}$ where the depth of $\advB_{2, \secpar}$ is at most $T^{\gap}(\secpar)$ with
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \advtg_\advB^\sss.
-\]
+$
 \end{lemma}
 
 The adversary $\advB_{1,\secpar}(N, T(\secpar), g)$ proceeds as follows:
@@ -308,9 +308,9 @@ Also $T(\cdot) \geq \tilT_\nitc(\cdot) \geq \tilT_\sss(\cdot)$ as required.
 In $\games_\thisgame$ we sample $y_3 \rand \Zns$ such that it has Jacobi symbol 1 and compute $c_3^*$ as $y_3(1+N)^{m_b}$. 
 
 \begin{lemma}\label{lem:dcr}
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \advtg_\advB^\dcr.
-\]
+$
 \end{lemma}
 We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against DCR. $\advB_\secpar(N,y)$ works as follows:
 
@@ -334,9 +334,9 @@ We remark that at this point $c_3^*$ does not reveal any information about $b$. 
 In $\games_\thisgame$ we sample $k_2$ uniformly at random from $[\varphi(N)/2]$. 
 
 \begin{lemma}
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
-\]
+$
 \end{lemma}
 
 Again using a statistical argument this lemma directly follows from \Cref{sampling-lemma} with $\ell:=2$.
@@ -345,9 +345,9 @@ Again using a statistical argument this lemma directly follows from \Cref{sampli
 In $\games_\thisgame$ we sample $y_2 \rand \Jn$ and compute $c_2^*$ as  $y_2^N(1+N)^{m_b}$. 
 
 \begin{lemma}\label{lem:ddh}
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \advtg_\advB^\ddh.
-\]
+$
 \end{lemma}
 We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against DDH in the group $\Jn$. %Given \Cref{thm:ddh} this implies an adversary against DDH in large prime-order subgroups of $\Zn^*$.
 
@@ -367,9 +367,9 @@ In $\games_\thisgame$ we sample $k_2$ uniformly at random from $\smplset$. Again
 
 
 \begin{lemma}
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
-\]
+$
 \end{lemma}
 
 
@@ -377,9 +377,9 @@ In $\games_\thisgame$ we sample $k_2$ uniformly at random from $\smplset$. Again
 In $\games_\thisgame$ we sample $y_2 \rand \Zns$ such that it has Jacobi symbol 1 and compute $c_2^*$ as $y_2(1+N)^{m_b}$. 
 
 \begin{lemma}
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \advtg_\advB^\dcr.
-\]
+$
 \end{lemma}
 This can be proven in similar way as \Cref{lem:dcr}. We remark that at this point $c_2^*$ does not reveal any information about $b$, with the same argument as in the transition from $\games_4$ to $\games_5$.
 
@@ -390,16 +390,16 @@ This can be proven in similar way as \Cref{lem:dcr}. We remark that at this poin
 In $\games_\thisgame$ we answer decommitment queries using $\dec$ (\Cref{fig:deco-lh}) with $i:=2$ which means that secret key $k_2$ and ciphertext $c_2$ are used. 
 
 \begin{lemma}
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \simsnd^\nizk_\advB. 
-\]
+$
 \end{lemma}
 
 Let $\event$ denote the event that adversary $\adv$ asks a decommitment query $(c, \pi_\com)$ such that its decommitment using the key $k_1$ is different from its decommitment using the key $k_2$. Since $\games_\prevgame$ and $\games_\thisgame$ are identical until $\event$ happens, it is sufficient to bound the probability of $\event$. Concretely,  
 
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \Pr[\event]. 
-\]
+$
 
 We construct an adversary $\advB$ that breaks one-time simulation soundness of the NIZK. It is given as input $\crs_\nizk$ together with a membership testing trapdoor $\tau_L:=(k_1, k_2, t)$, where $t:=2^T \bmod \varphi(N)/2$. 
 %
@@ -414,7 +414,7 @@ The adversary $\advB_{\secpar}^{\simul_2}(\crs_\nizk, \tau_L)$ proceeds as follo
 \end{enumerate}
 
 $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, it outputs a valid proof for a statement which is not in the specified language $L$. Therefore we get
-\[\Pr[\event] \leq \simsnd^\nizk_\advB.\]
+$\Pr[\event] \leq \simsnd^\nizk_\advB.$
 
 %\nextgame{ReRand2}
 %In $\games_\thisgame$ we use the key $t$ and randomness $r'$ as input for rerandomization. Concretely we compute $\rerand(c,c',h_1,h_2,t,r')$. This is just conceptual change since the ciphertext distributions are the same in both games and therefore 
@@ -439,9 +439,9 @@ In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/2]$.
 
 
 \begin{lemma}
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \frac{1}{p}+\frac{1}{q}-\frac{1}{N}.
-\]
+$
 \end{lemma}
 
 
@@ -449,9 +449,9 @@ In $\games_\thisgame$ we sample $k_1$ uniformly at random from $[\varphi(N)/2]$.
 In $\games_\thisgame$ we sample $y_1 \rand \Jn$ and compute $c_1^*$ as  $y_1^{N} (1+N)^{m_b}$. 
 
 \begin{lemma}
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \advtg_\advB^\ddh.
-\]
+$
 \end{lemma}
 This can be proven in similar way as \Cref{lem:ddh}.
 
@@ -459,16 +459,16 @@ This can be proven in similar way as \Cref{lem:ddh}.
 In $\games_\thisgame$ we sample $y_1 \rand \Zns$ such that it has Jacobi symbol 1 and compute $c_1^*$ as $y_1(1+N)^{m_b}$. 
 
 \begin{lemma}
-\[
+$
 \left|\Pr[\games_\prevgame = 1] - \Pr[\games_\thisgame = 1]\right| \leq \advtg_\advB^\dcr.
-\]
+$
 \end{lemma}
 This can be proven in similar way as \Cref{lem:dcr}. We remark that at this point $c_1^*$ does not reveal any information about $b$, with the same arguments as above.
 
 \begin{lemma}\label{nitc-lh:llem}
-\[
+$
 \Pr[\games_\thisgame = 1] = \half.
-\]
+$
 \end{lemma}
 
 Clearly, $c_0^*$ is uniform random element in $\Jn$ and hence it does not contain any information about the challenge message. Since $y_1, y_2, y_3$ are sampled uniformly at random from $\Zns$ the ciphertexts $c_1^*, c_2^*, c_3^*$ are also uniform random elements in $\Zns$ and hence do not contain any information about the challenge message $m_b$. Therefore, an adversary can not do better than guessing.

@@ -35,7 +35,7 @@ We resolve this problem by using ``triple Naor-Yung''. In our linearly homomorph
 
 
 \paragraph{Standard Naor-Yung works for multiplicative homomorphism.}
-Next, we observe that the standard (\ie, ``two-ciphertext'') Naor-Yung approach works, if a \emph{multiplicative} homomorphism (or no homomorphism at all) is required. Concretely, a commitment will have the form $c = (c_1, c_2, \pi)$, where $c_1$ is an ElGamal encryption and $c_2$ uses the ``sequential-squating-with-ElGamal-encryption'' idea of \cite{C:MalThy19}. By replacing the underlying group to the subgroup $\qrn$ of quadratic residues modulo $N$, we can rely on the DDH assumption in $\qrn$ and thus do not require the factorization of $N$ to be hidden when replacing the ElGamal encryption $c_1$ with an encryption of a random message.
+Next, we observe that the standard (\ie, ``two-ciphertext'') Naor-Yung approach works, if a \emph{multiplicative} homomorphism (or no homomorphism at all) is required. Concretely, a commitment will have the form $(c_1, c_2, \pi)$, where $c_1$ is an ElGamal encryption and $c_2$ uses the ``sequential-squaring-with-ElGamal-encryption'' idea of \cite{C:MalThy19}. By replacing the underlying group to the subgroup $\qrn$ of quadratic residues modulo $N$, we can rely on the DDH assumption in $\qrn$ and thus do not require the factorization of $N$ to be hidden when replacing the ElGamal encryption $c_1$ with an encryption of a random message.
 While the construction idea and high-level arguments are very similar, the underlying groups and detailed arguments are somewhat different, and thus we have to give a separate proof.
 
 

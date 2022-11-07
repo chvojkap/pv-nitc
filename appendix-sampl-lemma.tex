@@ -414,7 +414,7 @@ We construct an adversary $\advB$ that breaks soundness with respect to auxiliar
 The adversary $\advB_{\secpar}(p,q)$ proceeds as follows:
 \vspace{-2mm}
 \begin{enumerate}
-\item Samples $k_1, k_2\rand \smplset$, computes $h_1 := g^{k_1} \bmod N, h_2:=g^{k_2} \bmod N, \varphi(N):=(p-1)(q-1), t:=2^{T} \bmod \ord$ and sets $\crs:=(N, T, g, h_1, h_2, h_3)$ where $h_3$ is given by $L$. 
+\item Samples $k_1, k_2\rand \smplset$, computes $h_1 := g^{k_1} \bmod N, h_2:=g^{k_2} \bmod N,\allowbreak \varphi(N) :=(p-1)(q-1), t:=2^{T} \bmod \ord$ and sets $\crs:=(N, T, g, h_1, h_2, h_3)$ where $h_3$ is given by $L$. 
 \item Then it runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
 \item It samples $b \rand \bits, r \rand \smplset$ and computes $c_0^*:=g^r, c_1^*:=h_1^{rN}(1+N)^{m_b}, c_2^*:=h_2^{rN}(1+N)^{m_b}, c_3^*:=h_3^{rN}(1+N)^{m_b}$. It sets $(s:=\mathlist(h_1, h_2, c_0^*, c_1^*, c_2^*, c_3^*), w:=(m,r))$ and runs $\pi^* \leftarrow \nizk.\prove(s,w)$.
 \item Next, it runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.
@@ -493,7 +493,7 @@ From any polynomial-size adversary $\adv = \{(\adv_{1,\secpar}, \adv_{2, \secpar
 The adversary $\advB_{1,\secpar}(N, T(\secpar), g):$
 \vspace{-2mm}
 \begin{enumerate}
-\item Samples $k_1, k_2 \rand \smplset$, computes $h_1 := g^{k_1} \bmod N, h_2 := g^{k_2} \bmod N,  h_3 := g^{2^{T(\secpar)}} \bmod N$ and sets $\crs:=(N, T(\secpar), g, h_1, h_2, h_3)$. Notice that value $h_3$ is computed by repeated squaring.
+\item Samples $k_1, k_2 \rand \smplset$, computes $h_1 := g^{k_1} \bmod N, h_2 := g^{k_2} \bmod N, \allowbreak  h_3 := g^{2^{T(\secpar)}} \bmod N$ and sets $\crs:=(N, T(\secpar), g, h_1, h_2, h_3)$. Notice that value $h_3$ is computed by repeated squaring.
 \item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
 \item Outputs $(N,g,k_1, k_2, h_1,h_2,h_3, m_0, m_1, \st)$
 \end{enumerate}
@@ -634,7 +634,7 @@ The adversary $\advB_{\secpar}^{\simul_1, \simul_2}:$
 \item Runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_2$.
 \item Samples $b \rand \bits, x \rand \Jn, y_2, y_3 \rand \Zns$ and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(x, x^{k_1 N} (1+N)^{m_b}, y_2 (1+N)^{m_b}, y_3 (1+N)^{m_b})$. Forwards $(h_1, h_2, c_0^*, c_1^*, c_2^*, c_3^*)$ to simulation oracle $\simul_1$ and obtains a proof $\pi^*$.
 \item Runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*, c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_2$.
-\item Find a decommitment query $(c, \pi_\com)$ such that $\dec(\crs, c, \pi_\com, 1) \neq \allowbreak \dec(\crs,c, \pi_\com, 2)$ and returns $((h_1, h_2, c_0, c_1, c_2, c_3), \pi_\com)$.
+\item Find a decommitment query $(c, \pi_\com)$ such that $\dec(\crs, c, \pi_\com, 1) \neq \allowbreak \dec\mathlist(\crs,c, \pi_\com, 2)$ and returns $((h_1, h_2, c_0, c_1, c_2, c_3), \pi_\com)$.
 \end{enumerate}
 
 $\advB$ simulates $\games_\thisgame$ perfectly and if the event $\event$ happens, it outputs a valid proof for a statement which is not in the specified language $L$. Therefore

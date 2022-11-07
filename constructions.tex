@@ -354,7 +354,7 @@ We construct an adversary $\advB = \{\advB_\secpar\}_{\secpar \in \N}$ against D
 $\advB_{\secpar}(N,g,g^\alpha, g^\beta, g^\gamma)$ proceeds as follows:
 \vspace{-2mm}
 \begin{enumerate}
-\item It samples $k_1 \rand \smplset$, computes $h_1 := g^{k_1} \bmod N,  h_3 := g^{2^{T}} \bmod N$, runs $(\crs_\nizk, \tau) \leftarrow \nizk.\simul_1(\seck, L)$ and sets $\crs:=(N, T, g, h_1, h_2:=g^\alpha, h_3, \crs_\nizk)$.
+\item It samples $k_1 \rand \smplset$, computes $h_1 := g^{k_1} \bmod N,  h_3 := g^{2^{T}} \bmod N$, runs $(\crs_\nizk, \tau) \leftarrow \nizk.\simul_1(\seck, L)$ and sets $\crs:=\mathlist(N, T, g, h_1, h_2:=g^\alpha, h_3, \crs_\nizk)$.
 \item It runs $(m_0, m_1, \st) \leftarrow \adv_{1, \secpar}(\crs)$ and answers decommitment queries using $k_1$.
 \item It samples $b \rand \bits, y_3 \rand \Zns$ such that it has Jacobi symbol 1 and computes $(c_0^*, c_1^*, c_2^*, c_3^*):=(g^\beta, (g^\beta)^{k_1 N}(1+N)^{m_b}, (g^{\gamma})^N(1+N)^{m_b}, y_3(1+N)^{m_b}).$ Runs $\pi^* \leftarrow \simul_2(\crs_\nizk, \tau, (c_0^*, c_1^*, c_2^*, c_3^*))$.
 \item It runs $b' \leftarrow \adv_{2, \secpar}((c_0^*, c_1^*, c_2^*,c_3^*), \pi^*, \st)$ and answers decommitment queries using $k_1$.

@@ -242,7 +242,7 @@ Since our constructions relies on the strong sequential squaring assumption eith
 %We base our construction on the strong sequential squaring assumption in the group of quadratic residues. Precisely, let $p, q$ be strong primes (i.e., such that $p = 2p'+1,  q= 2q'+1$ for primes $p', q'$). We denote by $\varphi(\cdot)$ Euler's totient function and by $\qrn$ the cyclic group of quadratic residues modulo $N$ which has order $|\qrn| = \frac{\varphi(N)}{4} = \frac{(p-1)(q-1)}{4}$. To efficiently sample a random element $x$ from $\qrn$, we can sample $r \rand \Zn^*$ and let $x:= r^2 \bmod N$. When the factors $p,q$ are known, then it easy to check if the given element is a generator of $\qrn$ by checking if $x^{p'} \neq 1 \bmod N \land x^{q'} \neq 1 \bmod N$. Therefore we are able to efficiently sample a random generator of $\qrn$. Let $\genmod$ be a probabilistic polynomial-time algorithm which on input $\seck$ outputs two $\secpar$-bit strong primes $p$ and $q$, modulus $N= pq$ and a random generator $g$ of $\qrn$. Now we state the strong sequential squaring assumption. 
 
 
-\begin{figure}[h]
+\begin{figure}[tb]
 \begin{center}
 \begin{tabular}{l}
 $\mathsf{ExpSSS}_{\adv}^{b}(\secpar)$: \\
@@ -254,8 +254,23 @@ $\text{if } b = 0: y:=x^{2^{T(\secpar)}} \bmod N$\\
 $\text{if } b = 1: y \rand \G$\\
 return	$b' \leftarrow \adv_{2,\secpar}(x, y, \st)$
 \end{tabular}
+\qquad
+%\begin{figure}[tb]
+%\begin{center}
+\begin{tabular}{l}
+$\mathsf{ExpDCR}_{\adv}^{b}(\secpar)$: \\
+\hline
+$(p, q, N, g) \leftarrow \genmod(\seck)$ \\
+$y_1 \rand \Zns$ \\
+$y_0 = y_1^N \bmod N^2$\\
+return	$b' \leftarrow \adv_{\secpar}(N,y_b)$
+\end{tabular}
+%\end{center}
+%\caption{\label{fig:dcr}Security experiment for DCR.}
+%\end{figure}
 \end{center}
-\caption{\label{fig:sss}Security experiment for the strong sequential squaring assumption.}
+%\caption{\label{fig:sss}Security experiment for the strong sequential squaring assumption.}
+\caption{\label{fig:sss} \label{fig:dcr}  Security experiments for the strong sequential squaring assumption (left) and DCR (right).}
 \end{figure}
 
 
@@ -305,19 +320,7 @@ The decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\qrn$ i
 \[\advtg^\ddh_\adv = \abs{\Pr[\mathsf{ExpQR_NDDH}_{\adv}^{0}(\secpar) = 1] - \Pr[\mathsf{ExpQR_NDDH}_{\adv}^{1}(\secpar) = 1]} \leq \negl(\secpar).\]
 \end{definition} 
 
-\begin{figure}[h]
-\begin{center}
-\begin{tabular}{l}
-$\mathsf{ExpDCR}_{\adv}^{b}(\secpar)$: \\
-\hline
-$(p, q, N, g) \leftarrow \genmod(\seck)$ \\
-$y_1 \rand \Zns$ \\
-$y_0 = y_1^N \bmod N^2$\\
-return	$b' \leftarrow \adv_{\secpar}(N,y_b)$
-\end{tabular}
-\end{center}
-\caption{\label{fig:dcr}Security experiment for DCR.}
-\end{figure}
+
 
 
 

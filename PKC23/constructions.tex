@@ -495,7 +495,7 @@ If $\nizk = (\nizk.\setup, \nizk.\prove, \nizk.\vrfy)$ is a non-interactive zero
 \begin{proof}
 Completeness is straightforward to verify. 
 To prove soundness, notice that if the commitment verifies, then we know that $c_0 = g^r$ and $c_3 = h_3^r(1+N)^m$ for honestly generated $g$ and $h_3$ and some $r$ and $m$. Otherwise, an adversary would be able to break soundness of the proof system. Since there is an isomorphism $f:\Zn^* \times \Zn \rightarrow\Zns$ given by $f(a,b)=a^N(1+N)^b \bmod N^2$ (see e.g. \cite[Proposition 13.6]{books/crc/KatzLindell2014}) there exist unique values $\pi_\fdecom$ and $m$ such that $c_3=\pi_\fdecom^N(1+N)^m \bmod N^2$. Therefore adversary is not able to provide a different message $m'$ fulfilling the required equation.
-
+%
 Finally, note that $\fdvrfy$ is efficient, with a running time which is independent of $T$.
 \end{proof}
 

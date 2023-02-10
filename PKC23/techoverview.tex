@@ -2,7 +2,7 @@
 
 \subsection{Technical Overview}\label{sec:techoverview}
 The \emph{binding} property of our commitment scheme will be relatively easy to argue, therefore let us focus on the \emph{hiding} property and non-malleability. Like in \cite{TCC:KatLosXu20}, we prove this by considering an IND-CCA security experiment, where the adversary has access to a forced decommitment oracle. 
-Even though the forced decommitment can be performed in polynomial time, this polynomial may be very large, if the time parameter $T$ is large. Since the experiment needs to be perform a forced decommitment for \emph{every} decommitment query of the adversary, this would incur a very significant overhead and a highly lossy reduction.
+Even though the forced decommitment can be performed in polynomial time, this polynomial may be very large, if the time parameter $T$ is large. Since the experiment needs to perform a forced decommitment for \emph{every} decommitment query of the adversary, this would incur a very significant overhead and a highly lossy reduction.
 Hence, following Katz \etal \cite{TCC:KatLosXu20}, we aim to build commitment schemes where a reduction can perform a fast decommitment. 
 
 Recall that a classical approach to achieve IND-CCA security is to apply the Naor-Yung paradigm \cite{STOC:NaoYun90}. A natural approach to construct non-malleable timed commitments is therefore to apply this paradigm as follows. A commitment $c = (c_1, c_2, \pi)$ to a message $m$ consists of a time-lock puzzle $c_1$ opening to $m$, a public key encryption of $m$, and a simulation-sound zero knowledge proof $\pi$ that both contain the same message $m$, everything with respect to public parameters contained in a public common reference string.

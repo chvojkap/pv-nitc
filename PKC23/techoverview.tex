@@ -1,6 +1,6 @@
 %!TEX root=main.tex
 
-\subsection{Technical Overview}\label{sec:techoverview}
+\subsubsection*{Technical Overview}\label{sec:techoverview}
 The \emph{binding} property of our commitment scheme will be relatively easy to argue, therefore let us focus on the \emph{hiding} property and non-malleability. Like in \cite{TCC:KatLosXu20}, we prove this by considering an IND-CCA security experiment, where the adversary has access to a forced decommitment oracle. 
 Even though the forced decommitment can be performed in polynomial time, this polynomial may be very large, if the time parameter $T$ is large. Since the experiment needs to perform a forced decommitment for \emph{every} decommitment query of the adversary, this would incur a very significant overhead and a highly lossy reduction.
 Hence, following Katz \etal \cite{TCC:KatLosXu20}, we aim to build commitment schemes where a reduction can perform a fast decommitment. 
@@ -47,7 +47,7 @@ Since the syntactical definitions and properties of proof systems in the random 
 
 \paragraph{Shared randomness} To obtain commitments of smaller size we additionally apply the shared randomness technique from \cite{SCN:BiaMasVen16}, where instead of producing two or three independent encryptions of the same message, we reuse the same randomness for encryption. This allows to save one group element in case of the standard Naor-Yung constructions and two group elements in the case of triple Naor-Yung.
 
-\subsection{Further related work}
+\subsubsection*{Further related work}
 Time-lock puzzles based on randomized encodings were introduced in \cite{TCC:BDGM19}, but all known constructions of timed commitments rely on the repeated squaring puzzles of \cite{RSW96}.
 Timed commitments are also related to time-lock encryption scheme \cite{liu2018build} and time-released encryption \cite{cryptoeprint:2020/739}, albeit with different properties. The construction in \cite{liu2018build} is based on an external ``computational reference clock'' (instantiated with a public block chain), whose output can be used to decrypt, such that decrypting parties do not have to perform expensive computations by solving a puzzle. The constructions of Chvojka \etal \cite{cryptoeprint:2020/739} are based on repeated squaring, however, the main difference is that the time needed for decryption starts to run from the point when $setup$ is executed and not from the point when ciphertext is created. 
 

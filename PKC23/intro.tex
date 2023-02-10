@@ -17,7 +17,7 @@ Timed commitments can resolve this situation very elegantly and without the need
 In a timed commitment scheme, the parties create their commitments $c_i = \com(x_i,r_i, T)$ with respect to a suitable time parameter $T$ for the given application. In case one party is not able to or refuses to open its commitment, the other parties can force the commitment open in time $T$ and thus resolve a potential dispute. 
 
 
-\subsection{Requirements on Practical Timed Commitments}
+\subsubsection*{Requirements on Practical Timed Commitments}
 Several challenges arise when constructing timed commitments that can be used in practical applications.
 
 \begin{description}
@@ -72,7 +72,7 @@ Several challenges arise when constructing timed commitments that can be used in
 
 
 
-\subsection{Our Contributions}
+\subsubsection*{Our Contributions}
 We provide a simpler and more efficient approach to construct practical non-malleable timed commitments. We give the first constructions that simultaneously achieve non-interactivity, non-malleability, linear (\ie, additive) or multiplicative homomorphism, public verifiability of commitments and public verifiability of forced opening. Moreover, all our reductions avoid the need to answer decommitment queries using the slow forced decommitment algorithm, which yields much tighter security.
 Instead of relying on expensive ZK proofs for general NP languages as prior work, we show how to use Fiat-Shamir \cite{C:FiaSha86} NIZKs derived from Sigma protocols for simple algebraic languages. Our constructions can be instantiated in the standard model by leveraging techniques from Libert \etal \cite{Libert2021OneShotFN} and more efficiently in the random oracle model.
 

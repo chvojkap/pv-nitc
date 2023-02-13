@@ -108,6 +108,12 @@ return $c := (c_0, c_1, c_2, c_3, \pi)$ & \\
 %\end{figure}
 
 % \todo{appendix?}
+
+\begin{theorem}
+\label{thm:NITC-lin-ROM}
+If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$ which is sound with respect to auxiliary input $\aux:=(p,q)$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$ in $\Jn$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-lh-rom} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
+\end{theorem}
+
 \begin{proof}
 Completeness is implied by the completeness of the NIZK and can be verified by inspection. 
 
@@ -476,13 +482,6 @@ which concludes the proof.
 \end{proof}
 % \todo{appendix end}
 
-
-
-\begin{theorem}
-\label{thm:NITC-lin-ROM}
-If $\nizk = (\nizk.\prove, \nizk.\vrfy)$ is a one-time simulation-sound non-interactive zero-knowledge proof system for $L$ which is sound with respect to auxiliary input $\aux:=(p,q)$, the strong sequential squaring assumption with gap $\gap$ holds relative to $\genmod$ in $\Jn$, the Decisional Composite Residuosity assumption holds relative to $\genmod$, and the Decisional Diffie-Hellman assumption holds relative to $\genmod$ in $\Jn$, then \mathlist{(\pgen, \com, \cvrfy, \dvrfy, \fdecom)} defined in \Cref{table:nitc-lh-rom} is an IND-CCA-secure non-interactive timed commitment scheme with $\ugap$, for any $\ugap < \gap$. 
-\end{theorem}
-The proof can be found in \Cref{app:NITC-in-ROM}.
 
 \begin{theorem}
 $(\pgen, \com, \cvrfy, \dvrfy, \fdecom)$ defined in \Cref{table:nitc-lh-rom} is a BND-CCA-secure non-interactive timed commitment scheme. 

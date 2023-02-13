@@ -103,8 +103,10 @@ Additionally, we achieve public verifiability of forced opening and homomorphic 
 \hline
 \Cref{sec:linearNITCstdmodel} & linear        & \cmark        & priv.          & \cmark        & \cmark         & $O(1)$ &                 $O(\log\secpar)$ & $O(1)$      & \cmark         \\
 \Cref{sec:multNITCstdmodel}   & mult.         & \cmark        & priv.          & \cmark        & \cmark         & $O(1)$ &      $O(\log\secpar)$  & $O(1)$      & \cmark         \\
-Construction \ref{sec:linear-ROM}         & linear        & \xmark        & priv.          & \cmark        & \cmark         & $O(1)$           &    $O(1)$     & $O(1)$      & \cmark         \\
-Construction \ref{sec:mult-ROM}           & mult.         & \xmark        & priv.          & \cmark        & \cmark         & $O(1)$           &  $O(1)$    & $O(1)$      & \cmark         \\
+\cite{cryptoeprint:2022/1498} - Section 4.3         & linear        & \xmark        & priv.          & \cmark        & \cmark         & $O(1)$           &    $O(1)$     & $O(1)$      & \cmark         \\
+\cite{cryptoeprint:2022/1498} - Section 4.4         & mult.         & \xmark        & priv.          & \cmark        & \cmark         & $O(1)$           &  $O(1)$    & $O(1)$      & \cmark         \\
+%Construction \ref{sec:linear-ROM}         & linear        & \xmark        & priv.          & \cmark        & \cmark         & $O(1)$           &    $O(1)$     & $O(1)$      & \cmark         \\
+%Construction \ref{sec:mult-ROM}           & mult.         & \xmark        & priv.          & \cmark        & \cmark         & $O(1)$           &  $O(1)$    & $O(1)$      & \cmark         \\
 \hline
 \end{tabular}
 \caption{\label{tab:comparison-related-work}Comparison of our constructions with related work. Column \textbf{Hom.} indicates whether the construction provides a linear/multiplicative homomorphism, \textbf{Std.} whether the construction has a standard-model proof, \textbf{Com?} whether it is publicly verifiable that commitments are well-formed, \textbf{FDec?} efficient public verifiability of forced decommitments, $|\com|$ is the size of commitments, \textbf{$|\pi_\com|$} the size of proofs,  $t_{Com}$ the running time of the commitment algorithm, and \textbf{Tight} whether the proof avoids running the forced decommitment algorithm to respond to CCA queries.}
@@ -125,12 +127,12 @@ In comparison, the non-interactive construction of David \etal~\cite{EC:BDDNO21}
 \cite{CCS:TCLM21}    & 2.32   & 3321.41 &   8846.96
  & 256 \\
 \hline
-
-\ref{sec:linear-ROM}         & 1.92       & 1.54      & 1.55 & 3072 \\
+\cite{cryptoeprint:2022/1498} - Section 4.3    & 1.92       & 1.54      & 1.55 & 3072 \\
+%\ref{sec:linear-ROM}         & 1.92       & 1.54      & 1.55 & 3072 \\
 
 \hline
 \end{tabular}
-\caption{\label{tab:comparison-NITC}Comparison of our construction \ref{sec:linear-ROM} with \cite{CCS:TCLM21} for security level $\secpar = 128$ bits and taking into account the security loss for $Q = T = 2^{32}$.}
+\caption{\label{tab:comparison-NITC}Comparison of our construction \cite{cryptoeprint:2022/1498}(Section 4.3) with \cite{CCS:TCLM21} for security level $\secpar = 128$ bits and taking into account the security loss for $Q = T = 2^{32}$.}
 \end{center}
 \end{table}
 
